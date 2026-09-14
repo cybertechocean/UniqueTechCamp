@@ -51,6 +51,11 @@ ALLOWED_HOSTS = env.list(
 # ------------------------------------------------------------------------------
 
 INSTALLED_APPS = [
+    # Unfold Admin Theme (must be before django.contrib.admin)
+    "unfold",
+    "unfold.contrib.filters",
+    "unfold.contrib.forms",
+
     # Django Apps
     "django.contrib.admin",
     "django.contrib.auth",
@@ -63,11 +68,13 @@ INSTALLED_APPS = [
     "tailwind",
     "theme",
     "django_browser_reload",
+    "django_ckeditor_5",
 
     # Local Apps
     "core",
     "services",
     "portfolio",
+    "blog",
 ]
 
 # ------------------------------------------------------------------------------
@@ -202,3 +209,96 @@ INTERNAL_IPS = [
 # ------------------------------------------------------------------------------
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
+
+# ------------------------------------------------------------------------------
+# Django Unfold Admin Configuration
+# ------------------------------------------------------------------------------
+
+from django.templatetags.static import static
+
+UNFOLD = {
+    "SITE_TITLE": "UniqueTechCamp Management Studio",
+    "SITE_HEADER": "UniqueTechCamp",
+    "SITE_SUBHEADER": "Web Development • Tech Solutions • Digital Growth",
+    "SITE_ICON": {
+        "light": lambda request: static("images/logo-icon.png"),
+        "dark": lambda request: static("images/logo-icon.png"),
+    },
+    "SITE_LOGO": {
+        "light": lambda request: static("images/logo-rounded.png"),
+        "dark": lambda request: static("images/logo-rounded.png"),
+    },
+    "SITE_SYMBOL": "terminal",
+    "SHOW_HISTORY": True,
+    "SHOW_VIEW_ON_SITE": True,
+    "COLORS": {
+        "primary": {
+            "50": "240 253 244",
+            "100": "220 252 231",
+            "200": "187 247 208",
+            "300": "134 239 172",
+            "400": "74 222 128",
+            "500": "34 197 94",   # Primary Green (#22c55e)
+            "600": "22 163 74",   # Hover Green (#16a34a)
+            "700": "21 128 61",
+            "800": "22 101 52",
+            "900": "20 83 45",
+            "950": "5 46 22",
+        },
+    },
+}
+
+# ------------------------------------------------------------------------------
+# CKEditor 5 Configuration
+# ------------------------------------------------------------------------------
+
+CKEDITOR_5_CONFIGS = {
+    'default': {
+        'toolbar': ['heading', '|', 'bold', 'italic', 'link', 'bulletedList', 'numberedList', 'blockQuote', 'imageUpload'],
+    },
+    'extends': {
+        'blockToolbar': [
+            'paragraph', 'heading1', 'heading2', 'heading3',
+            '|',
+            'bulletedList', 'numberedList',
+            '|',
+            'blockQuote',
+        ],
+        'toolbar': [
+            'heading', '|', 'bold', 'italic', 'link', 'underline', 'strikethrough', 'code', 'highlight', '|',
+            'bulletedList', 'numberedList', 'todoList', '|',
+            'blockQuote', 'imageUpload', '|',
+            'fontSize', 'fontFamily', 'fontColor', 'fontBackgroundColor', 'mediaEmbed', 'removeFormat', 'insertTable'
+        ],
+        'image': {
+            'toolbar': ['imageTextAlternative', '|', 'imageStyle:alignLeft', 'imageStyle:alignRight', 'imageStyle:alignCenter', 'imageStyle:side'],
+        },
+        'table': {
+            'contentToolbar': ['tableColumn', 'tableRow', 'mergeTableCells', 'tableProperties', 'tableCellProperties'],
+        },
+        'heading': {
+            'options': [
+                {'model': 'paragraph', 'title': 'Paragraph', 'class': 'ck-heading_paragraph'},
+                {'model': 'heading1', 'view': 'h1', 'title': 'Heading 1', 'class': 'ck-heading_heading1'},
+                {'model': 'heading2', 'view': 'h2', 'title': 'Heading 2', 'class': 'ck-heading_heading2'},
+                {'model': 'heading3', 'view': 'h3', 'title': 'Heading 3', 'class': 'ck-heading_heading3'},
+            ]
+        },
+    },
+}
+CKEDITOR_5_FILE_UPLOAD_PERMISSION = "staff"
+
+# ------------------------------------------------------------------------------
+# Email Backend Configuration (SMTP / Gmail App Password)
+# ------------------------------------------------------------------------------
+
+EMAIL_BACKEND = env("EMAIL_BACKEND", default="django.core.mail.backends.smtp.EmailBackend")
+EMAIL_HOST = env("EMAIL_HOST", default="smtp.gmail.com")
+EMAIL_PORT = env.int("EMAIL_PORT", default=587)
+EMAIL_USE_TLS = env.bool("EMAIL_USE_TLS", default=True)
+EMAIL_HOST_USER = env("EMAIL_HOST_USER", default="UniqueTechCamp@gmail.com")
+EMAIL_HOST_PASSWORD = env("EMAIL_HOST_PASSWORD", default="")
+DEFAULT_FROM_EMAIL = env("DEFAULT_FROM_EMAIL", default="UniqueTechCamp <info@uniquetechcamp.org>")
+SERVER_EMAIL = env("SERVER_EMAIL", default="UniqueTechCamp <info@uniquetechcamp.org>")
+ADMIN_EMAIL_PRIMARY = "info@uniquetechcamp.org"
+ADMIN_EMAIL_GMAIL = "UniqueTechCamp@gmail.com"

@@ -1,17 +1,18 @@
 from django.contrib import admin
+from unfold.admin import ModelAdmin, TabularInline
 from .models import Project, ProjectCategory, ProjectScreenshot
 
 @admin.register(ProjectCategory)
-class ProjectCategoryAdmin(admin.ModelAdmin):
+class ProjectCategoryAdmin(ModelAdmin):
     list_display = ('name',)
     prepopulated_fields = {'slug': ('name',)}
 
-class ProjectScreenshotInline(admin.TabularInline):
+class ProjectScreenshotInline(TabularInline):
     model = ProjectScreenshot
     extra = 1
 
 @admin.register(Project)
-class ProjectAdmin(admin.ModelAdmin):
+class ProjectAdmin(ModelAdmin):
     list_display = ('title', 'category', 'client_name', 'order', 'created_at')
     list_filter = ('category', 'created_at')
     search_fields = ('title', 'client_name', 'technologies', 'description')
