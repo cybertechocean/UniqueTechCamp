@@ -3,13 +3,15 @@
 @theme {
   --color-primary: #22C55E;
   --color-primary-hover: #16A34A;
-  --color-secondary: #1F2937;
+  --color-secondary: #0F172A;
+  --color-dark-bg: #020617;
+  --color-dark-surface: #0B0F19;
   --color-neutral-white: #FFFFFF;
   --color-light-bg: #F8FAFC;
 
-  --font-heading: "Space Grotesk", sans-serif;
-  --font-body: "Plus Jakarta Sans", sans-serif;
-  --font-support: "Inter", sans-serif;
+  --font-heading: "Space Grotesk", system-ui, sans-serif;
+  --font-body: "Plus Jakarta Sans", system-ui, sans-serif;
+  --font-support: "Inter", system-ui, sans-serif;
 }
 
 @source "../../../**/*.{html,py,js}";
@@ -18,23 +20,52 @@
   .text-shadow-sm {
     text-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
   }
+  .text-shadow-glow {
+    text-shadow: 0 0 20px rgba(34, 197, 94, 0.4);
+  }
+  .glass-header {
+    background: rgba(2, 6, 23, 0.88);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  }
+  .glass-card {
+    background: rgba(255, 255, 255, 0.88);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border: 1px solid rgba(226, 232, 240, 0.8);
+    box-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.05);
+  }
+  .glass-card-dark {
+    background: rgba(15, 23, 42, 0.78);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    box-shadow: 0 20px 40px -15px rgba(0, 0, 0, 0.4);
+  }
+  .safe-pb {
+    padding-bottom: max(0.6rem, env(safe-area-inset-bottom, 0px));
+  }
 }
 
 @layer components {
   .btn-primary {
-    @apply bg-primary hover:bg-primary-hover text-white font-support font-semibold py-3 px-6 rounded-lg transition-all duration-300 shadow-md hover:shadow-lg inline-flex items-center justify-center gap-2;
+    @apply bg-gradient-to-r from-emerald-500 to-green-600 hover:from-emerald-600 hover:to-green-700 text-white font-support font-semibold py-3 px-6 rounded-xl transition-all duration-300 shadow-lg shadow-emerald-500/20 hover:shadow-emerald-500/40 inline-flex items-center justify-center gap-2 active:scale-95 cursor-pointer;
   }
   .btn-secondary {
-    @apply bg-white hover:bg-gray-50 text-secondary font-support font-semibold py-3 px-6 rounded-lg transition-all duration-300 shadow-md hover:shadow-lg border border-gray-200 inline-flex items-center justify-center gap-2;
+    @apply bg-white/10 hover:bg-white/20 text-white font-support font-semibold py-3 px-6 rounded-xl transition-all duration-300 shadow-md border border-white/20 inline-flex items-center justify-center gap-2 active:scale-95 cursor-pointer;
   }
-  .glass-card {
-    @apply bg-white/80 backdrop-blur-md border border-white/20 shadow-xl rounded-2xl;
+  .btn-light {
+    @apply bg-white hover:bg-slate-50 text-slate-900 font-support font-semibold py-3 px-6 rounded-xl transition-all duration-300 shadow-sm hover:shadow-md border border-slate-200 inline-flex items-center justify-center gap-2 active:scale-95 cursor-pointer;
   }
   .section-title {
-    @apply text-3xl md:text-4xl lg:text-5xl font-heading font-bold text-secondary mb-4;
+    @apply text-3xl md:text-4xl lg:text-5xl font-heading font-extrabold text-slate-900 mb-4 tracking-tight;
   }
   .section-subtitle {
-    @apply text-lg text-gray-600 font-body max-w-2xl mx-auto;
+    @apply text-base md:text-lg text-slate-600 font-body max-w-2xl mx-auto leading-relaxed;
+  }
+  .badge-emerald {
+    @apply inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold uppercase tracking-wider bg-emerald-500/15 text-emerald-600 border border-emerald-500/30;
   }
 }
 
@@ -52,10 +83,10 @@ h1, h2, h3, h4, h5, h6 {
   font-family: var(--font-heading);
 }
 
-/* Animations */
+/* Modern Animations */
 @keyframes float {
   0% { transform: translateY(0px); }
-  50% { transform: translateY(-20px); }
+  50% { transform: translateY(-16px); }
   100% { transform: translateY(0px); }
 }
 
@@ -65,7 +96,7 @@ h1, h2, h3, h4, h5, h6 {
 
 @keyframes float-delayed {
   0% { transform: translateY(0px); }
-  50% { transform: translateY(-15px); }
+  50% { transform: translateY(-12px); }
   100% { transform: translateY(0px); }
 }
 
@@ -79,13 +110,15 @@ h1, h2, h3, h4, h5, h6 {
   top: 0;
   left: 0;
   width: 0%;
-  height: 4px;
-  background-color: var(--color-primary);
+  height: 3px;
+  background: linear-gradient(90deg, #22C55E, #4ADE80);
   z-index: 1000;
   transition: width 0.1s;
 }
 
 /* Base transitions */
 * {
-  @apply transition-colors duration-200;
+  transition-property: color, background-color, border-color, text-decoration-color, fill, stroke;
+  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+  transition-duration: 150ms;
 }
