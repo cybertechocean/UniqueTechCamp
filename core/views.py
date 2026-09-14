@@ -423,3 +423,40 @@ class LLMsTxtView(View):
 
         return HttpResponse("\n".join(md), content_type="text/plain; charset=utf-8")
 
+
+class EmailPreviewWelcomeView(View):
+    """Visual in-browser preview for the Welcome Email."""
+    def get(self, request):
+        from .emails import get_email_context
+        context = get_email_context(request)
+        context.update({
+            "user_name": request.GET.get("name", "Dr. Alex Mwangi"),
+            "cta_url": f"{context['site_url']}/services/",
+            "cta_text": "Explore 107 Growth Services →",
+        })
+        return render(request, "emails/welcome_email.html", context)
+
+
+class EmailPreviewPasswordResetView(View):
+    """Visual in-browser preview for the Password Reset Email."""
+    def get(self, request):
+        from .emails import get_email_context
+        context = get_email_context(request)
+        
+        class MockUser:
+            username = "alexmwangi"
+            email = "alex.mwangi@example.com"
+            is_authenticated = True
+            def get_full_name(self):
+                return "Alex Mwangi"
+
+        context.update({
+            "user": request.user if request.user.is_authenticated else MockUser(),
+            "user_name": "Alex Mwangi",
+            "email": "alex.mwangi@example.com",
+            "uid": "MQ",
+            "token": "d7k29s-sample-reset-token-preview",
+            "reset_url": f"{context['site_url']}/auth/reset/MQ/sample-reset-token-preview/",
+        })
+        return render(request, "registration/password_reset_email.html", context)
+

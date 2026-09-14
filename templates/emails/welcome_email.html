@@ -1,0 +1,71 @@
+{% extends 'emails/base_email.html' %}
+
+{% block email_title %}Welcome to UniqueTechCamp — Website, Clients, Income{% endblock %}
+
+{% block email_content %}
+<div style="font-size: 20px; font-weight: 800; color: #0f172a; margin-bottom: 16px; letter-spacing: -0.3px;">
+    Welcome to UniqueTechCamp, {{ user_name|default:"there" }}! &#128075;
+</div>
+
+<p style="margin: 0 0 16px 0; font-size: 15px; color: #334155; line-height: 1.65;">
+    Thank you for joining <strong>UniqueTechCamp</strong>. We are thrilled to welcome you to our digital growth ecosystem.
+</p>
+
+<p style="margin: 0 0 24px 0; font-size: 15px; color: #334155; line-height: 1.65;">
+    At UniqueTechCamp, we don't build generic commodity websites. We engineer <strong>complete client acquisition engines</strong> designed to convert your web traffic into paying customers with 24/7 automated intelligence.
+</p>
+
+<!-- Features Card -->
+<div style="background-color: #f0fdf4; border: 1.5px solid #bbf7d0; border-radius: 14px; padding: 22px; margin-bottom: 28px;">
+    <div style="font-size: 14px; font-weight: 800; color: #15803d; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 12px;">
+        What Powers Your Digital Engine:
+    </div>
+    <ul style="margin: 0; padding-left: 20px; color: #166534; font-size: 14px; line-height: 1.7;">
+        <li><strong>High-Converting Web Architecture:</strong> Sub-second load times, mobile-first design, and seamless user experiences.</li>
+        <li><strong>24/7 AI WhatsApp Qualification Bot:</strong> Pre-screen incoming prospects, filter budgets, and schedule meetings around the clock.</li>
+        <li><strong>Automated Follow-Up Funnels:</strong> Re-engage leads via SMS, Email, and WhatsApp to maximize consultation close rates.</li>
+        <li><strong>107 Specialized Industry Systems:</strong> Turnkey solutions customized for healthcare, law, real estate, e-commerce, and corporate enterprises.</li>
+    </ul>
+</div>
+
+{% if temporary_password %}
+<!-- Credentials Box (If auto-generated account) -->
+<div style="background-color: #fefce8; border: 1.5px solid #fef08a; border-radius: 14px; padding: 20px; margin-bottom: 28px;">
+    <div style="font-size: 13px; font-weight: 800; color: #854d0e; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 8px;">
+        Your Account Credentials:
+    </div>
+    <table role="presentation" cellpadding="0" cellspacing="0" border="0" style="font-size: 14px; color: #713f12; line-height: 1.6;">
+        <tr>
+            <td style="font-weight: bold; width: 90px;">Username:</td>
+            <td><code>{{ user.username }}</code></td>
+        </tr>
+        <tr>
+            <td style="font-weight: bold;">Password:</td>
+            <td><code>{{ temporary_password }}</code></td>
+        </tr>
+    </table>
+    <p style="margin: 8px 0 0 0; font-size: 12px; color: #a16207;">
+        <em>Please log in and update your password immediately.</em>
+    </p>
+</div>
+{% endif %}
+
+<!-- Action Button -->
+<div style="text-align: center; margin: 32px 0 28px 0;">
+    <a href="{{ cta_url|default:'https://uniquetechcamp.org/services/' }}" 
+       target="_blank" 
+       style="display: inline-block; background-color: #22c55e; color: #ffffff; text-decoration: none; font-size: 15px; font-weight: 800; padding: 14px 34px; border-radius: 12px; box-shadow: 0 4px 14px rgba(34, 197, 94, 0.4); text-align: center;">
+        {{ cta_text|default:"Explore 107 Growth Services &rarr;" }}
+    </a>
+</div>
+
+<p style="margin: 0 0 16px 0; font-size: 14px; color: #475569; line-height: 1.6;">
+    If you ever have any questions, want to scope out a new web solution, or require custom AI integrations, reply directly to this email or reach us on WhatsApp at <strong>+254 715 479 955</strong>.
+</p>
+
+<p style="margin: 24px 0 0 0; font-size: 14px; color: #334155; line-height: 1.6;">
+    To your digital success,<br>
+    <strong style="color: #0f172a;">The UniqueTechCamp Engineering & AI Team</strong><br>
+    <span style="font-size: 12px; color: #16a34a; font-weight: 600;">Website • Clients • Income</span>
+</p>
+{% endblock %}

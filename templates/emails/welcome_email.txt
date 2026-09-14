@@ -1,0 +1,44 @@
+==============================================================================
+UNIQUETECHCAMP — WEBSITE • CLIENTS • INCOME
+==============================================================================
+
+Welcome to UniqueTechCamp, {{ user_name|default:"there" }}!
+
+Thank you for joining UniqueTechCamp. We are thrilled to welcome you to our digital growth ecosystem.
+
+At UniqueTechCamp, we don't build generic commodity websites. We engineer complete client acquisition engines designed to convert your web traffic into paying customers with 24/7 automated intelligence.
+
+WHAT POWERS YOUR DIGITAL ENGINE:
+- High-Converting Web Architecture: Sub-second load times and seamless user experiences.
+- 24/7 AI WhatsApp Qualification Bot: Pre-screen incoming prospects and schedule meetings 24/7.
+- Automated Follow-Up Funnels: Re-engage leads via SMS, Email, and WhatsApp.
+- 107 Specialized Industry Systems: Turnkey solutions customized for your exact industry.
+
+{% if temporary_password %}
+ACCOUNT CREDENTIALS:
+Username: {{ user.username }}
+Password: {{ temporary_password }}
+Please log in and change your password immediately.
+{% endif %}
+
+GET STARTED:
+{{ cta_url|default:'https://uniquetechcamp.org/services/' }}
+
+NEED IMMEDIATE ASSISTANCE?
+- Direct Line: +254 715 479 955
+- WhatsApp: https://wa.me/254715479955
+- Email: info@uniquetechcamp.org
+- Website: https://uniquetechcamp.org
+
+CONNECT WITH US:
+- WhatsApp: https://wa.me/254715479955
+- TikTok: https://www.tiktok.com/@UniqueTechCamp
+- Facebook: https://www.facebook.com/UniqueTechCamp
+- Instagram: https://www.instagram.com/UniqueTechCamp
+- X (Twitter): https://x.com/UniqueTechCamp
+- LinkedIn: https://www.linkedin.com/company/uniquetechcamp
+- YouTube: https://www.youtube.com/@UniqueTechCamp
+
+UniqueTechCamp Limited
+Nairobi, Kenya
+(c) 2026 UniqueTechCamp Limited. All rights reserved.

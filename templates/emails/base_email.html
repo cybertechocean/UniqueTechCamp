@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>{% block email_title %}UniqueTechCamp{% endblock %}</title>
+    <!--[if mso]>
+    <style type="text/css">
+        body, table, td, a { font-family: Arial, Helvetica, sans-serif !important; }
+    </style>
+    <![endif]-->
+</head>
+<body style="margin: 0; padding: 0; background-color: #f8fafc; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; -webkit-font-smoothing: antialiased; -webkit-text-size-adjust: 100%; -ms-text-size-adjust: 100%;">
+    
+    <!-- Outer Wrapper -->
+    <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="background-color: #f8fafc; width: 100%; padding: 40px 10px;">
+        <tr>
+            <td align="center">
+                
+                <!-- Main Email Container (Max 600px) -->
+                <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="max-width: 600px; background-color: #ffffff; border-radius: 20px; overflow: hidden; border: 1px solid #e2e8f0; box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05);">
+                    
+                    <!-- Top Accent Bar -->
+                    <tr>
+                        <td height="6" style="background: linear-gradient(90deg, #22c55e 0%, #16a34a 50%, #0f172a 100%); font-size: 0; line-height: 0;">&nbsp;</td>
+                    </tr>
+
+                    <!-- Header with Rounded Logo -->
+                    <tr>
+                        <td align="center" style="padding: 36px 40px 24px 40px; background-color: #ffffff; border-bottom: 1px solid #f1f5f9;">
+                            <a href="{{ site_url|default:'https://uniquetechcamp.org' }}" target="_blank" style="text-decoration: none; display: inline-block;">
+                                <img src="{{ logo_url|default:'https://uniquetechcamp.org/static/images/logo-rounded.png' }}" 
+                                     alt="UniqueTechCamp Logo" 
+                                     width="76" 
+                                     height="76" 
+                                     style="display: block; border-radius: 18px; border: 2.5px solid #22c55e; margin: 0 auto; box-shadow: 0 4px 12px rgba(34, 197, 94, 0.2);" />
+                            </a>
+                            <div style="margin-top: 14px; font-size: 22px; font-weight: 800; color: #0f172a; letter-spacing: -0.5px; text-align: center;">
+                                UniqueTechCamp
+                            </div>
+                            <div style="margin-top: 4px; font-size: 11px; font-weight: 700; color: #16a34a; letter-spacing: 2px; text-transform: uppercase; text-align: center;">
+                                Website • Clients • Income
+                            </div>
+                        </td>
+                    </tr>
+
+                    <!-- Email Body Content Slot -->
+                    <tr>
+                        <td style="padding: 36px 40px 32px 40px; color: #334155; font-size: 15px; line-height: 1.65;">
+                            {% block email_content %}
+                            {% endblock %}
+                        </td>
+                    </tr>
+
+                    <!-- Direct Support Info Box -->
+                    <tr>
+                        <td style="padding: 0 40px 28px 40px;">
+                            <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="background-color: #f8fafc; border: 1px solid #e2e8f0; border-radius: 14px; padding: 18px 20px;">
+                                <tr>
+                                    <td style="font-size: 13px; color: #475569; line-height: 1.5;">
+                                        <strong style="color: #0f172a; font-size: 13px; display: block; margin-bottom: 4px;">Need Immediate Assistance?</strong>
+                                        Our engineering and growth architects are on standby.<br>
+                                        &#128222; <strong>Direct Line:</strong> <a href="tel:+254715479955" style="color: #16a34a; text-decoration: none; font-weight: 600;">+254 715 479 955</a> &nbsp;|&nbsp; 
+                                        &#128172; <strong>WhatsApp:</strong> <a href="https://wa.me/254715479955" style="color: #25d366; text-decoration: none; font-weight: 600;">Chat Now</a> &nbsp;|&nbsp; 
+                                        &#9993;&#65039; <strong>Email:</strong> <a href="mailto:info@uniquetechcamp.org" style="color: #0284c7; text-decoration: none; font-weight: 600;">info@uniquetechcamp.org</a>
+                                    </td>
+                                </tr>
+                            </table>
+                        </td>
+                    </tr>
+
+                    <!-- Footer / Social Media Section (At the Bottom) -->
+                    <tr>
+                        <td align="center" style="background-color: #0f172a; padding: 36px 30px 30px 30px; color: #94a3b8; border-top: 1px solid #1e293b;">
+                            
+                            <!-- Section Heading -->
+                            <div style="font-size: 12px; font-weight: 700; color: #cbd5e1; text-transform: uppercase; letter-spacing: 1.5px; margin-bottom: 16px; text-align: center;">
+                                Connect With UniqueTechCamp Across Our Channels
+                            </div>
+
+                            <!-- Social Icons Matrix (9 Social Channels, Email-Client Compatible) -->
+                            <table role="presentation" cellpadding="0" cellspacing="0" border="0" style="margin: 0 auto 22px auto;">
+                                <tr>
+                                    <!-- WhatsApp -->
+                                    <td align="center" style="padding: 0 4px;">
+                                        <a href="https://wa.me/254715479955" target="_blank" title="WhatsApp" 
+                                           style="display: inline-block; background-color: #25D366; color: #ffffff; text-decoration: none; font-size: 11px; font-weight: bold; border-radius: 8px; padding: 7px 11px; margin: 3px 2px;">
+                                            WhatsApp
+                                        </a>
+                                    </td>
+                                    <!-- Phone -->
+                                    <td align="center" style="padding: 0 4px;">
+                                        <a href="tel:+254715479955" target="_blank" title="Call Us" 
+                                           style="display: inline-block; background-color: #16A34A; color: #ffffff; text-decoration: none; font-size: 11px; font-weight: bold; border-radius: 8px; padding: 7px 11px; margin: 3px 2px;">
+                                            Call
+                                        </a>
+                                    </td>
+                                    <!-- Email -->
+                                    <td align="center" style="padding: 0 4px;">
+                                        <a href="mailto:info@uniquetechcamp.org" target="_blank" title="Email" 
+                                           style="display: inline-block; background-color: #0284C7; color: #ffffff; text-decoration: none; font-size: 11px; font-weight: bold; border-radius: 8px; padding: 7px 11px; margin: 3px 2px;">
+                                            Email
+                                        </a>
+                                    </td>
+                                    <!-- TikTok -->
+                                    <td align="center" style="padding: 0 4px;">
+                                        <a href="https://www.tiktok.com/@UniqueTechCamp" target="_blank" title="TikTok" 
+                                           style="display: inline-block; background-color: #1e293b; color: #ffffff; text-decoration: none; font-size: 11px; font-weight: bold; border-radius: 8px; padding: 7px 11px; margin: 3px 2px; border: 1px solid #334155;">
+                                            TikTok
+                                        </a>
+                                    </td>
+                                    <!-- Facebook -->
+                                    <td align="center" style="padding: 0 4px;">
+                                        <a href="https://www.facebook.com/UniqueTechCamp" target="_blank" title="Facebook" 
+                                           style="display: inline-block; background-color: #1877F2; color: #ffffff; text-decoration: none; font-size: 11px; font-weight: bold; border-radius: 8px; padding: 7px 11px; margin: 3px 2px;">
+                                            Facebook
+                                        </a>
+                                    </td>
+                                </tr>
+                            </table>
+
+                            <table role="presentation" cellpadding="0" cellspacing="0" border="0" style="margin: 0 auto 24px auto;">
+                                <tr>
+                                    <!-- Instagram -->
+                                    <td align="center" style="padding: 0 4px;">
+                                        <a href="https://www.instagram.com/UniqueTechCamp" target="_blank" title="Instagram" 
+                                           style="display: inline-block; background-color: #E1306C; color: #ffffff; text-decoration: none; font-size: 11px; font-weight: bold; border-radius: 8px; padding: 7px 11px; margin: 3px 2px;">
+                                            Instagram
+                                        </a>
+                                    </td>
+                                    <!-- X / Twitter -->
+                                    <td align="center" style="padding: 0 4px;">
+                                        <a href="https://x.com/UniqueTechCamp" target="_blank" title="X (Twitter)" 
+                                           style="display: inline-block; background-color: #000000; color: #ffffff; text-decoration: none; font-size: 11px; font-weight: bold; border-radius: 8px; padding: 7px 11px; margin: 3px 2px; border: 1px solid #334155;">
+                                            X (Twitter)
+                                        </a>
+                                    </td>
+                                    <!-- LinkedIn -->
+                                    <td align="center" style="padding: 0 4px;">
+                                        <a href="https://www.linkedin.com/company/uniquetechcamp" target="_blank" title="LinkedIn" 
+                                           style="display: inline-block; background-color: #0A66C2; color: #ffffff; text-decoration: none; font-size: 11px; font-weight: bold; border-radius: 8px; padding: 7px 11px; margin: 3px 2px;">
+                                            LinkedIn
+                                        </a>
+                                    </td>
+                                    <!-- YouTube -->
+                                    <td align="center" style="padding: 0 4px;">
+                                        <a href="https://www.youtube.com/@UniqueTechCamp" target="_blank" title="YouTube" 
+                                           style="display: inline-block; background-color: #FF0000; color: #ffffff; text-decoration: none; font-size: 11px; font-weight: bold; border-radius: 8px; padding: 7px 11px; margin: 3px 2px;">
+                                            YouTube
+                                        </a>
+                                    </td>
+                                </tr>
+                            </table>
+
+                            <!-- Divider -->
+                            <div style="border-top: 1px solid #1e293b; margin: 20px auto; max-width: 480px;"></div>
+
+                            <!-- Address and Copyright -->
+                            <div style="font-size: 12px; color: #64748b; line-height: 1.6; text-align: center;">
+                                <strong style="color: #94a3b8;">UniqueTechCamp Limited</strong><br>
+                                Central Business District, Nairobi, Kenya<br>
+                                Engineering High-Performance Web & AI Systems Worldwide
+                            </div>
+
+                            <div style="margin-top: 14px; font-size: 11px; color: #475569; text-align: center;">
+                                &copy; 2026 UniqueTechCamp Limited. All rights reserved.<br>
+                                <a href="{{ site_url|default:'https://uniquetechcamp.org' }}/privacy/" style="color: #64748b; text-decoration: underline;">Privacy Policy</a> &nbsp;•&nbsp; 
+                                <a href="{{ site_url|default:'https://uniquetechcamp.org' }}/terms/" style="color: #64748b; text-decoration: underline;">Terms of Service</a> &nbsp;•&nbsp; 
+                                <a href="{{ site_url|default:'https://uniquetechcamp.org' }}/payment-policy/" style="color: #64748b; text-decoration: underline;">Payment Policy</a>
+                            </div>
+
+                        </td>
+                    </tr>
+
+                </table>
+                <!-- End Main Container -->
+
+            </td>
+        </tr>
+    </table>
+    <!-- End Outer Wrapper -->
+
+</body>
+</html>

@@ -16,9 +16,12 @@ from core.feeds import (
     LatestPostsAtomFeed,
     ServicesFeed,
 )
+from django.contrib.auth import views as auth_views
 from core.views import (
     RobotsTxtView,
     LLMsTxtView,
+    EmailPreviewWelcomeView,
+    EmailPreviewPasswordResetView,
 )
 
 sitemaps = {
@@ -41,6 +44,45 @@ urlpatterns = [
     path('robots.txt', RobotsTxtView.as_view(), name='robots_txt'),
     path('llms.txt', LLMsTxtView.as_view(), name='llms_txt'),
     path('llms-full.txt', LLMsTxtView.as_view(), name='llms_full_txt'),
+
+    # Authentication & Password Reset (Branded with Top Logo & Bottom Social Icons)
+    path(
+        'auth/password_reset/',
+        auth_views.PasswordResetView.as_view(
+            template_name='registration/password_reset_form.html',
+            email_template_name='registration/password_reset_email.txt',
+            html_email_template_name='registration/password_reset_email.html',
+            subject_template_name='registration/password_reset_subject.txt',
+            success_url='/auth/password_reset/done/',
+        ),
+        name='password_reset'
+    ),
+    path(
+        'auth/password_reset/done/',
+        auth_views.PasswordResetDoneView.as_view(
+            template_name='registration/password_reset_done.html'
+        ),
+        name='password_reset_done'
+    ),
+    path(
+        'auth/reset/<uidb64>/<token>/',
+        auth_views.PasswordResetConfirmView.as_view(
+            template_name='registration/password_reset_confirm.html',
+            success_url='/auth/reset/done/',
+        ),
+        name='password_reset_confirm'
+    ),
+    path(
+        'auth/reset/done/',
+        auth_views.PasswordResetCompleteView.as_view(
+            template_name='registration/password_reset_complete.html'
+        ),
+        name='password_reset_complete'
+    ),
+
+    # Visual Email In-Browser Previews
+    path('emails/preview/welcome/', EmailPreviewWelcomeView.as_view(), name='preview_welcome_email'),
+    path('emails/preview/password-reset/', EmailPreviewPasswordResetView.as_view(), name='preview_password_reset_email'),
 
     # Application routes
     path('', include('core.urls')),

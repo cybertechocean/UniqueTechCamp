@@ -71,6 +71,18 @@ Every digital property we construct is engineered to turn casual website visitor
 - **Database**: MariaDB / MySQL configured with `utf8mb4` charset and `collation_connection=utf8mb4_unicode_ci` for full emoji support (🛒, 🏥, 🤖, etc.).
 - **Caching**: Production database caching via `utc_cache_table`.
 
+### 7. Branded Email Ecosystem (Welcome & Password Reset)
+- **Top Brand Logo**: Official rounded logo (`logo-rounded.png`) prominently featured with emerald border.
+- **Bottom Social Icons**: 9 bulletproof, email-client-compatible channel badges (WhatsApp, Phone, Email, TikTok, Facebook, Instagram, X, LinkedIn, YouTube) with direct links and Nairobi, Kenya headquarters metadata.
+- **Automated Dispatches**:
+  - `core.signals`: Automated welcome email dispatch whenever a new user account is created.
+  - Standard Django `PasswordResetView`: Custom HTML email template (`templates/registration/password_reset_email.html`) and responsive web pages (`/auth/password_reset/`).
+- **Live In-Browser Visual Previews**:
+  - Welcome Email Preview: `/emails/preview/welcome/`
+  - Password Reset Email Preview: `/emails/preview/password-reset/`
+- **CLI Testing Utility**:
+  - `python manage.py send_test_email --type=all --console` (instantly test and render emails in the terminal or send via SMTP).
+
 ---
 
 ## 📂 Project Structure
@@ -136,6 +148,17 @@ UniqueTechCamp_Web/
 │   ├── 404.html                  # Branded 404 error page with search
 │   ├── 500.html                  # Branded 500 server error page
 │   ├── 403.html                  # Branded 403 forbidden error page
+│   ├── emails/                   # Responsive HTML & Text email templates (Logo & Social)
+│   │   ├── base_email.html       # Email wrapper with top logo & bottom 9 social links
+│   │   ├── welcome_email.html    # Branded welcome email template
+│   │   └── welcome_email.txt     # Plain text welcome email fallback
+│   ├── registration/             # Authentication & Password Reset UI + Emails
+│   │   ├── password_reset_email.html # Branded password reset HTML email
+│   │   ├── password_reset_email.txt  # Plain text password reset email
+│   │   ├── password_reset_form.html  # Password reset request page
+│   │   ├── password_reset_done.html  # Reset link sent confirmation page
+│   │   ├── password_reset_confirm.html# New password input page
+│   │   └── password_reset_complete.html# Password reset success page
 │   ├── pages/                    # Privacy, Terms, Cookie, Payment policies
 │   ├── services/                 # Services catalogue & detail templates
 │   ├── blog/                     # Blog listing and detail templates
