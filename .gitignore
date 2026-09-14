@@ -8,9 +8,15 @@ env/
 venv/
 .venv/
 ENV/
-build/
-develop-eggs/
-dist/
+/build/
+/develop-eggs/
+/dist/
+
+# Ensure compiled theme CSS & assets are tracked in Git
+!theme/static/
+!theme/static/**
+!static/
+!static/**
 downloads/
 eggs/
 .eggs/
