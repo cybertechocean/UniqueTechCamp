@@ -3,35 +3,68 @@
 <html lang="en" class="scroll-smooth">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{% block title %}UniqueTechCamp - Premium Web Development & Digital Solutions{% endblock %}</title>
-    <meta name="description" content="{% block description %}UniqueTechCamp provides elite web development, UI/UX design, and digital solutions to elevate your business.{% endblock %}">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <title>{% block title %}UniqueTechCamp - Website, Clients, Income | Web & AI Growth Systems{% endblock %}</title>
+    <meta name="description" content="{% block description %}UniqueTechCamp builds high-performance web applications integrated with AI Lead Generation, 24/7 WhatsApp qualification bots, and automated follow-up systems.{% endblock %}">
     
-    <!-- Favicon -->
-    <link rel="icon" type="image/jpeg" href="{% static 'logo.jpg' %}">
+    <!-- Crisp Multi-Resolution Favicons & PWA Manifest -->
+    <link rel="icon" type="image/x-icon" href="{% static 'favicon.ico' %}">
+    <link rel="icon" type="image/png" sizes="16x16" href="{% static 'favicon-16x16.png' %}">
+    <link rel="icon" type="image/png" sizes="32x32" href="{% static 'favicon-32x32.png' %}">
+    <link rel="apple-touch-icon" sizes="180x180" href="{% static 'apple-touch-icon.png' %}">
+    <link rel="manifest" href="{% static 'site.webmanifest' %}">
+    <meta name="theme-color" content="#22C55E">
     
     <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
     
-    <!-- Material Symbols -->
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" />
+    <!-- FontAwesome 6.6.0 (STRICTLY FOR SOCIAL MEDIA ICONS) -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css" integrity="sha512-Kc323vGBEqzTmouAECnVceyQqyqdsSiqLQISBL29aUW4U/M7pSPA/gEUZQqv1cwx4OnYxTxve5UMg5GT6L4JJg==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+
+    <!-- Lucide Icons (FOR ALL OTHER PARTS OF WEBSITE) -->
+    <script src="https://unpkg.com/lucide@latest"></script>
 
     {% tailwind_css %}
     
     <style>
-        .material-symbols-outlined {
-          font-variation-settings:
-          'FILL' 0,
-          'wght' 400,
-          'GRAD' 0,
-          'opsz' 24
+        /* Modern Scrollbar */
+        ::-webkit-scrollbar { width: 8px; height: 8px; }
+        ::-webkit-scrollbar-track { background: #f1f5f9; }
+        ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+        
+        /* Floating Stack Transition */
+        .social-stack-item {
+            transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+            transform: scale(0.6) translateY(20px);
+            opacity: 0;
+            pointer-events: none;
+        }
+        .social-stack-open .social-stack-item {
+            transform: scale(1) translateY(0);
+            opacity: 1;
+            pointer-events: auto;
+        }
+        
+        /* Safe Area Padding for mobile bottom bar */
+        .safe-pb {
+            padding-bottom: max(0.6rem, env(safe-area-inset-bottom, 0px));
+        }
+
+        /* Search Highlight */
+        .search-highlight {
+            background-color: rgba(34, 197, 94, 0.2);
+            color: #15803d;
+            font-weight: 700;
+            border-radius: 2px;
+            padding: 0 2px;
         }
     </style>
     {% block extra_head %}{% endblock %}
 </head>
-<body class="antialiased min-h-screen flex flex-col selection:bg-primary selection:text-white">
+<body class="antialiased min-h-screen flex flex-col selection:bg-primary selection:text-white pb-24 md:pb-0">
 
     <div id="scroll-progress"></div>
 
@@ -39,210 +72,507 @@
     <nav class="fixed w-full z-50 transition-all duration-300" id="navbar">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="flex justify-between items-center h-20">
+                <!-- Brand / Logo -->
                 <div class="flex-shrink-0 flex items-center gap-3">
                     <a href="{% url 'core:home' %}" class="flex items-center gap-3 group">
-                        <img class="h-10 w-auto rounded shadow-sm group-hover:shadow-md transition-shadow" src="{% static 'logo.jpg' %}" alt="UniqueTechCamp">
-                        <span class="font-heading font-bold text-xl tracking-tight text-secondary group-hover:text-primary transition-colors">UniqueTechCamp</span>
+                        <img class="h-10 w-10 rounded-xl object-contain shadow-sm group-hover:shadow-md transition-all bg-white p-0.5 border border-gray-100" 
+                             src="{% static 'images/logo-navbar.png' %}" 
+                             alt="UniqueTechCamp - Website, Clients, Income">
+                        <div class="flex flex-col">
+                            <span class="font-heading font-bold text-lg tracking-tight text-secondary group-hover:text-primary transition-colors leading-tight">UniqueTechCamp</span>
+                            <span class="text-[10px] text-gray-400 font-medium tracking-wide">WEBSITE • CLIENTS • INCOME</span>
+                        </div>
                     </a>
                 </div>
                 
                 <!-- Desktop Menu -->
-                <div class="hidden md:flex items-center space-x-8">
-                    <a href="{% url 'core:home' %}" class="text-secondary hover:text-primary font-support font-medium transition-colors">Home</a>
-                    <a href="{% url 'services:list' %}" class="text-secondary hover:text-primary font-support font-medium transition-colors">Services</a>
-                    <a href="{% url 'portfolio:list' %}" class="text-secondary hover:text-primary font-support font-medium transition-colors">Portfolio</a>
-                    <a href="{% url 'core:about' %}" class="text-secondary hover:text-primary font-support font-medium transition-colors">About</a>
-                    <a href="{% url 'core:contact' %}" class="btn-primary py-2 px-5 text-sm">Get Started</a>
+                <div class="hidden md:flex items-center space-x-7">
+                    <a href="{% url 'core:home' %}" class="text-secondary hover:text-primary font-support font-medium text-sm transition-colors">Home</a>
+                    <a href="{% url 'services:list' %}" class="text-secondary hover:text-primary font-support font-medium text-sm transition-colors">Services</a>
+                    <a href="{% url 'portfolio:list' %}" class="text-secondary hover:text-primary font-support font-medium text-sm transition-colors">Portfolio</a>
+                    <a href="{% url 'blog:list' %}" class="text-secondary hover:text-primary font-support font-medium text-sm transition-colors">Blog</a>
+                    <a href="{% url 'core:about' %}" class="text-secondary hover:text-primary font-support font-medium text-sm transition-colors">About</a>
+                    
+                    <!-- Quick Search Trigger -->
+                    <a href="{% url 'core:search' %}" class="p-2 text-gray-500 hover:text-primary hover:bg-gray-100 rounded-lg transition-all" title="Search services, AI systems & blog">
+                        <i data-lucide="search" class="w-4 h-4"></i>
+                    </a>
+
+                    <a href="{% url 'core:contact' %}" class="btn-primary py-2 px-5 text-sm rounded-xl">Get Started</a>
                 </div>
 
                 <!-- Mobile menu button -->
-                <div class="md:hidden flex items-center">
-                    <button id="mobile-menu-btn" class="text-secondary hover:text-primary focus:outline-none p-2">
-                        <span class="material-symbols-outlined text-3xl">menu</span>
+                <div class="md:hidden flex items-center gap-2">
+                    <a href="{% url 'core:search' %}" class="p-2 text-gray-700 hover:text-primary" title="Search">
+                        <i data-lucide="search" class="w-5 h-5"></i>
+                    </a>
+                    <button id="mobile-menu-btn" class="text-secondary hover:text-primary focus:outline-none p-2" aria-label="Toggle menu">
+                        <i data-lucide="menu" class="w-6 h-6"></i>
                     </button>
                 </div>
             </div>
         </div>
 
-        <!-- Mobile Menu -->
-        <div id="mobile-menu" class="hidden md:hidden bg-white/95 backdrop-blur-md shadow-lg border-t border-gray-100 absolute w-full">
-            <div class="px-4 pt-2 pb-6 space-y-2">
-                <a href="{% url 'core:home' %}" class="block px-3 py-3 text-base font-medium text-secondary hover:text-primary hover:bg-gray-50 rounded-lg">Home</a>
-                <a href="{% url 'services:list' %}" class="block px-3 py-3 text-base font-medium text-secondary hover:text-primary hover:bg-gray-50 rounded-lg">Services</a>
-                <a href="{% url 'portfolio:list' %}" class="block px-3 py-3 text-base font-medium text-secondary hover:text-primary hover:bg-gray-50 rounded-lg">Portfolio</a>
-                <a href="{% url 'core:about' %}" class="block px-3 py-3 text-base font-medium text-secondary hover:text-primary hover:bg-gray-50 rounded-lg">About</a>
-                <a href="{% url 'core:contact' %}" class="block px-3 py-3 text-base font-medium text-primary hover:bg-gray-50 rounded-lg font-bold">Get Started</a>
+        <!-- Mobile Drawer Menu -->
+        <div id="mobile-menu" class="hidden md:hidden bg-white/95 backdrop-blur-md shadow-xl border-t border-gray-100 absolute w-full">
+            <div class="px-4 pt-3 pb-6 space-y-2">
+                <a href="{% url 'core:home' %}" class="block px-3 py-2.5 text-sm font-medium text-secondary hover:text-primary hover:bg-gray-50 rounded-lg">Home</a>
+                <a href="{% url 'services:list' %}" class="block px-3 py-2.5 text-sm font-medium text-secondary hover:text-primary hover:bg-gray-50 rounded-lg">Services (100+)</a>
+                <a href="{% url 'portfolio:list' %}" class="block px-3 py-2.5 text-sm font-medium text-secondary hover:text-primary hover:bg-gray-50 rounded-lg">Portfolio & Case Studies</a>
+                <a href="{% url 'blog:list' %}" class="block px-3 py-2.5 text-sm font-medium text-secondary hover:text-primary hover:bg-gray-50 rounded-lg">Blog & Insights</a>
+                <a href="{% url 'core:about' %}" class="block px-3 py-2.5 text-sm font-medium text-secondary hover:text-primary hover:bg-gray-50 rounded-lg">About Us</a>
+                <a href="{% url 'core:search' %}" class="block px-3 py-2.5 text-sm font-medium text-secondary hover:text-primary hover:bg-gray-50 rounded-lg">Search Platform</a>
+                <a href="{% url 'core:contact' %}" class="block px-3 py-2.5 text-sm font-bold text-primary hover:bg-gray-50 rounded-lg">Get Started</a>
             </div>
         </div>
     </nav>
 
-    <!-- Messages -->
+    <!-- Messages / Alerts -->
     {% if messages %}
     <div class="fixed top-24 right-4 z-50 flex flex-col gap-2 max-w-sm w-full">
         {% for message in messages %}
-        <div class="p-4 rounded-lg shadow-lg {% if message.tags == 'error' %}bg-red-50 text-red-800 border border-red-200{% else %}bg-green-50 text-green-800 border border-green-200{% endif %} animate-float flex items-start gap-3">
-            <span class="material-symbols-outlined mt-0.5">
-                {% if message.tags == 'error' %}error{% else %}check_circle{% endif %}
-            </span>
-            <p class="text-sm font-medium">{{ message }}</p>
+        <div class="p-4 rounded-xl shadow-lg {% if message.tags == 'error' %}bg-red-50 text-red-800 border border-red-200{% else %}bg-green-50 text-green-800 border border-green-200{% endif %} animate-float flex items-start gap-3">
+            <i data-lucide="{% if message.tags == 'error' %}alert-circle{% else %}check-circle-2{% endif %}" class="w-5 h-5 shrink-0 mt-0.5"></i>
+            <p class="text-xs font-medium">{{ message }}</p>
         </div>
         {% endfor %}
     </div>
     {% endif %}
 
-    <!-- Main Content -->
+    <!-- Main Page Content -->
     <main class="flex-grow pt-20">
         {% block content %}{% endblock %}
     </main>
+
+    <!-- Sticky Mobile Bottom Action Bar (MOBILE VIEW ONLY) -->
+    <aside class="block md:hidden fixed bottom-0 left-0 right-0 z-40 bg-white/95 backdrop-blur-lg border-t border-gray-200 shadow-[0_-4px_25px_rgba(0,0,0,0.08)] rounded-t-2xl safe-pb" aria-label="Mobile quick actions">
+        <div class="grid grid-cols-3 divide-x divide-gray-100 text-center py-2 px-1">
+            <!-- Services Button -->
+            <a href="{% url 'services:list' %}" class="flex flex-col items-center justify-center py-1 text-slate-700 hover:text-primary active:scale-95 transition-all">
+                <i data-lucide="layout-grid" class="w-5 h-5 mb-1 text-slate-600"></i>
+                <span class="text-[11px] font-semibold tracking-tight">Services</span>
+            </a>
+            
+            <!-- Call Button -->
+            <a href="tel:+254715479955" class="flex flex-col items-center justify-center py-1 text-slate-700 hover:text-primary active:scale-95 transition-all">
+                <i data-lucide="phone-call" class="w-5 h-5 mb-1 text-primary"></i>
+                <span class="text-[11px] font-semibold tracking-tight">Call Us</span>
+            </a>
+            
+            <!-- WhatsApp Button -->
+            <a href="https://wa.me/254715479955?text=Hello%20UniqueTechCamp!%20I%20am%20interested%20in%20your%20services.%20Please%20provide%20more%20details." 
+               target="_blank" rel="noopener noreferrer" 
+               class="flex flex-col items-center justify-center py-1 text-[#25D366] hover:text-[#1eb855] active:scale-95 transition-all">
+                <i class="fa-brands fa-whatsapp text-xl mb-0.5"></i>
+                <span class="text-[11px] font-bold tracking-tight">WhatsApp</span>
+            </a>
+        </div>
+    </aside>
+
+    <!-- Modern Floating Social / Contact Widget (Expandable 9 Buttons) -->
+    <div class="fixed bottom-24 md:bottom-8 right-5 md:right-8 z-50 flex flex-col items-end" id="floating-social-container">
+        <!-- Vertical Stack of 9 Circular Buttons -->
+        <div id="social-stack" class="flex flex-col items-end gap-2.5 mb-3 pointer-events-none transition-all duration-300">
+            <!-- 1. Phone Call -->
+            <div class="social-stack-item flex items-center gap-2">
+                <span class="px-2.5 py-1 rounded-md text-[11px] font-semibold bg-slate-900 text-white shadow-md">Call +254715479955</span>
+                <a href="tel:+254715479955" 
+                   class="w-10 h-10 rounded-full bg-emerald-600 text-white flex items-center justify-center shadow-lg hover:scale-110 active:scale-95 transition-transform" 
+                   aria-label="Call UniqueTechCamp">
+                    <i data-lucide="phone" class="w-4 h-4"></i>
+                </a>
+            </div>
+
+            <!-- 2. WhatsApp -->
+            <div class="social-stack-item flex items-center gap-2">
+                <span class="px-2.5 py-1 rounded-md text-[11px] font-semibold bg-slate-900 text-white shadow-md">WhatsApp Chat</span>
+                <a href="https://wa.me/254715479955?text=Hello%20UniqueTechCamp!" 
+                   target="_blank" rel="noopener noreferrer" 
+                   class="w-10 h-10 rounded-full bg-[#25D366] text-white flex items-center justify-center shadow-lg hover:scale-110 active:scale-95 transition-transform" 
+                   aria-label="Chat on WhatsApp">
+                    <i class="fa-brands fa-whatsapp text-lg"></i>
+                </a>
+            </div>
+
+            <!-- 3. Email -->
+            <div class="social-stack-item flex items-center gap-2">
+                <span class="px-2.5 py-1 rounded-md text-[11px] font-semibold bg-slate-900 text-white shadow-md">Email Solutions Desk</span>
+                <a href="mailto:info@uniquetechcamp.org" 
+                   class="w-10 h-10 rounded-full bg-blue-600 text-white flex items-center justify-center shadow-lg hover:scale-110 active:scale-95 transition-transform" 
+                   aria-label="Send Email">
+                    <i data-lucide="mail" class="w-4 h-4"></i>
+                </a>
+            </div>
+
+            <!-- 4. TikTok -->
+            <div class="social-stack-item flex items-center gap-2">
+                <span class="px-2.5 py-1 rounded-md text-[11px] font-semibold bg-slate-900 text-white shadow-md">TikTok @UniqueTechCamp</span>
+                <a href="https://www.tiktok.com/@UniqueTechCamp" 
+                   target="_blank" rel="noopener noreferrer" 
+                   class="w-10 h-10 rounded-full bg-black text-white flex items-center justify-center shadow-lg hover:scale-110 active:scale-95 transition-transform" 
+                   aria-label="Follow on TikTok">
+                    <i class="fa-brands fa-tiktok text-sm"></i>
+                </a>
+            </div>
+
+            <!-- 5. Facebook -->
+            <div class="social-stack-item flex items-center gap-2">
+                <span class="px-2.5 py-1 rounded-md text-[11px] font-semibold bg-slate-900 text-white shadow-md">Facebook /UniqueTechCamp</span>
+                <a href="https://www.facebook.com/UniqueTechCamp" 
+                   target="_blank" rel="noopener noreferrer" 
+                   class="w-10 h-10 rounded-full bg-[#1877F2] text-white flex items-center justify-center shadow-lg hover:scale-110 active:scale-95 transition-transform" 
+                   aria-label="Visit Facebook">
+                    <i class="fa-brands fa-facebook-f text-sm"></i>
+                </a>
+            </div>
+
+            <!-- 6. Instagram -->
+            <div class="social-stack-item flex items-center gap-2">
+                <span class="px-2.5 py-1 rounded-md text-[11px] font-semibold bg-slate-900 text-white shadow-md">Instagram @UniqueTechCamp</span>
+                <a href="https://www.instagram.com/UniqueTechCamp" 
+                   target="_blank" rel="noopener noreferrer" 
+                   class="w-10 h-10 rounded-full bg-gradient-to-tr from-amber-500 via-rose-500 to-purple-600 text-white flex items-center justify-center shadow-lg hover:scale-110 active:scale-95 transition-transform" 
+                   aria-label="Follow on Instagram">
+                    <i class="fa-brands fa-instagram text-base"></i>
+                </a>
+            </div>
+
+            <!-- 7. X (Twitter) -->
+            <div class="social-stack-item flex items-center gap-2">
+                <span class="px-2.5 py-1 rounded-md text-[11px] font-semibold bg-slate-900 text-white shadow-md">X @UniqueTechCamp</span>
+                <a href="https://x.com/UniqueTechCamp" 
+                   target="_blank" rel="noopener noreferrer" 
+                   class="w-10 h-10 rounded-full bg-black text-white flex items-center justify-center shadow-lg hover:scale-110 active:scale-95 transition-transform" 
+                   aria-label="Follow on X">
+                    <i class="fa-brands fa-x-twitter text-sm"></i>
+                </a>
+            </div>
+
+            <!-- 8. LinkedIn -->
+            <div class="social-stack-item flex items-center gap-2">
+                <span class="px-2.5 py-1 rounded-md text-[11px] font-semibold bg-slate-900 text-white shadow-md">LinkedIn /UniqueTechCamp</span>
+                <a href="https://www.linkedin.com/company/uniquetechcamp" 
+                   target="_blank" rel="noopener noreferrer" 
+                   class="w-10 h-10 rounded-full bg-[#0A66C2] text-white flex items-center justify-center shadow-lg hover:scale-110 active:scale-95 transition-transform" 
+                   aria-label="Connect on LinkedIn">
+                    <i class="fa-brands fa-linkedin-in text-sm"></i>
+                </a>
+            </div>
+
+            <!-- 9. YouTube -->
+            <div class="social-stack-item flex items-center gap-2">
+                <span class="px-2.5 py-1 rounded-md text-[11px] font-semibold bg-slate-900 text-white shadow-md">YouTube @UniqueTechCamp</span>
+                <a href="https://www.youtube.com/@UniqueTechCamp" 
+                   target="_blank" rel="noopener noreferrer" 
+                   class="w-10 h-10 rounded-full bg-[#FF0000] text-white flex items-center justify-center shadow-lg hover:scale-110 active:scale-95 transition-transform" 
+                   aria-label="Subscribe on YouTube">
+                    <i class="fa-brands fa-youtube text-sm"></i>
+                </a>
+            </div>
+        </div>
+
+        <!-- Main Toggle Button -->
+        <button id="floating-social-toggle" 
+                class="w-13 h-13 p-3.5 bg-primary text-white rounded-full flex items-center justify-center shadow-xl hover:shadow-2xl hover:scale-105 active:scale-95 transition-all duration-300 ring-4 ring-primary/20"
+                aria-expanded="false" aria-label="Open contact and social channels">
+            <i data-lucide="message-square" id="toggle-icon-open" class="w-6 h-6"></i>
+            <i data-lucide="x" id="toggle-icon-close" class="w-6 h-6 hidden"></i>
+        </button>
+    </div>
 
     <!-- Footer -->
     <footer class="bg-secondary text-white pt-16 pb-8 border-t border-gray-800 mt-20">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="grid grid-cols-1 md:grid-cols-4 gap-12 mb-12">
+                <!-- Brand Column -->
                 <div class="col-span-1 md:col-span-1">
                     <a href="{% url 'core:home' %}" class="flex items-center gap-3 mb-6">
-                        <img class="h-10 w-auto rounded" src="{% static 'logo.jpg' %}" alt="UniqueTechCamp">
-                        <span class="font-heading font-bold text-xl text-white">UniqueTechCamp</span>
+                        <img class="h-10 w-10 rounded-xl object-contain shadow-sm bg-white p-0.5 border border-gray-100" 
+                             src="{% static 'images/logo-footer.png' %}" 
+                             alt="UniqueTechCamp">
+                        <div class="flex flex-col">
+                            <span class="font-heading font-bold text-lg text-white">UniqueTechCamp</span>
+                            <span class="text-[10px] text-gray-400 font-medium tracking-wide">WEBSITE • CLIENTS • INCOME</span>
+                        </div>
                     </a>
-                    <p class="text-gray-400 font-body text-sm leading-relaxed mb-6">
-                        Elevating businesses with premium web development, innovative design, and strategic digital solutions.
+                    <p class="text-gray-400 font-body text-xs leading-relaxed mb-6">
+                        We don't sell commodity websites. We deploy end-to-end Client Acquisition & Revenue Growth Systems with integrated AI Lead Qualification and automated follow-ups.
                     </p>
+                    <div class="flex flex-wrap gap-2">
+                        <!-- FontAwesome for social media icons only -->
+                        <a href="https://wa.me/254715479955" target="_blank" rel="noopener noreferrer" class="w-8 h-8 rounded-full bg-gray-800 flex items-center justify-center text-gray-300 hover:bg-[#25D366] hover:text-white transition-all" title="WhatsApp">
+                            <i class="fa-brands fa-whatsapp text-sm"></i>
+                        </a>
+                        <a href="https://www.tiktok.com/@UniqueTechCamp" target="_blank" rel="noopener noreferrer" class="w-8 h-8 rounded-full bg-gray-800 flex items-center justify-center text-gray-300 hover:bg-black hover:text-white transition-all" title="TikTok">
+                            <i class="fa-brands fa-tiktok text-xs"></i>
+                        </a>
+                        <a href="https://www.facebook.com/UniqueTechCamp" target="_blank" rel="noopener noreferrer" class="w-8 h-8 rounded-full bg-gray-800 flex items-center justify-center text-gray-300 hover:bg-[#1877F2] hover:text-white transition-all" title="Facebook">
+                            <i class="fa-brands fa-facebook-f text-xs"></i>
+                        </a>
+                        <a href="https://www.instagram.com/UniqueTechCamp" target="_blank" rel="noopener noreferrer" class="w-8 h-8 rounded-full bg-gray-800 flex items-center justify-center text-gray-300 hover:bg-pink-600 hover:text-white transition-all" title="Instagram">
+                            <i class="fa-brands fa-instagram text-xs"></i>
+                        </a>
+                        <a href="https://x.com/UniqueTechCamp" target="_blank" rel="noopener noreferrer" class="w-8 h-8 rounded-full bg-gray-800 flex items-center justify-center text-gray-300 hover:bg-black hover:text-white transition-all" title="X (Twitter)">
+                            <i class="fa-brands fa-x-twitter text-xs"></i>
+                        </a>
+                        <a href="https://www.linkedin.com/company/uniquetechcamp" target="_blank" rel="noopener noreferrer" class="w-8 h-8 rounded-full bg-gray-800 flex items-center justify-center text-gray-300 hover:bg-[#0A66C2] hover:text-white transition-all" title="LinkedIn">
+                            <i class="fa-brands fa-linkedin-in text-xs"></i>
+                        </a>
+                        <a href="https://www.youtube.com/@UniqueTechCamp" target="_blank" rel="noopener noreferrer" class="w-8 h-8 rounded-full bg-gray-800 flex items-center justify-center text-gray-300 hover:bg-[#FF0000] hover:text-white transition-all" title="YouTube">
+                            <i class="fa-brands fa-youtube text-xs"></i>
+                        </a>
+                    </div>
                 </div>
                 
+                <!-- Quick Links -->
                 <div>
-                    <h3 class="font-heading font-bold text-lg mb-6 text-white">Quick Links</h3>
-                    <ul class="space-y-4 font-support text-gray-400">
+                    <h3 class="font-heading font-bold text-sm uppercase tracking-wider mb-5 text-white">Platform</h3>
+                    <ul class="space-y-3 font-support text-xs text-gray-400">
                         <li><a href="{% url 'core:home' %}" class="hover:text-primary transition-colors">Home</a></li>
-                        <li><a href="{% url 'services:list' %}" class="hover:text-primary transition-colors">Services</a></li>
-                        <li><a href="{% url 'portfolio:list' %}" class="hover:text-primary transition-colors">Portfolio</a></li>
+                        <li><a href="{% url 'services:list' %}" class="hover:text-primary transition-colors">100+ Services & Systems</a></li>
+                        <li><a href="{% url 'portfolio:list' %}" class="hover:text-primary transition-colors">Client Case Studies</a></li>
+                        <li><a href="{% url 'blog:list' %}" class="hover:text-primary transition-colors">Growth & Tech Blog</a></li>
                         <li><a href="{% url 'core:about' %}" class="hover:text-primary transition-colors">About Us</a></li>
+                        <li><a href="{% url 'core:search' %}" class="hover:text-primary transition-colors">Universal Search</a></li>
                     </ul>
                 </div>
                 
+                <!-- Legal Pages -->
                 <div>
-                    <h3 class="font-heading font-bold text-lg mb-6 text-white">Legal</h3>
-                    <ul class="space-y-4 font-support text-gray-400">
-                        <li><a href="#" class="hover:text-primary transition-colors">Privacy Policy</a></li>
-                        <li><a href="#" class="hover:text-primary transition-colors">Terms of Service</a></li>
-                        <li><a href="#" class="hover:text-primary transition-colors">Cookie Policy</a></li>
+                    <h3 class="font-heading font-bold text-sm uppercase tracking-wider mb-5 text-white">Legal & Compliance</h3>
+                    <ul class="space-y-3 font-support text-xs text-gray-400">
+                        <li><a href="{% url 'core:privacy_policy' %}" class="hover:text-primary transition-colors">Privacy Policy</a></li>
+                        <li><a href="{% url 'core:terms_of_service' %}" class="hover:text-primary transition-colors">Terms of Service</a></li>
+                        <li><a href="{% url 'core:cookie_policy' %}" class="hover:text-primary transition-colors">Cookie Policy</a></li>
+                        <li><a href="{% url 'core:payment_policy' %}" class="hover:text-primary transition-colors">Payment Policy</a></li>
                     </ul>
                 </div>
                 
+                <!-- Contact Info -->
                 <div>
-                    <h3 class="font-heading font-bold text-lg mb-6 text-white">Contact Us</h3>
-                    <ul class="space-y-4 font-support text-gray-400">
-                        <li class="flex items-start gap-3">
-                            <span class="material-symbols-outlined text-primary text-xl">location_on</span>
-                            <span>Nairobi, Kenya</span>
+                    <h3 class="font-heading font-bold text-sm uppercase tracking-wider mb-5 text-white">Connect Direct</h3>
+                    <ul class="space-y-3 font-support text-xs text-gray-400">
+                        <li class="flex items-start gap-2.5">
+                            <i data-lucide="map-pin" class="w-4 h-4 text-primary shrink-0 mt-0.5"></i>
+                            <span>Nairobi, Kenya • Global Delivery</span>
                         </li>
-                        <li class="flex items-start gap-3">
-                            <span class="material-symbols-outlined text-primary text-xl">mail</span>
+                        <li class="flex items-start gap-2.5">
+                            <i data-lucide="mail" class="w-4 h-4 text-primary shrink-0 mt-0.5"></i>
                             <div class="flex flex-col">
-                                <a href="mailto:UniqueTechCamp@gmail.com" class="hover:text-primary transition-colors">UniqueTechCamp@gmail.com</a>
-                                <a href="mailto:info@uniquetechcamp.org" class="hover:text-primary transition-colors mt-1">info@uniquetechcamp.org</a>
+                                <a href="mailto:info@uniquetechcamp.org" class="hover:text-primary transition-colors">info@uniquetechcamp.org</a>
+                                <a href="mailto:UniqueTechCamp@gmail.com" class="hover:text-primary transition-colors mt-0.5">UniqueTechCamp@gmail.com</a>
                             </div>
                         </li>
-                        <li class="flex items-start gap-3">
-                            <span class="material-symbols-outlined text-primary text-xl">call</span>
+                        <li class="flex items-start gap-2.5">
+                            <i data-lucide="phone" class="w-4 h-4 text-primary shrink-0 mt-0.5"></i>
                             <div class="flex flex-col">
                                 <a href="tel:+254715479955" class="hover:text-primary transition-colors">+254 715 479 955</a>
-                                <a href="https://wa.me/254715479955" target="_blank" rel="noopener noreferrer" class="hover:text-primary transition-colors mt-1">WhatsApp: wa.me/254715479955</a>
+                                <a href="https://wa.me/254715479955" target="_blank" rel="noopener noreferrer" class="hover:text-primary transition-colors mt-0.5">WhatsApp: wa.me/254715479955</a>
                             </div>
                         </li>
                     </ul>
                 </div>
             </div>
             
-            <div class="border-t border-gray-800 pt-8 flex flex-col md:flex-row justify-between items-center gap-4">
-                <p class="text-gray-500 font-body text-sm text-center md:text-left">
-                    &copy; {% now "Y" %} UniqueTechCamp. All rights reserved.
-                </p>
-                <div class="flex gap-4">
-                    <!-- Social Links -->
-                    <a href="#" class="w-10 h-10 rounded-full bg-gray-800 flex items-center justify-center text-gray-400 hover:bg-primary hover:text-white transition-all">
-                        <span class="material-symbols-outlined text-xl">language</span>
-                    </a>
-                </div>
+            <div class="border-t border-gray-800 pt-8 flex flex-col md:flex-row justify-between items-center gap-4 text-xs text-gray-500">
+                <p>&copy; {% now "Y" %} UniqueTechCamp. All rights reserved. Web Development • Tech Solutions • Digital Growth.</p>
+                <p class="text-gray-400">Nairobi, Kenya • info@uniquetechcamp.org</p>
             </div>
         </div>
     </footer>
 
-    <!-- Floating Action Buttons -->
-    <div class="fixed bottom-6 right-6 z-[100] flex flex-col gap-3">
-        <!-- WhatsApp Button -->
-        <a href="https://wa.me/254715479955?text=Hello%20UniqueTechCamp!%20I%20am%20interested%20in%20your%20services.%20My%20business%20is%20in%20one%20of%20the%20following%20sectors:%20Medical%20clinics,%20Dental%20clinics,%20Hospitals,%20Pharmacies,%20Restaurants,%20Caf%C3%A9s,%20Hotels,%20Furniture%20stores,%20Schools,%20Driving%20schools,%20Law%20firms,%20Hardware%20shops,%20Garages,%20Salons,%20Barbershops,%20Supermarkets,%20Logistics,%20Real%20Estate,%20E-Commerce.%20Please%20provide%20more%20information." 
-           target="_blank" rel="noopener noreferrer" 
-           class="w-14 h-14 bg-[#25D366] text-white rounded-full flex items-center justify-center shadow-lg hover:shadow-xl hover:scale-110 transition-all duration-300"
-           aria-label="Contact us on WhatsApp">
-            <svg class="w-8 h-8" fill="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51a12.8 12.8 0 0 0-.57-.01c-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 0 1-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 0 1-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 0 1 2.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0 0 12.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 0 0 5.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 0 0-3.48-8.413Z"/></svg>
-        </a>
-        
-        <!-- Back to Top Button -->
-        <button onclick="window.scrollTo({top: 0, behavior: 'smooth'})" 
-                class="w-14 h-14 bg-secondary text-white rounded-full flex items-center justify-center shadow-lg hover:bg-primary hover:shadow-xl hover:-translate-y-1 transition-all duration-300"
-                aria-label="Back to top" id="back-to-top-btn" style="opacity: 0; pointer-events: none;">
-            <span class="material-symbols-outlined text-2xl">arrow_upward</span>
-        </button>
-    </div>
-
     <!-- Scripts -->
     <script>
-        // Navbar scroll effect
+        // Initialize Lucide Icons
+        if (window.lucide) {
+            lucide.createIcons();
+        }
+
+        // Navbar Scroll Progress & Styling
         const navbar = document.getElementById('navbar');
         const scrollProgress = document.getElementById('scroll-progress');
         
         window.addEventListener('scroll', () => {
-            // Navbar styling
-            if (window.scrollY > 10) {
-                navbar.classList.add('bg-white/90', 'backdrop-blur-md', 'shadow-sm');
+            if (window.scrollY > 15) {
+                navbar.classList.add('bg-white/95', 'backdrop-blur-md', 'shadow-sm');
                 navbar.classList.remove('bg-transparent');
             } else {
                 navbar.classList.add('bg-transparent');
-                navbar.classList.remove('bg-white/90', 'backdrop-blur-md', 'shadow-sm');
+                navbar.classList.remove('bg-white/95', 'backdrop-blur-md', 'shadow-sm');
             }
             
-            // Scroll progress bar
             const winScroll = document.body.scrollTop || document.documentElement.scrollTop;
             const height = document.documentElement.scrollHeight - document.documentElement.clientHeight;
-            const scrolled = (winScroll / height) * 100;
-            scrollProgress.style.width = scrolled + "%";
-
-            // Back to top button visibility
-            const backToTopBtn = document.getElementById('back-to-top-btn');
-            if (window.scrollY > 300) {
-                backToTopBtn.style.opacity = '1';
-                backToTopBtn.style.pointerEvents = 'auto';
-            } else {
-                backToTopBtn.style.opacity = '0';
-                backToTopBtn.style.pointerEvents = 'none';
+            if (height > 0) {
+                const scrolled = (winScroll / height) * 100;
+                scrollProgress.style.width = scrolled + "%";
             }
         });
 
-        // Initial check for navbar
-        if (window.scrollY > 10) {
-            navbar.classList.add('bg-white/90', 'backdrop-blur-md', 'shadow-sm');
+        // Mobile Drawer Menu
+        const mobileMenuBtn = document.getElementById('mobile-menu-btn');
+        const mobileMenu = document.getElementById('mobile-menu');
+        if (mobileMenuBtn && mobileMenu) {
+            mobileMenuBtn.addEventListener('click', () => {
+                mobileMenu.classList.toggle('hidden');
+            });
         }
 
-        // Mobile menu toggle
-        const btn = document.getElementById('mobile-menu-btn');
-        const menu = document.getElementById('mobile-menu');
-        const icon = btn.querySelector('.material-symbols-outlined');
+        // Modern Floating Social / Contact Widget Logic
+        const floatingToggle = document.getElementById('floating-social-toggle');
+        const socialStack = document.getElementById('social-stack');
+        const toggleIconOpen = document.getElementById('toggle-icon-open');
+        const toggleIconClose = document.getElementById('toggle-icon-close');
+        let isSocialOpen = false;
 
-        btn.addEventListener('click', () => {
-            menu.classList.toggle('hidden');
-            if (menu.classList.contains('hidden')) {
-                icon.textContent = 'menu';
-            } else {
-                icon.textContent = 'close';
-            }
+        if (floatingToggle && socialStack) {
+            floatingToggle.addEventListener('click', (e) => {
+                e.stopPropagation();
+                isSocialOpen = !isSocialOpen;
+                if (isSocialOpen) {
+                    socialStack.classList.add('social-stack-open');
+                    toggleIconOpen.classList.add('hidden');
+                    toggleIconClose.classList.remove('hidden');
+                    floatingToggle.setAttribute('aria-expanded', 'true');
+                    floatingToggle.classList.add('bg-red-600', 'hover:bg-red-700', 'ring-red-200');
+                    floatingToggle.classList.remove('bg-primary', 'hover:bg-primary-hover', 'ring-primary/20');
+                } else {
+                    socialStack.classList.remove('social-stack-open');
+                    toggleIconOpen.classList.remove('hidden');
+                    toggleIconClose.classList.add('hidden');
+                    floatingToggle.setAttribute('aria-expanded', 'false');
+                    floatingToggle.classList.remove('bg-red-600', 'hover:bg-red-700', 'ring-red-200');
+                    floatingToggle.classList.add('bg-primary', 'hover:bg-primary-hover', 'ring-primary/20');
+                }
+            });
+
+            // Close when clicking outside
+            document.addEventListener('click', (e) => {
+                if (isSocialOpen && !document.getElementById('floating-social-container').contains(e.target)) {
+                    isSocialOpen = false;
+                    socialStack.classList.remove('social-stack-open');
+                    toggleIconOpen.classList.remove('hidden');
+                    toggleIconClose.classList.add('hidden');
+                    floatingToggle.setAttribute('aria-expanded', 'false');
+                    floatingToggle.classList.remove('bg-red-600', 'hover:bg-red-700', 'ring-red-200');
+                    floatingToggle.classList.add('bg-primary', 'hover:bg-primary-hover', 'ring-primary/20');
+                }
+            });
+        }
+
+        // Robust Live Search Auto-Suggest Functionality
+        document.querySelectorAll('.utc-search-container').forEach(container => {
+            const input = container.querySelector('.utc-search-input');
+            const dropdown = container.querySelector('.utc-search-dropdown');
+            if (!input || !dropdown) return;
+
+            let debounceTimer = null;
+            let activeIndex = -1;
+
+            input.addEventListener('input', () => {
+                clearTimeout(debounceTimer);
+                const query = input.value.trim();
+                if (query.length < 2) {
+                    dropdown.classList.add('hidden');
+                    dropdown.innerHTML = '';
+                    return;
+                }
+
+                dropdown.innerHTML = `
+                    <div class="p-3 text-center text-xs text-gray-400 flex items-center justify-center gap-2">
+                        <span class="inline-block w-4 h-4 border-2 border-primary border-t-transparent rounded-full animate-spin"></span>
+                        Searching 100+ services & articles...
+                    </div>
+                `;
+                dropdown.classList.remove('hidden');
+
+                debounceTimer = setTimeout(() => {
+                    fetch(`/api/search/?q=${encodeURIComponent(query)}`)
+                        .then(res => res.json())
+                        .then(data => {
+                            if (!data.results || data.results.length === 0) {
+                                dropdown.innerHTML = `
+                                    <div class="p-4 text-center">
+                                        <p class="text-xs text-gray-500 font-medium">No instant matches found for "${query}".</p>
+                                        <a href="/search/?q=${encodeURIComponent(query)}" class="mt-2 inline-block text-xs text-primary font-bold hover:underline">
+                                            Press Enter for full search &rarr;
+                                        </a>
+                                    </div>
+                                `;
+                                return;
+                            }
+
+                            let html = `<div class="p-2 space-y-1">`;
+                            data.results.forEach((item, index) => {
+                                html += `
+                                    <a href="${item.url}" class="utc-suggest-item flex items-start gap-3 p-2.5 rounded-xl hover:bg-slate-50 transition-colors group cursor-pointer" data-index="${index}">
+                                        <div class="w-8 h-8 rounded-lg bg-slate-100 text-slate-700 group-hover:bg-primary group-hover:text-white flex items-center justify-center shrink-0 transition-colors mt-0.5">
+                                            <i data-lucide="${item.icon || 'layers'}" class="w-4 h-4"></i>
+                                        </div>
+                                        <div class="flex-1 min-w-0">
+                                            <div class="flex items-center justify-between gap-2">
+                                                <h5 class="text-xs font-bold text-slate-900 group-hover:text-primary transition-colors truncate">${item.title}</h5>
+                                                <span class="text-[9px] uppercase font-semibold px-2 py-0.5 rounded-full bg-slate-100 text-slate-600 shrink-0">${item.badge}</span>
+                                            </div>
+                                            <p class="text-[11px] text-gray-500 line-clamp-1 mt-0.5">${item.snippet}</p>
+                                        </div>
+                                    </a>
+                                `;
+                            });
+                            html += `
+                                <div class="pt-2 mt-2 border-t border-gray-100 text-center">
+                                    <a href="/search/?q=${encodeURIComponent(query)}" class="text-xs font-bold text-primary hover:underline">
+                                        View all results for "${query}" &rarr;
+                                    </a>
+                                </div>
+                            </div>`;
+
+                            dropdown.innerHTML = html;
+                            if (window.lucide) lucide.createIcons();
+                        })
+                        .catch(err => {
+                            console.error('Search error:', err);
+                            dropdown.classList.add('hidden');
+                        });
+                }, 200);
+            });
+
+            // Keyboard navigation
+            input.addEventListener('keydown', (e) => {
+                const items = dropdown.querySelectorAll('.utc-suggest-item');
+                if (dropdown.classList.contains('hidden') || items.length === 0) return;
+
+                if (e.key === 'ArrowDown') {
+                    e.preventDefault();
+                    activeIndex = (activeIndex + 1) % items.length;
+                    items.forEach((it, idx) => it.classList.toggle('bg-slate-100', idx === activeIndex));
+                } else if (e.key === 'ArrowUp') {
+                    e.preventDefault();
+                    activeIndex = (activeIndex - 1 + items.length) % items.length;
+                    items.forEach((it, idx) => it.classList.toggle('bg-slate-100', idx === activeIndex));
+                } else if (e.key === 'Enter' && activeIndex >= 0) {
+                    e.preventDefault();
+                    items[activeIndex].click();
+                } else if (e.key === 'Escape') {
+                    dropdown.classList.add('hidden');
+                }
+            });
+
+            // Close dropdown when clicking outside
+            document.addEventListener('click', (e) => {
+                if (!container.contains(e.target)) {
+                    dropdown.classList.add('hidden');
+                }
+            });
         });
 
-        // Hide messages after 5 seconds
+        // Hide alert messages after 5 seconds
         setTimeout(() => {
-            const messages = document.querySelectorAll('.animate-float');
-            messages.forEach(msg => {
+            const alerts = document.querySelectorAll('.animate-float');
+            alerts.forEach(msg => {
                 msg.style.opacity = '0';
-                setTimeout(() => msg.remove(), 300);
+                msg.style.transition = 'opacity 0.4s ease';
+                setTimeout(() => msg.remove(), 400);
             });
         }, 5000);
     </script>

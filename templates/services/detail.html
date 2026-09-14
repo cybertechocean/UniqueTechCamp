@@ -1,78 +1,135 @@
 {% extends 'base.html' %}
+{% load static %}
 
-{% block title %}{{ service.title }} - UniqueTechCamp{% endblock %}
+{% block title %}{{ service.title }} - AI Growth & Web System | UniqueTechCamp{% endblock %}
+{% block description %}{{ service.short_description }}{% endblock %}
 
 {% block content %}
 <!-- Hero Section -->
-<div class="bg-secondary text-white py-20 relative overflow-hidden">
-    <div class="absolute top-0 right-0 w-1/2 h-full bg-primary/5 blur-[100px] rounded-full"></div>
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10 grid md:grid-cols-2 gap-12 items-center">
-        <div>
-            <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/10 text-gray-300 font-support text-sm mb-6">
-                <span class="material-symbols-outlined text-sm">{{ service.icon_name }}</span>
-                Service
+<div class="bg-gradient-to-b from-slate-950 via-slate-900 to-slate-950 text-white py-20 relative overflow-hidden">
+    <div class="absolute -top-32 -left-32 w-80 h-80 bg-primary/20 rounded-full blur-3xl pointer-events-none"></div>
+    <div class="absolute -bottom-32 -right-32 w-80 h-80 bg-emerald-500/15 rounded-full blur-3xl pointer-events-none"></div>
+
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10 grid md:grid-cols-12 gap-12 items-center">
+        <div class="md:col-span-8">
+            <div class="flex flex-wrap items-center gap-2.5 mb-6">
+                <a href="{% url 'services:list' %}" class="text-xs text-gray-400 hover:text-primary flex items-center gap-1 transition-colors">
+                    <i data-lucide="arrow-left" class="w-3.5 h-3.5"></i> All Services
+                </a>
+                <span class="text-gray-600">•</span>
+                <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-primary/20 text-primary border border-primary/30 text-xs font-bold uppercase tracking-wider">
+                    <i data-lucide="layers" class="w-3.5 h-3.5"></i> {{ service.category.name|default:"Growth System" }}
+                </span>
+                <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 text-xs font-bold">
+                    <i data-lucide="bot" class="w-3.5 h-3.5"></i> AI Lead Gen & Qualification Included
+                </span>
             </div>
-            <h1 class="text-4xl md:text-5xl lg:text-6xl font-heading font-bold mb-6">{{ service.title }}</h1>
-            <p class="text-xl text-gray-300 font-body mb-8 leading-relaxed">{{ service.short_description }}</p>
-            <a href="{{ whatsapp_url }}" target="_blank" rel="noopener noreferrer" class="btn-primary inline-flex items-center gap-2">
-                Get a Quote via WhatsApp
-                <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51a12.8 12.8 0 0 0-.57-.01c-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 0 1-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 0 1-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 0 1 2.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0 0 12.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 0 0 5.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 0 0-3.48-8.413Z"/></svg>
-            </a>
+
+            <h1 class="text-3xl sm:text-4xl lg:text-5xl font-heading font-extrabold mb-6 leading-tight">
+                {{ service.title }}
+            </h1>
+
+            <p class="text-base sm:text-lg text-gray-300 font-body mb-8 leading-relaxed max-w-3xl">
+                {{ service.short_description }}
+            </p>
+
+            <div class="flex flex-wrap items-center gap-4">
+                <a href="{{ whatsapp_url }}" target="_blank" rel="noopener noreferrer" 
+                   class="btn-primary py-3.5 px-6 rounded-xl inline-flex items-center gap-2 shadow-lg shadow-primary/20 text-sm font-semibold">
+                    <i class="fa-brands fa-whatsapp text-lg"></i>
+                    Get Quotation via WhatsApp
+                </a>
+                <a href="{% url 'core:contact' %}" 
+                   class="btn-secondary py-3.5 px-6 rounded-xl inline-flex items-center gap-2 !bg-white/10 !text-white !border-white/20 hover:!bg-white/20 text-sm font-semibold">
+                    <i data-lucide="mail" class="w-4 h-4"></i>
+                    Inquire Online
+                </a>
+            </div>
         </div>
-        {% if service.featured_image %}
-        <div class="hidden md:block">
-            <img src="{{ service.featured_image.url }}" alt="{{ service.title }}" class="rounded-2xl shadow-2xl border border-white/10 w-full h-[400px] object-cover">
+
+        <div class="md:col-span-4 hidden md:block">
+            <div class="bg-slate-900/90 border border-slate-800 rounded-3xl p-6 shadow-2xl backdrop-blur-md">
+                <div class="flex items-center gap-3 mb-4 pb-4 border-b border-slate-800">
+                    <img src="{% static 'images/logo-icon.png' %}" alt="UTC" class="w-10 h-10 rounded-xl bg-white p-0.5 shadow-sm">
+                    <div>
+                        <h4 class="text-xs font-bold text-white">UniqueTechCamp Solution</h4>
+                        <p class="text-[10px] text-primary flex items-center gap-1">
+                            <span class="w-1.5 h-1.5 rounded-full bg-primary animate-ping"></span> 24/7 Client Engine
+                        </p>
+                    </div>
+                </div>
+                <div class="space-y-3 text-xs text-gray-300">
+                    <div class="flex items-center gap-2">
+                        <i data-lucide="check" class="w-4 h-4 text-primary shrink-0"></i>
+                        <span>End-to-End System, Not Just A Template</span>
+                    </div>
+                    <div class="flex items-center gap-2">
+                        <i data-lucide="check" class="w-4 h-4 text-primary shrink-0"></i>
+                        <span>AI Lead Qualification Chatbot Setup</span>
+                    </div>
+                    <div class="flex items-center gap-2">
+                        <i data-lucide="check" class="w-4 h-4 text-primary shrink-0"></i>
+                        <span>Multi-Channel WhatsApp/Email Follow-Up</span>
+                    </div>
+                    <div class="flex items-center gap-2">
+                        <i data-lucide="check" class="w-4 h-4 text-primary shrink-0"></i>
+                        <span>30-Day Post-Launch Warranty Support</span>
+                    </div>
+                </div>
+            </div>
         </div>
-        {% endif %}
     </div>
 </div>
 
-<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20">
-    <div class="grid lg:grid-cols-3 gap-12">
-        <!-- Main Content -->
-        <div class="lg:col-span-2 space-y-16">
+<!-- Main Body -->
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
+    <div class="grid lg:grid-cols-12 gap-12">
+        <!-- Main Details Column -->
+        <div class="lg:col-span-8 space-y-16">
+            <!-- AI Customer Acquisition Highlight Box -->
+            <div class="p-6 md:p-8 rounded-3xl bg-gradient-to-r from-emerald-50 via-emerald-100/40 to-teal-50 border border-emerald-200">
+                <div class="flex items-start gap-4">
+                    <div class="w-12 h-12 rounded-2xl bg-primary text-white flex items-center justify-center shrink-0 shadow-md">
+                        <i data-lucide="sparkles" class="w-6 h-6"></i>
+                    </div>
+                    <div>
+                        <span class="text-[11px] font-extrabold uppercase tracking-wider text-emerald-800 bg-emerald-200/60 px-2.5 py-0.5 rounded-full">
+                            Included Growth Machine
+                        </span>
+                        <h3 class="text-xl font-heading font-extrabold text-slate-900 mt-2 mb-2">
+                            Engineered To Acquire Customers & Grow Income
+                        </h3>
+                        <p class="text-xs md:text-sm text-slate-700 leading-relaxed">
+                            With UniqueTechCamp, this service includes our proprietary <strong class="text-slate-900">AI Customer Acquisition System</strong>. 
+                            We configure an intelligent 24/7 lead intake bot on your website and WhatsApp that greets prospects, pre-qualifies their budget and service requirements, and sets up automated follow-up sequences so no warm lead slips through the cracks.
+                        </p>
+                    </div>
+                </div>
+            </div>
+
             <!-- Overview -->
             <div>
-                <h2 class="text-3xl font-heading font-bold text-secondary mb-6">Overview</h2>
-                <div class="prose prose-lg text-gray-600 font-body">
+                <h2 class="text-2xl md:text-3xl font-heading font-bold text-slate-900 mb-6 flex items-center gap-3">
+                    <i data-lucide="file-text" class="w-6 h-6 text-primary"></i> Detailed System Overview
+                </h2>
+                <div class="prose prose-slate max-w-none text-gray-700 leading-relaxed font-body space-y-4">
                     {{ service.overview|linebreaks }}
                 </div>
             </div>
             
-            <!-- Features -->
-            {% if service.features.all %}
-            <div>
-                <h2 class="text-3xl font-heading font-bold text-secondary mb-8">What's Included</h2>
-                <div class="grid sm:grid-cols-2 gap-6">
-                    {% for feature in service.features.all %}
-                    <div class="bg-gray-50 rounded-xl p-6 border border-gray-100">
-                        <div class="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center text-primary mb-4">
-                            <span class="material-symbols-outlined text-xl">{{ feature.icon_name|default:'check_circle' }}</span>
-                        </div>
-                        <h3 class="font-heading font-bold text-lg text-secondary mb-2">{{ feature.title }}</h3>
-                        <p class="text-gray-600 font-body text-sm">{{ feature.description }}</p>
-                    </div>
-                    {% endfor %}
-                </div>
-            </div>
-            {% endif %}
-            
-            <!-- Process -->
+            <!-- Process Breakdown -->
             {% if service.get_process_list %}
             <div>
-                <h2 class="text-3xl font-heading font-bold text-secondary mb-8">Our Process</h2>
+                <h2 class="text-2xl md:text-3xl font-heading font-bold text-slate-900 mb-8 flex items-center gap-3">
+                    <i data-lucide="git-branch" class="w-6 h-6 text-primary"></i> Execution & Implementation Roadmap
+                </h2>
                 <div class="space-y-6">
                     {% for step in service.get_process_list %}
-                    <div class="flex gap-6">
-                        <div class="flex flex-col items-center">
-                            <div class="w-10 h-10 rounded-full bg-primary text-white flex items-center justify-center font-bold text-lg z-10">
-                                {{ forloop.counter }}
-                            </div>
-                            {% if not forloop.last %}
-                            <div class="w-px h-full bg-primary/20 mt-2"></div>
-                            {% endif %}
+                    <div class="flex gap-5 p-4 rounded-2xl bg-slate-50 border border-gray-100 hover:bg-white hover:shadow-sm transition-all">
+                        <div class="w-9 h-9 rounded-xl bg-primary text-white flex items-center justify-center font-bold text-sm shrink-0">
+                            {{ forloop.counter }}
                         </div>
-                        <div class="pb-8 pt-1 text-gray-600 font-body text-lg">
+                        <div class="pt-1 text-gray-700 font-body text-sm leading-relaxed">
                             {{ step }}
                         </div>
                     </div>
@@ -80,42 +137,35 @@
                 </div>
             </div>
             {% endif %}
-            
-            <!-- FAQs -->
-            {% if service.faqs.all %}
-            <div>
-                <h2 class="text-3xl font-heading font-bold text-secondary mb-8">Frequently Asked Questions</h2>
-                <div class="space-y-4">
-                    {% for faq in service.faqs.all %}
-                    <details class="group bg-gray-50 border border-gray-100 rounded-lg">
-                        <summary class="flex justify-between items-center font-medium cursor-pointer list-none p-6 text-secondary font-heading font-bold text-lg">
-                            <span>{{ faq.question }}</span>
-                            <span class="transition group-open:rotate-180 material-symbols-outlined text-primary">
-                                expand_more
-                            </span>
-                        </summary>
-                        <div class="text-gray-600 font-body p-6 pt-0 leading-relaxed">
-                            {{ faq.answer }}
-                        </div>
-                    </details>
-                    {% endfor %}
+
+            <!-- Consultation Banner -->
+            <div class="p-8 rounded-3xl bg-gradient-to-r from-slate-950 via-slate-900 to-slate-950 text-white flex flex-col sm:flex-row items-center justify-between gap-6 shadow-xl">
+                <div>
+                    <h3 class="text-lg md:text-xl font-heading font-extrabold mb-1">Ready to deploy {{ service.title }}?</h3>
+                    <p class="text-xs text-gray-400">Our engineering architects will design your custom blueprint.</p>
+                </div>
+                <div class="shrink-0 flex gap-3">
+                    <a href="{{ whatsapp_url }}" target="_blank" rel="noopener noreferrer" class="btn-primary py-2.5 px-5 rounded-xl text-xs font-semibold">
+                        Chat on WhatsApp
+                    </a>
                 </div>
             </div>
-            {% endif %}
         </div>
         
         <!-- Sidebar -->
-        <div class="lg:col-span-1">
+        <div class="lg:col-span-4">
             <div class="sticky top-28 space-y-8">
-                <!-- Benefits Card -->
+                <!-- Key Benefits Card -->
                 {% if service.get_benefits_list %}
-                <div class="glass-card p-8 bg-gray-50">
-                    <h3 class="font-heading font-bold text-2xl text-secondary mb-6">Key Benefits</h3>
-                    <ul class="space-y-4">
+                <div class="p-6 md:p-8 rounded-3xl bg-white border border-gray-100 shadow-md">
+                    <h3 class="font-heading font-bold text-lg text-slate-900 mb-6 flex items-center gap-2">
+                        <i data-lucide="check-circle-2" class="w-5 h-5 text-primary"></i> Core System Capabilities
+                    </h3>
+                    <ul class="space-y-3.5 text-xs text-gray-600">
                         {% for benefit in service.get_benefits_list %}
-                        <li class="flex items-start gap-3">
-                            <span class="material-symbols-outlined text-primary mt-1">check_circle</span>
-                            <span class="text-gray-600 font-body">{{ benefit }}</span>
+                        <li class="flex items-start gap-2.5">
+                            <i data-lucide="check" class="w-4 h-4 text-primary shrink-0 mt-0.5"></i>
+                            <span class="leading-relaxed">{{ benefit }}</span>
                         </li>
                         {% endfor %}
                     </ul>
@@ -124,17 +174,18 @@
                 
                 <!-- Related Services -->
                 {% if related_services %}
-                <div class="border border-gray-100 rounded-2xl p-8">
-                    <h3 class="font-heading font-bold text-xl text-secondary mb-6">Other Services</h3>
-                    <div class="space-y-4">
+                <div class="p-6 md:p-8 rounded-3xl bg-slate-50 border border-gray-100">
+                    <h3 class="font-heading font-bold text-base text-slate-900 mb-5 flex items-center gap-2">
+                        <i data-lucide="layers" class="w-4 h-4 text-primary"></i> Complementary Growth Services
+                    </h3>
+                    <div class="space-y-3">
                         {% for rel_service in related_services %}
-                        <a href="{% url 'services:detail' rel_service.slug %}" class="flex items-center gap-4 group">
-                            <div class="w-12 h-12 rounded-lg bg-gray-50 flex items-center justify-center text-gray-500 group-hover:bg-primary/10 group-hover:text-primary transition-colors">
-                                <span class="material-symbols-outlined">{{ rel_service.icon_name }}</span>
-                            </div>
+                        <a href="{% url 'services:detail' rel_service.slug %}" class="p-3 rounded-xl bg-white border border-gray-100 hover:border-primary/40 hover:shadow-sm transition-all flex items-center justify-between group">
                             <div>
-                                <h4 class="font-heading font-bold text-secondary group-hover:text-primary transition-colors">{{ rel_service.title }}</h4>
+                                <h4 class="font-heading font-bold text-xs text-slate-900 group-hover:text-primary transition-colors">{{ rel_service.title }}</h4>
+                                <span class="text-[10px] text-gray-400">{{ rel_service.category.name }}</span>
                             </div>
+                            <i data-lucide="chevron-right" class="w-4 h-4 text-gray-400 group-hover:text-primary group-hover:translate-x-0.5 transition-all"></i>
                         </a>
                         {% endfor %}
                     </div>

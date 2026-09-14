@@ -1,0 +1,132 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Cookie Policy | UniqueTechCamp{% endblock %}
+{% block description %}UniqueTechCamp Cookie Policy. Discover how cookies, web beacons, and local storage technologies enhance your user experience and power our digital services.{% endblock %}
+
+{% block content %}
+<div class="bg-gradient-to-b from-slate-900 via-slate-950 to-slate-900 text-white py-16 px-4 relative overflow-hidden">
+    <div class="max-w-5xl mx-auto text-center relative z-10">
+        <span class="inline-flex items-center gap-2 px-4 py-1.5 rounded-full text-xs font-semibold uppercase tracking-wider bg-primary/20 text-primary border border-primary/30 mb-4">
+            <i data-lucide="cookie" class="w-4 h-4"></i> Transparent Tracking
+        </span>
+        <h1 class="text-4xl md:text-5xl font-heading font-extrabold tracking-tight mb-4">Cookie Policy</h1>
+        <p class="text-gray-300 max-w-2xl mx-auto text-base md:text-lg">
+            Last Updated: September 15, 2026 • Full Transparency Regarding Browser Technologies
+        </p>
+    </div>
+</div>
+
+<section class="py-16 bg-white text-slate-800">
+    <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="p-6 rounded-2xl bg-amber-50 border border-amber-200 mb-12 flex items-start gap-4">
+            <div class="w-12 h-12 rounded-xl bg-amber-500 text-white flex items-center justify-center shrink-0">
+                <i data-lucide="info" class="w-6 h-6"></i>
+            </div>
+            <div>
+                <h3 class="font-heading font-bold text-lg text-amber-950 mb-1">What Are Cookies & Why Do We Use Them?</h3>
+                <p class="text-sm text-amber-900 leading-relaxed">
+                    Cookies are minute text files downloaded to your device when you browse websites. At <strong>UniqueTechCamp</strong>, we utilize cookies and web storage to provide essential security, preserve your dark/light UI preferences, remember chat state in our AI lead qualification widgets, and evaluate site performance.
+                </p>
+            </div>
+        </div>
+
+        <div class="prose prose-slate max-w-none space-y-10 font-body text-gray-700 leading-relaxed">
+            <div>
+                <h2 class="text-2xl font-heading font-bold text-slate-900 flex items-center gap-3">
+                    <span class="text-primary font-mono text-lg">01.</span> Categories of Cookies We Deploy
+                </h2>
+                <div class="mt-4 space-y-4">
+                    <div class="p-5 rounded-xl border border-gray-200 bg-gray-50/70">
+                        <div class="flex items-center justify-between mb-2">
+                            <h4 class="font-heading font-bold text-slate-900 flex items-center gap-2">
+                                <i data-lucide="shield-alert" class="w-4 h-4 text-emerald-600"></i> Strictly Necessary Cookies
+                            </h4>
+                            <span class="px-2.5 py-0.5 rounded-full text-xs font-semibold bg-emerald-100 text-emerald-800">Mandatory</span>
+                        </div>
+                        <p class="text-sm text-gray-600">
+                            Indispensable for core site security, CSRF token verification on Django forms, session state persistence, and load balancing. The site cannot function without these cookies.
+                        </p>
+                    </div>
+
+                    <div class="p-5 rounded-xl border border-gray-200 bg-gray-50/70">
+                        <div class="flex items-center justify-between mb-2">
+                            <h4 class="font-heading font-bold text-slate-900 flex items-center gap-2">
+                                <i data-lucide="bot" class="w-4 h-4 text-primary"></i> Functional & AI Interaction Cookies
+                            </h4>
+                            <span class="px-2.5 py-0.5 rounded-full text-xs font-semibold bg-blue-100 text-blue-800">Experience</span>
+                        </div>
+                        <p class="text-sm text-gray-600">
+                            Maintains state across our interactive 24/7 lead qualification chatbots, keeping your service selections active as you move between pages so you don't lose typed prompts or contact answers.
+                        </p>
+                    </div>
+
+                    <div class="p-5 rounded-xl border border-gray-200 bg-gray-50/70">
+                        <div class="flex items-center justify-between mb-2">
+                            <h4 class="font-heading font-bold text-slate-900 flex items-center gap-2">
+                                <i data-lucide="bar-chart-2" class="w-4 h-4 text-purple-600"></i> Analytics & Performance Cookies
+                            </h4>
+                            <span class="px-2.5 py-0.5 rounded-full text-xs font-semibold bg-purple-100 text-purple-800">Performance</span>
+                        </div>
+                        <p class="text-sm text-gray-600">
+                            Aggregates anonymous telemetry data regarding page load latency, scroll depth, and search queries. This allows our engineers to identify and optimize sluggish pages.
+                        </p>
+                    </div>
+
+                    <div class="p-5 rounded-xl border border-gray-200 bg-gray-50/70">
+                        <div class="flex items-center justify-between mb-2">
+                            <h4 class="font-heading font-bold text-slate-900 flex items-center gap-2">
+                                <i data-lucide="target" class="w-4 h-4 text-amber-600"></i> Marketing & Conversion Pixels
+                            </h4>
+                            <span class="px-2.5 py-0.5 rounded-full text-xs font-semibold bg-amber-100 text-amber-800">Targeting</span>
+                        </div>
+                        <p class="text-sm text-gray-600">
+                            Tracks the efficacy of our advertising campaigns (such as Google Ads or Meta Ads) to determine which services are receiving high interest, preventing repeated irrelevant ads.
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <div>
+                <h2 class="text-2xl font-heading font-bold text-slate-900 flex items-center gap-3">
+                    <span class="text-primary font-mono text-lg">02.</span> How Long Do Cookies Persist?
+                </h2>
+                <ul class="list-disc pl-6 space-y-2 mt-3 text-gray-600">
+                    <li><strong>Session Cookies:</strong> Temporary files that remain active only while your browser tab is open, vanishing automatically once you close the window.</li>
+                    <li><strong>Persistent Cookies:</strong> Remain stored on your device for a predetermined lifespan (ranging from 30 days to 12 months) unless manually purged earlier via your browser settings.</li>
+                </ul>
+            </div>
+
+            <div>
+                <h2 class="text-2xl font-heading font-bold text-slate-900 flex items-center gap-3">
+                    <span class="text-primary font-mono text-lg">03.</span> Managing & Revoking Your Cookie Preferences
+                </h2>
+                <p class="mt-3">
+                    You have complete autonomy over your device storage. Most modern browsers let you view, delete, or block cookies across all websites:
+                </p>
+                <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 mt-4 text-center text-xs">
+                    <div class="p-3 border rounded-lg bg-gray-50 font-semibold text-slate-700">Google Chrome Settings → Privacy</div>
+                    <div class="p-3 border rounded-lg bg-gray-50 font-semibold text-slate-700">Safari Preferences → Security</div>
+                    <div class="p-3 border rounded-lg bg-gray-50 font-semibold text-slate-700">Mozilla Firefox → Tracking</div>
+                    <div class="p-3 border rounded-lg bg-gray-50 font-semibold text-slate-700">Microsoft Edge → Permissions</div>
+                </div>
+                <p class="text-xs text-gray-500 mt-3">
+                    Note: If you disable all cookies including essential session cookies, certain interactive areas of our site (such as client inquiry forms and instant bot calculators) may experience degraded functionality.
+                </p>
+            </div>
+
+            <div>
+                <h2 class="text-2xl font-heading font-bold text-slate-900 flex items-center gap-3">
+                    <span class="text-primary font-mono text-lg">04.</span> Inquiries Regarding Tracking
+                </h2>
+                <div class="mt-4 p-6 rounded-xl border border-gray-200 bg-slate-900 text-white">
+                    <h4 class="font-heading font-bold text-lg text-primary mb-2">UniqueTechCamp Infrastructure & Privacy Team</h4>
+                    <p class="text-sm text-gray-300">Nairobi, Kenya</p>
+                    <p class="text-sm text-gray-300 mt-2">Email: <a href="mailto:info@uniquetechcamp.org" class="text-primary hover:underline">info@uniquetechcamp.org</a></p>
+                    <p class="text-sm text-gray-300">Phone: <a href="tel:+254715479955" class="text-primary hover:underline">+254 715 479 955</a></p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}
