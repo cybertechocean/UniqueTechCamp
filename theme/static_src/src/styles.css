@@ -1,0 +1,91 @@
+@import "tailwindcss";
+
+@theme {
+  --color-primary: #22C55E;
+  --color-primary-hover: #16A34A;
+  --color-secondary: #1F2937;
+  --color-neutral-white: #FFFFFF;
+  --color-light-bg: #F8FAFC;
+
+  --font-heading: "Space Grotesk", sans-serif;
+  --font-body: "Plus Jakarta Sans", sans-serif;
+  --font-support: "Inter", sans-serif;
+}
+
+@source "../../../**/*.{html,py,js}";
+
+@layer utilities {
+  .text-shadow-sm {
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+  }
+}
+
+@layer components {
+  .btn-primary {
+    @apply bg-primary hover:bg-primary-hover text-white font-support font-semibold py-3 px-6 rounded-lg transition-all duration-300 shadow-md hover:shadow-lg inline-flex items-center justify-center gap-2;
+  }
+  .btn-secondary {
+    @apply bg-white hover:bg-gray-50 text-secondary font-support font-semibold py-3 px-6 rounded-lg transition-all duration-300 shadow-md hover:shadow-lg border border-gray-200 inline-flex items-center justify-center gap-2;
+  }
+  .glass-card {
+    @apply bg-white/80 backdrop-blur-md border border-white/20 shadow-xl rounded-2xl;
+  }
+  .section-title {
+    @apply text-3xl md:text-4xl lg:text-5xl font-heading font-bold text-secondary mb-4;
+  }
+  .section-subtitle {
+    @apply text-lg text-gray-600 font-body max-w-2xl mx-auto;
+  }
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  font-family: var(--font-body);
+  color: var(--color-secondary);
+  background-color: var(--color-light-bg);
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--font-heading);
+}
+
+/* Animations */
+@keyframes float {
+  0% { transform: translateY(0px); }
+  50% { transform: translateY(-20px); }
+  100% { transform: translateY(0px); }
+}
+
+.animate-float {
+  animation: float 6s ease-in-out infinite;
+}
+
+@keyframes float-delayed {
+  0% { transform: translateY(0px); }
+  50% { transform: translateY(-15px); }
+  100% { transform: translateY(0px); }
+}
+
+.animate-float-delayed {
+  animation: float-delayed 8s ease-in-out infinite 2s;
+}
+
+/* Scroll progress */
+#scroll-progress {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 0%;
+  height: 4px;
+  background-color: var(--color-primary);
+  z-index: 1000;
+  transition: width 0.1s;
+}
+
+/* Base transitions */
+* {
+  @apply transition-colors duration-200;
+}

@@ -1,0 +1,683 @@
+{% extends 'base.html' %}
+
+{% block title %}Our Services - UniqueTechCamp | Future-Ready Web Development & AI Solutions{% endblock %}
+{% block description %}Explore UniqueTechCamp's complete range of services: Web Development, AI Integration, Chatbot Development, Custom Software, and digital solutions for 14+ industry sectors.{% endblock %}
+
+{% block extra_head %}
+<style>
+  /* ── Hero ── */
+  .services-hero {
+    background: linear-gradient(135deg, #111827 0%, #1F2937 50%, #111827 100%);
+    position: relative;
+    overflow: hidden;
+  }
+  .services-hero::before {
+    content: '';
+    position: absolute; inset: 0;
+    background:
+      radial-gradient(ellipse 700px 500px at 15% 60%, rgba(34,197,94,0.2) 0%, transparent 65%),
+      radial-gradient(ellipse 500px 400px at 85% 20%, rgba(34,197,94,0.12) 0%, transparent 60%);
+    pointer-events: none;
+  }
+  .gradient-text {
+    background: linear-gradient(135deg, #22C55E, #4ADE80, #16A34A);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+  /* ── Search & filter toolbar ── */
+  .toolbar {
+    background: #fff;
+    border: 1px solid #e5e7eb;
+    border-radius: 20px;
+    padding: 20px 24px;
+    box-shadow: 0 4px 24px rgba(0,0,0,0.06);
+    position: sticky;
+    top: 88px;
+    z-index: 40;
+    transition: box-shadow 0.3s ease;
+  }
+  .toolbar:focus-within {
+    box-shadow: 0 8px 32px rgba(34,197,94,0.12);
+  }
+  .search-input-wrap {
+    position: relative;
+    flex: 1 1 280px;
+    min-width: 0;
+  }
+  .search-input {
+    width: 100%;
+    padding: 12px 16px 12px 48px;
+    border: 1.5px solid #e5e7eb;
+    border-radius: 14px;
+    font-size: 0.95rem;
+    outline: none;
+    transition: all 0.25s ease;
+    background: #f9fafb;
+    color: #0f172a;
+  }
+  .search-input:focus {
+    border-color: #22C55E;
+    background: #fff;
+    box-shadow: 0 0 0 3px rgba(34,197,94,0.12);
+  }
+  .search-icon {
+    position: absolute;
+    left: 14px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #9ca3af;
+    pointer-events: none;
+    transition: color 0.25s;
+  }
+  .search-input:focus + .search-icon,
+  .search-input-wrap:focus-within .search-icon {
+    color: #22C55E;
+  }
+  .search-clear {
+    position: absolute;
+    right: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    cursor: pointer;
+    color: #9ca3af;
+    display: none;
+    border: none;
+    background: none;
+    padding: 2px;
+    border-radius: 50%;
+    line-height: 1;
+  }
+  .search-clear:hover { color: #22C55E; }
+  .filter-select {
+    padding: 12px 36px 12px 16px;
+    border: 1.5px solid #e5e7eb;
+    border-radius: 14px;
+    font-size: 0.9rem;
+    outline: none;
+    transition: all 0.25s ease;
+    background: #f9fafb url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%239ca3af' stroke-width='2'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E") no-repeat right 10px center;
+    -webkit-appearance: none;
+    appearance: none;
+    cursor: pointer;
+    color: #374151;
+  }
+  .filter-select:focus {
+    border-color: #22C55E;
+    background-color: #fff;
+    box-shadow: 0 0 0 3px rgba(34,197,94,0.12);
+  }
+  /* ── Category pill tabs ── */
+  .cat-tabs {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    padding: 16px 0 4px;
+    border-top: 1px solid #f3f4f6;
+    margin-top: 16px;
+  }
+  .cat-tab {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 16px;
+    border-radius: 9999px;
+    font-size: 0.82rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    border: 1.5px solid #e5e7eb;
+    background: #f9fafb;
+    color: #6b7280;
+    text-decoration: none;
+    white-space: nowrap;
+  }
+  .cat-tab:hover {
+    border-color: #22C55E;
+    color: #16A34A;
+    background: #f0fdf4;
+  }
+  .cat-tab.active {
+    background: linear-gradient(135deg, #22C55E, #16A34A);
+    border-color: transparent;
+    color: #fff;
+    box-shadow: 0 4px 12px rgba(34,197,94,0.35);
+  }
+  /* ── Live search results panel ── */
+  #search-suggestions {
+    position: absolute;
+    top: calc(100% + 8px);
+    left: 0; right: 0;
+    background: #fff;
+    border: 1px solid #e5e7eb;
+    border-radius: 16px;
+    box-shadow: 0 16px 48px rgba(0,0,0,0.12);
+    z-index: 200;
+    max-height: 320px;
+    overflow-y: auto;
+    display: none;
+  }
+  #search-suggestions.show { display: block; }
+  .suggestion-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px 16px;
+    cursor: pointer;
+    transition: background 0.15s;
+    border-bottom: 1px solid #f9fafb;
+    text-decoration: none;
+    color: inherit;
+  }
+  .suggestion-item:last-child { border-bottom: none; }
+  .suggestion-item:hover { background: #f0fdf4; }
+  .suggestion-icon {
+    width: 36px; height: 36px;
+    border-radius: 10px;
+    display: flex; align-items: center; justify-content: center;
+    background: linear-gradient(135deg, rgba(34,197,94,0.12), rgba(34,197,94,0.06));
+    flex-shrink: 0;
+  }
+  .suggestion-cat {
+    font-size: 0.7rem;
+    color: #16A34A;
+    font-weight: 600;
+    letter-spacing: 0.05em;
+  }
+  .no-results-tip {
+    padding: 20px 16px;
+    text-align: center;
+    color: #9ca3af;
+    font-size: 0.88rem;
+  }
+  /* ── Results summary bar ── */
+  .results-bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-bottom: 24px;
+    padding: 12px 16px;
+    background: #f0fdf4;
+    border: 1px solid #d1fae5;
+    border-radius: 14px;
+  }
+  /* ── Service card ── */
+  .service-card {
+    background: #fff;
+    border: 1px solid #e8edf7;
+    border-radius: 22px;
+    padding: 32px 28px;
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    transition: all 0.35s cubic-bezier(0.25,0.8,0.25,1);
+    position: relative;
+    overflow: hidden;
+  }
+  .service-card::before {
+    content: '';
+    position: absolute;
+    bottom: 0; left: 0; right: 0;
+    height: 3px;
+    background: linear-gradient(90deg, #22C55E, #4ADE80, #16A34A);
+    transform: scaleX(0);
+    transform-origin: left;
+    transition: transform 0.35s ease;
+  }
+  .service-card:hover {
+    box-shadow: 0 20px 60px rgba(34,197,94,0.14);
+    border-color: rgba(34,197,94,0.18);
+    transform: translateY(-6px);
+  }
+  .service-card:hover::before { transform: scaleX(1); }
+  .service-card.featured {
+    background: linear-gradient(135deg, #111827 0%, #1F2937 100%);
+    border-color: rgba(34,197,94,0.3);
+  }
+  .service-card.featured .service-title { color: #f1f5f9; }
+  .service-card.featured .service-desc { color: #94a3b8; }
+  .service-icon-wrap {
+    width: 60px; height: 60px;
+    border-radius: 16px;
+    display: flex; align-items: center; justify-content: center;
+    background: linear-gradient(135deg, rgba(34,197,94,0.12), rgba(34,197,94,0.06));
+    margin-bottom: 20px;
+    transition: all 0.35s ease;
+    flex-shrink: 0;
+  }
+  .service-card:hover .service-icon-wrap {
+    background: linear-gradient(135deg, #22C55E, #16A34A);
+    box-shadow: 0 8px 24px rgba(34,197,94,0.35);
+    transform: scale(1.1) rotate(-3deg);
+  }
+  .service-card:hover .service-icon-wrap .material-symbols-outlined { color: #fff !important; }
+  .cat-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    background: linear-gradient(135deg, #f0fdf4, #dcfce7);
+    border: 1px solid #bbf7d0;
+    border-radius: 9999px;
+    padding: 3px 10px;
+    font-size: 0.7rem;
+    font-weight: 700;
+    color: #16A34A;
+    letter-spacing: 0.05em;
+    margin-bottom: 12px;
+  }
+  .explore-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    color: #22C55E;
+    font-weight: 700;
+    font-size: 0.9rem;
+    transition: all 0.25s ease;
+    text-decoration: none;
+  }
+  .explore-link:hover { gap: 10px; color: #16A34A; }
+  /* ── Empty state ── */
+  .empty-state {
+    text-align: center;
+    padding: 80px 40px;
+    grid-column: 1 / -1;
+  }
+  /* ── Animations ── */
+  @keyframes fadeInUp {
+    from { opacity: 0; transform: translateY(24px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+  .fade-in { animation: fadeInUp 0.5s ease both; }
+  .service-card { animation: fadeInUp 0.4s ease both; }
+  /* ── highlight match ── */
+  mark { background: rgba(34,197,94,0.15); color: #16A34A; border-radius: 3px; padding: 0 2px; }
+</style>
+{% endblock %}
+
+{% block content %}
+
+<!-- ═══════════════════════════════ HERO ═══════════════════════════════ -->
+<section class="services-hero py-20 md:py-28">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10 text-center">
+    <p class="text-green-400 font-semibold tracking-widest uppercase text-xs mb-4">Everything You Need to Succeed Digitally</p>
+    <h1 class="text-4xl md:text-6xl font-bold text-white leading-tight mb-5">
+      Our <span class="gradient-text">Services</span>
+    </h1>
+    <p class="text-lg md:text-xl text-slate-300 max-w-2xl mx-auto leading-relaxed">
+      Comprehensive digital solutions across <strong class="text-white">14 industry sectors</strong> — from
+      AI-powered chatbots to custom web applications, designed to automate, engage, and grow.
+    </p>
+  </div>
+</section>
+
+<!-- ═══════════════════════════ MAIN CONTENT ══════════════════════════ -->
+<section class="py-16 bg-slate-50">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+
+    <!-- ── TOOLBAR ── -->
+    <form id="filter-form" method="get" action="{% url 'services:list' %}" autocomplete="off">
+      <div class="toolbar mb-8">
+
+        <!-- Row 1: Search + Sort -->
+        <div class="flex flex-wrap gap-3 items-center">
+
+          <!-- Search -->
+          <div class="search-input-wrap" style="position:relative;">
+            <input
+              type="text"
+              id="search-input"
+              name="q"
+              value="{{ current_q }}"
+              placeholder="Search services, industries, solutions…"
+              class="search-input"
+              autocomplete="off"
+              aria-label="Search services"
+            >
+            <span class="material-symbols-outlined search-icon" style="position:absolute;left:14px;top:50%;transform:translateY(-50%);color:#9ca3af;pointer-events:none;">search</span>
+            {% if current_q %}
+            <button type="button" id="search-clear" class="search-clear" style="display:block;" aria-label="Clear search">
+              <span class="material-symbols-outlined" style="font-size:1.1rem;">close</span>
+            </button>
+            {% else %}
+            <button type="button" id="search-clear" class="search-clear" aria-label="Clear search">
+              <span class="material-symbols-outlined" style="font-size:1.1rem;">close</span>
+            </button>
+            {% endif %}
+            <!-- Live suggestions dropdown -->
+            <div id="search-suggestions"></div>
+          </div>
+
+          <!-- Sort -->
+          <select name="sort" id="sort-select" class="filter-select" onchange="this.form.submit()" aria-label="Sort services">
+            <option value="order" {% if current_sort == 'order' %}selected{% endif %}>Default Order</option>
+            <option value="title" {% if current_sort == 'title' %}selected{% endif %}>Name A → Z</option>
+            <option value="-title" {% if current_sort == '-title' %}selected{% endif %}>Name Z → A</option>
+            <option value="newest" {% if current_sort == 'newest' %}selected{% endif %}>Newest First</option>
+            <option value="oldest" {% if current_sort == 'oldest' %}selected{% endif %}>Oldest First</option>
+          </select>
+
+          <!-- Hidden category field so sort preserves category -->
+          <input type="hidden" name="category" id="hidden-category" value="{{ current_category }}">
+
+          <!-- Submit (visible only when JS is off) -->
+          <button type="submit" class="px-6 py-3 rounded-xl font-semibold text-sm transition-all" style="background:linear-gradient(135deg,#22C55E,#16A34A);color:#fff;border:none;cursor:pointer;">
+            Search
+          </button>
+
+          {% if current_q or current_category %}
+          <a href="{% url 'services:list' %}" class="px-5 py-3 rounded-xl text-sm font-semibold text-slate-500 hover:text-red-500 hover:bg-red-50 transition-all border border-slate-200">
+            <span class="material-symbols-outlined" style="font-size:1rem;vertical-align:middle;">restart_alt</span>
+            Clear All
+          </a>
+          {% endif %}
+        </div>
+
+        <!-- Row 2: Category pills -->
+        {% if categories %}
+        <div class="cat-tabs">
+          <a href="{% url 'services:list' %}{% if current_q %}?q={{ current_q }}{% endif %}{% if current_sort and current_sort != 'order' %}&sort={{ current_sort }}{% endif %}"
+             class="cat-tab {% if not current_category %}active{% endif %}"
+             id="cat-all">
+            🌐 All Services
+          </a>
+          {% for cat in categories %}
+          <a href="?category={{ cat.slug }}{% if current_q %}&q={{ current_q }}{% endif %}{% if current_sort and current_sort != 'order' %}&sort={{ current_sort }}{% endif %}"
+             class="cat-tab {% if current_category == cat.slug %}active{% endif %}"
+             id="cat-{{ cat.slug }}">
+            {{ cat.icon }} {{ cat.name }}
+          </a>
+          {% endfor %}
+        </div>
+        {% endif %}
+
+      </div>
+    </form>
+
+    <!-- ── RESULTS SUMMARY ── -->
+    <div class="results-bar">
+      <div class="flex items-center gap-2 text-slate-600 text-sm font-medium">
+        <span class="material-symbols-outlined text-green-600" style="font-size:1.1rem;">grid_view</span>
+        <span id="results-count">
+          {% if current_q or current_category %}
+            <strong>{{ services|length }}</strong> service{{ services|length|pluralize }} found
+            {% if current_q %} for "<em>{{ current_q }}</em>"{% endif %}
+            {% if current_category %} in <em>{{ current_category }}</em>{% endif %}
+          {% else %}
+            Showing <strong>{{ services|length }}</strong> service{{ services|length|pluralize }}
+          {% endif %}
+        </span>
+      </div>
+      <div class="flex items-center gap-2 text-xs text-slate-400">
+        <span class="material-symbols-outlined" style="font-size:0.9rem;">info</span>
+        Start typing to search in real-time
+      </div>
+    </div>
+
+    <!-- ── SERVICE CARDS GRID ── -->
+    <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-6" id="services-grid">
+      {% for service in services %}
+      <div class="service-card {% if service.is_featured %}featured{% endif %}" data-title="{{ service.title|lower }}" data-desc="{{ service.short_description|lower }}" data-cat="{% if service.category %}{{ service.category.name|lower }}{% endif %}" style="animation-delay: {{ forloop.counter0 }}0ms;">
+
+        <!-- Icon -->
+        <div class="service-icon-wrap">
+          <span class="material-symbols-outlined text-3xl {% if service.is_featured %}text-green-300{% else %}text-green-600{% endif %}">{{ service.icon_name }}</span>
+        </div>
+
+        <!-- Category pill -->
+        {% if service.category %}
+        <span class="cat-pill">{{ service.category.icon }} {{ service.category.name }}</span>
+        {% endif %}
+
+        <!-- Featured badge -->
+        {% if service.is_featured %}
+        <span style="position:absolute;top:16px;right:16px;background:linear-gradient(135deg,#22C55E,#16A34A);color:#fff;font-size:0.68rem;font-weight:800;letter-spacing:0.08em;padding:3px 10px;border-radius:9999px;text-transform:uppercase;">✨ Featured</span>
+        {% endif %}
+
+        <!-- Title & Description -->
+        <h2 class="text-xl font-bold mb-3 service-title" style="color:{% if service.is_featured %}#f1f5f9{% else %}#0f172a{% endif %};">{{ service.title }}</h2>
+        <p class="service-desc flex-grow text-sm leading-relaxed mb-6" style="color:{% if service.is_featured %}#94a3b8{% else %}#6b7280{% endif %};">{{ service.short_description }}</p>
+
+        <!-- Link -->
+        <div class="pt-5 mt-auto border-t {% if service.is_featured %}border-slate-700{% else %}border-slate-100{% endif %}">
+          <a href="{% url 'services:detail' service.slug %}" class="explore-link">
+            Explore Service
+            <span class="material-symbols-outlined" style="font-size:1rem;">arrow_forward</span>
+          </a>
+        </div>
+      </div>
+      {% empty %}
+      <div class="empty-state">
+        <div class="text-6xl mb-4">🔍</div>
+        <h3 class="text-xl font-bold text-slate-700 mb-2">No Services Found</h3>
+        <p class="text-slate-500 mb-6 max-w-md mx-auto">
+          We couldn't find services matching your search. Try a different keyword or browse all categories.
+        </p>
+        <a href="{% url 'services:list' %}" class="inline-flex items-center gap-2 font-semibold px-6 py-3 rounded-xl text-white transition-all" style="background:linear-gradient(135deg,#22C55E,#16A34A);">
+          <span class="material-symbols-outlined">grid_view</span>
+          View All Services
+        </a>
+      </div>
+      {% endfor %}
+    </div>
+
+  </div>
+</section>
+
+<!-- ═════════════════════════════ CTA ════════════════════════════════ -->
+<section class="py-20 bg-secondary relative overflow-hidden">
+  <div class="absolute inset-0 opacity-10" style="background:radial-gradient(ellipse at bottom right, #22C55E, transparent 60%);"></div>
+  <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center relative z-10">
+    <h2 class="text-3xl md:text-4xl font-bold text-white mb-5">Need a Custom Solution?</h2>
+    <p class="text-xl text-slate-300 mb-8 max-w-xl mx-auto">Let's discuss how we can tailor our services to meet your specific goals and industry needs.</p>
+    <a href="{% url 'core:contact' %}" class="inline-flex items-center gap-2 bg-green-500 hover:bg-green-400 text-white font-bold px-8 py-4 rounded-2xl transition-all duration-300 hover:shadow-lg hover:shadow-green-500/30 hover:-translate-y-1">
+      <span class="material-symbols-outlined">chat</span>
+      Contact Our Experts
+    </a>
+  </div>
+</section>
+
+{% endblock %}
+
+{% block extra_scripts %}
+<script>
+(function () {
+  'use strict';
+
+  // ── Gather all service data from the DOM for live search ──────────
+  const cards = Array.from(document.querySelectorAll('.service-card'));
+  const allServices = cards.map(card => ({
+    el: card,
+    title: card.dataset.title || '',
+    desc: card.dataset.desc || '',
+    cat: card.dataset.cat || '',
+    // pull the real title and link from the card
+    displayTitle: card.querySelector('.service-title')?.textContent?.trim() || '',
+    displayCat:   card.querySelector('.cat-pill')?.textContent?.trim() || '',
+    href:         card.querySelector('.explore-link')?.getAttribute('href') || '#',
+    icon:         card.querySelector('.service-icon-wrap .material-symbols-outlined')?.textContent?.trim() || 'web',
+  }));
+
+  const searchInput       = document.getElementById('search-input');
+  const searchClear       = document.getElementById('search-clear');
+  const suggestionsBox    = document.getElementById('search-suggestions');
+  const hiddenCategory    = document.getElementById('hidden-category');
+  const filterForm        = document.getElementById('filter-form');
+  const grid              = document.getElementById('services-grid');
+  const resultsCount      = document.getElementById('results-count');
+
+  // ── Helpers ──────────────────────────────────────────────────────
+  function highlight(text, query) {
+    if (!query) return text;
+    const escaped = query.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+    return text.replace(new RegExp(`(${escaped})`, 'gi'), '<mark>$1</mark>');
+  }
+
+  function matchScore(svc, q) {
+    if (!q) return 1;
+    const lq = q.toLowerCase();
+    if (svc.title.includes(lq)) return 3;
+    if (svc.cat.includes(lq))   return 2;
+    if (svc.desc.includes(lq))  return 1;
+    return 0;
+  }
+
+  // ── Live search (client-side for instant feel) ───────────────────
+  function runLiveSearch(query) {
+    const q = query.trim().toLowerCase();
+    let visible = 0;
+
+    // Show/hide clear button
+    if (q.length > 0) {
+      searchClear.style.display = 'block';
+    } else {
+      searchClear.style.display = 'none';
+    }
+
+    cards.forEach(card => {
+      if (!q) {
+        card.style.display = '';
+        visible++;
+        return;
+      }
+      const score = matchScore({
+        title: card.dataset.title,
+        desc:  card.dataset.desc,
+        cat:   card.dataset.cat,
+      }, q);
+      if (score > 0) {
+        card.style.display = '';
+        visible++;
+      } else {
+        card.style.display = 'none';
+      }
+    });
+
+    // Update results count
+    if (resultsCount) {
+      if (q) {
+        resultsCount.innerHTML = `<strong>${visible}</strong> service${visible !== 1 ? 's' : ''} found for "<em>${query.trim()}</em>"`;
+      } else {
+        resultsCount.innerHTML = `Showing <strong>${cards.length}</strong> service${cards.length !== 1 ? 's' : ''}`;
+      }
+    }
+
+    // Show empty state if needed
+    let emptyState = grid.querySelector('.empty-state-live');
+    if (visible === 0 && q) {
+      if (!emptyState) {
+        emptyState = document.createElement('div');
+        emptyState.className = 'empty-state empty-state-live';
+        emptyState.style.cssText = 'grid-column:1/-1;text-align:center;padding:60px 20px;';
+        emptyState.innerHTML = `
+          <div style="font-size:3.5rem;margin-bottom:12px;">🔍</div>
+          <h3 style="font-size:1.2rem;font-weight:700;color:#334155;margin-bottom:8px;">No matches for "<em>${query.trim()}</em>"</h3>
+          <p style="color:#9ca3af;font-size:0.9rem;">Try searching for something else — e.g. "clinic", "chatbot", "restaurant", "school"</p>`;
+        grid.appendChild(emptyState);
+      } else {
+        emptyState.querySelector('h3').innerHTML = `No matches for "<em>${query.trim()}</em>"`;
+        emptyState.style.display = '';
+      }
+    } else if (emptyState) {
+      emptyState.style.display = 'none';
+    }
+  }
+
+  // ── Suggestions dropdown ─────────────────────────────────────────
+  function showSuggestions(query) {
+    const q = query.trim().toLowerCase();
+    if (q.length < 2) {
+      suggestionsBox.classList.remove('show');
+      suggestionsBox.innerHTML = '';
+      return;
+    }
+
+    const matches = allServices
+      .map(svc => ({ svc, score: matchScore(svc, q) }))
+      .filter(x => x.score > 0)
+      .sort((a,b) => b.score - a.score)
+      .slice(0, 6);
+
+    if (matches.length === 0) {
+      suggestionsBox.innerHTML = `<div class="no-results-tip">No suggestions — press Enter to search anyway.</div>`;
+    } else {
+      suggestionsBox.innerHTML = matches.map(({ svc }) => `
+        <a href="${svc.href}" class="suggestion-item">
+          <div class="suggestion-icon">
+            <span class="material-symbols-outlined" style="font-size:1.2rem;color:#22C55E;">${svc.icon}</span>
+          </div>
+          <div>
+            <div style="font-weight:600;font-size:0.9rem;color:#0f172a;">${highlight(svc.displayTitle, query.trim())}</div>
+            ${svc.displayCat ? `<div class="suggestion-cat">${svc.displayCat}</div>` : ''}
+          </div>
+        </a>`).join('');
+    }
+
+    suggestionsBox.classList.add('show');
+  }
+
+  // ── Event listeners ──────────────────────────────────────────────
+  let debounceTimer;
+  searchInput.addEventListener('input', function () {
+    clearTimeout(debounceTimer);
+    const val = this.value;
+
+    // Instant client-side filter
+    runLiveSearch(val);
+
+    // Debounced suggestions
+    debounceTimer = setTimeout(() => showSuggestions(val), 180);
+  });
+
+  // Clear button
+  searchClear.addEventListener('click', function () {
+    searchInput.value = '';
+    runLiveSearch('');
+    suggestionsBox.classList.remove('show');
+    suggestionsBox.innerHTML = '';
+    this.style.display = 'none';
+    searchInput.focus();
+  });
+
+  // Hide suggestions when clicking outside
+  document.addEventListener('click', function (e) {
+    if (!searchInput.contains(e.target) && !suggestionsBox.contains(e.target)) {
+      suggestionsBox.classList.remove('show');
+    }
+  });
+
+  // Show suggestions on focus if there's already a value
+  searchInput.addEventListener('focus', function () {
+    if (this.value.trim().length >= 2) {
+      showSuggestions(this.value);
+    }
+  });
+
+  // Close suggestions on Escape
+  searchInput.addEventListener('keydown', function (e) {
+    if (e.key === 'Escape') {
+      suggestionsBox.classList.remove('show');
+    }
+  });
+
+  // ── Category tab clicks update hidden input and submit ───────────
+  // (The cat tabs are plain anchor links already, so no JS needed,
+  //  but we keep the hidden-category input in sync for sort combos)
+
+  // ── Initialize ───────────────────────────────────────────────────
+  const initialQ = searchInput.value.trim();
+  if (initialQ) {
+    searchClear.style.display = 'block';
+    runLiveSearch(initialQ);
+  }
+
+  // Show clear button if there is a pre-filled value
+  searchInput.addEventListener('input', function () {
+    searchClear.style.display = this.value.length > 0 ? 'block' : 'none';
+  });
+  if (searchInput.value.length > 0) searchClear.style.display = 'block';
+
+})();
+</script>
+{% endblock %}

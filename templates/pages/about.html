@@ -1,0 +1,780 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}About Us - UniqueTechCamp | Future-Ready Web Development & AI Solutions{% endblock %}
+{% block description %}UniqueTechCamp is a modern technology company specializing in Future-Ready Web Development, AI Integration, Chatbot Development, Custom Software Solutions, and Digital Transformation.{% endblock %}
+
+{% block extra_head %}
+<style>
+  /* ── Hero gradient ── */
+  .about-hero {
+    background: linear-gradient(135deg, #111827 0%, #1F2937 40%, #111827 100%);
+    position: relative;
+    overflow: hidden;
+  }
+  .about-hero::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background:
+      radial-gradient(ellipse 800px 600px at 20% 50%, rgba(34,197,94,0.18) 0%, transparent 60%),
+      radial-gradient(ellipse 600px 500px at 80% 30%, rgba(34,197,94,0.10) 0%, transparent 60%);
+    pointer-events: none;
+  }
+  .hero-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: rgba(34,197,94,0.15);
+    border: 1px solid rgba(34,197,94,0.35);
+    border-radius: 9999px;
+    padding: 6px 18px;
+    font-size: 0.85rem;
+    color: #86EFAC;
+    letter-spacing: 0.05em;
+    font-weight: 600;
+  }
+  .gradient-text {
+    background: linear-gradient(135deg, #22C55E, #4ADE80, #16A34A);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+  /* ── Stats bar ── */
+  .stat-card {
+    background: rgba(255,255,255,0.04);
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 16px;
+    padding: 28px 24px;
+    text-align: center;
+    transition: all 0.3s ease;
+  }
+  .stat-card:hover {
+    background: rgba(34,197,94,0.08);
+    border-color: rgba(34,197,94,0.3);
+    transform: translateY(-4px);
+  }
+  /* ── Section headings ── */
+  .section-label {
+    display: inline-block;
+    background: linear-gradient(135deg, rgba(34,197,94,0.15), rgba(34,197,94,0.08));
+    border: 1px solid rgba(34,197,94,0.25);
+    border-radius: 9999px;
+    padding: 4px 16px;
+    font-size: 0.75rem;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: #16A34A;
+    margin-bottom: 16px;
+  }
+  /* ── Mission / Vision cards ── */
+  .mv-card {
+    background: linear-gradient(135deg, #ffffff 0%, #f0fdf4 100%);
+    border: 1px solid #d1fae5;
+    border-radius: 24px;
+    padding: 40px 36px;
+    position: relative;
+    overflow: hidden;
+    transition: all 0.35s ease;
+  }
+  .mv-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0;
+    width: 4px; height: 100%;
+    background: linear-gradient(180deg, #22C55E, #16A34A);
+    border-radius: 4px 0 0 4px;
+  }
+  .mv-card:hover {
+    box-shadow: 0 20px 60px rgba(34,197,94,0.12);
+    transform: translateY(-4px);
+  }
+  .mv-icon {
+    width: 60px; height: 60px;
+    border-radius: 16px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 1.8rem;
+    margin-bottom: 24px;
+    flex-shrink: 0;
+  }
+  /* ── Values ── */
+  .value-chip {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    background: #fff;
+    border: 1px solid #e8edf7;
+    border-radius: 14px;
+    padding: 16px 20px;
+    transition: all 0.3s ease;
+    cursor: default;
+  }
+  .value-chip:hover {
+    border-color: #22C55E;
+    background: linear-gradient(135deg, #f0fdf4, #fff);
+    box-shadow: 0 8px 24px rgba(34,197,94,0.12);
+    transform: translateY(-2px);
+  }
+  /* ── Positioning banner ── */
+  .positioning-banner {
+    background: linear-gradient(135deg, #111827 0%, #1F2937 100%);
+    border-radius: 28px;
+    padding: 56px 48px;
+    position: relative;
+    overflow: hidden;
+  }
+  .positioning-banner::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(ellipse 600px 400px at 50% 50%, rgba(34,197,94,0.2), transparent 70%);
+  }
+  /* ── Client category cards ── */
+  .cat-card {
+    background: #fff;
+    border: 1px solid #e8edf7;
+    border-radius: 20px;
+    padding: 28px 24px;
+    transition: all 0.35s ease;
+    height: 100%;
+    position: relative;
+    overflow: hidden;
+  }
+  .cat-card::after {
+    content: '';
+    position: absolute;
+    bottom: 0; left: 0; right: 0;
+    height: 3px;
+    background: linear-gradient(90deg, #22C55E, #4ADE80);
+    transform: scaleX(0);
+    transform-origin: left;
+    transition: transform 0.35s ease;
+    border-radius: 0 0 20px 20px;
+  }
+  .cat-card:hover {
+    box-shadow: 0 16px 48px rgba(34,197,94,0.13);
+    transform: translateY(-5px);
+    border-color: rgba(34,197,94,0.2);
+  }
+  .cat-card:hover::after {
+    transform: scaleX(1);
+  }
+  .cat-icon {
+    width: 52px; height: 52px;
+    border-radius: 14px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 1.5rem;
+    margin-bottom: 16px;
+    flex-shrink: 0;
+  }
+  .cat-badge {
+    display: inline-block;
+    background: linear-gradient(135deg, #f0fdf4, #dcfce7);
+    border: 1px solid #bbf7d0;
+    border-radius: 9999px;
+    padding: 3px 10px;
+    font-size: 0.7rem;
+    font-weight: 700;
+    color: #16A34A;
+    letter-spacing: 0.06em;
+    margin-bottom: 10px;
+  }
+  .cat-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 5px 0;
+    color: #4b5563;
+    font-size: 0.875rem;
+    border-bottom: 1px solid #f3f4f6;
+  }
+  .cat-item:last-child { border-bottom: none; }
+  .cat-item::before {
+    content: '';
+    width: 6px; height: 6px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #22C55E, #4ADE80);
+    flex-shrink: 0;
+  }
+  /* ── Special category cards (AI/custom) ── */
+  .cat-card.special {
+    background: linear-gradient(135deg, #111827, #1F2937);
+    border-color: rgba(34,197,94,0.25);
+  }
+  .cat-card.special .cat-badge {
+    background: rgba(34,197,94,0.2);
+    border-color: rgba(34,197,94,0.4);
+    color: #86EFAC;
+  }
+  .cat-card.special .cat-card-title { color: #f1f5f9; }
+  .cat-card.special .cat-item { color: #94a3b8; border-bottom-color: rgba(255,255,255,0.06); }
+  .cat-card.special .cat-item::before { background: linear-gradient(135deg, #22C55E, #4ADE80); }
+  .cat-card.special::after { background: linear-gradient(90deg, #22C55E, #4ADE80, #16A34A); }
+  /* ── CTA ── */
+  .cta-section {
+    background: linear-gradient(135deg, #22C55E 0%, #16A34A 50%, #15803D 100%);
+    border-radius: 28px;
+    padding: 64px 48px;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+  }
+  .cta-section::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(ellipse 600px 400px at 50% 0%, rgba(255,255,255,0.15), transparent 60%);
+  }
+  /* ── Animations ── */
+  @keyframes fadeInUp {
+    from { opacity: 0; transform: translateY(30px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+  .fade-in { animation: fadeInUp 0.7s ease both; }
+  .delay-1 { animation-delay: 0.1s; }
+  .delay-2 { animation-delay: 0.2s; }
+  .delay-3 { animation-delay: 0.3s; }
+  .delay-4 { animation-delay: 0.4s; }
+  /* ── Pulse dot ── */
+  .pulse-dot {
+    width: 10px; height: 10px;
+    background: #22C55E;
+    border-radius: 50%;
+    display: inline-block;
+    animation: pulse 2s infinite;
+  }
+  @keyframes pulse {
+    0%,100% { box-shadow: 0 0 0 0 rgba(34,197,94,0.5); }
+    50%      { box-shadow: 0 0 0 8px rgba(34,197,94,0); }
+  }
+</style>
+{% endblock %}
+
+{% block content %}
+
+<!-- ═══════════════════════════════════════════════════════ -->
+<!--  HERO SECTION                                          -->
+<!-- ═══════════════════════════════════════════════════════ -->
+<section class="about-hero py-24 md:py-36">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+    <div class="text-center max-w-4xl mx-auto">
+
+      <!-- Badge -->
+      <div class="mb-8 fade-in">
+        <span class="hero-badge">
+          <span class="pulse-dot"></span>
+          East Africa's Future-Ready Tech Partner
+        </span>
+      </div>
+
+      <!-- Tagline pill -->
+      <p class="text-green-300 font-semibold tracking-widest uppercase text-sm mb-4 fade-in delay-1">
+        Web Development &bull; AI Integration &bull; Digital Growth
+      </p>
+
+      <!-- Main headline -->
+      <h1 class="text-4xl md:text-6xl font-bold text-white leading-tight mb-6 fade-in delay-2">
+        We Build <span class="gradient-text">Future-Ready Websites</span><br>
+        &amp; AI Solutions That Grow<br>Your Business
+      </h1>
+
+      <!-- Sub-heading -->
+      <p class="text-lg md:text-xl text-slate-300 leading-relaxed mb-10 max-w-3xl mx-auto fade-in delay-3">
+        We design and develop Future-Ready Websites, AI-powered chatbots, custom web applications, and intelligent business solutions that help organizations automate processes, improve customer experiences, and achieve sustainable digital growth.
+      </p>
+
+      <!-- CTA buttons -->
+      <div class="flex flex-wrap justify-center gap-4 fade-in delay-4">
+        <a href="{% url 'services:list' %}" class="inline-flex items-center gap-2 bg-green-500 hover:bg-green-400 text-white font-semibold px-8 py-4 rounded-2xl transition-all duration-300 hover:shadow-lg hover:shadow-green-500/30 hover:-translate-y-1">
+          <span class="material-symbols-outlined text-xl">rocket_launch</span>
+          Explore Our Services
+        </a>
+        <a href="{% url 'core:contact' %}" class="inline-flex items-center gap-2 bg-white/10 hover:bg-white/20 text-white font-semibold px-8 py-4 rounded-2xl border border-white/20 transition-all duration-300 hover:-translate-y-1 backdrop-blur-sm">
+          <span class="material-symbols-outlined text-xl">chat</span>
+          Talk to Us
+        </a>
+      </div>
+    </div>
+
+    <!-- Stats bar -->
+    <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mt-20 fade-in delay-4">
+      <div class="stat-card">
+        <div class="text-3xl md:text-4xl font-bold gradient-text mb-2">14+</div>
+        <div class="text-slate-400 text-sm font-medium">Industry Sectors Served</div>
+      </div>
+      <div class="stat-card">
+        <div class="text-3xl md:text-4xl font-bold gradient-text mb-2">50+</div>
+        <div class="text-slate-400 text-sm font-medium">Services Offered</div>
+      </div>
+      <div class="stat-card">
+        <div class="text-3xl md:text-4xl font-bold gradient-text mb-2">AI</div>
+        <div class="text-slate-400 text-sm font-medium">Powered Solutions</div>
+      </div>
+      <div class="stat-card">
+        <div class="text-3xl md:text-4xl font-bold gradient-text mb-2">🚀</div>
+        <div class="text-slate-400 text-sm font-medium">Future-Ready Always</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════════════════ -->
+<!--  COMPANY DESCRIPTION                                   -->
+<!-- ═══════════════════════════════════════════════════════ -->
+<section class="py-20 bg-white">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div class="grid lg:grid-cols-2 gap-16 items-center">
+      <div>
+        <span class="section-label">Who We Are</span>
+        <h2 class="text-3xl md:text-4xl font-bold text-slate-900 mb-6 leading-tight">
+          UniqueTechCamp — <br><span style="color:#16A34A;">Modern Technology. Real Impact.</span>
+        </h2>
+        <p class="text-lg text-slate-600 leading-relaxed mb-6">
+          <strong class="text-slate-800">UniqueTechCamp</strong> is a modern technology company specializing in
+          <strong>Future-Ready Web Development, AI Integration, Chatbot Development, Custom Software Solutions,
+          and Digital Transformation</strong>.
+        </p>
+        <p class="text-slate-600 leading-relaxed mb-8">
+          We help businesses, organizations, and institutions build future-ready digital experiences that
+          <strong>automate operations, engage customers, and accelerate growth</strong>.
+          From small retail shops to large hospitals and multinational enterprises, we deliver premium digital
+          solutions tailored to every industry in East Africa and beyond.
+        </p>
+        <!-- Key differentiators -->
+        <div class="space-y-3">
+          <div class="flex items-center gap-3 p-3 bg-green-50 rounded-xl border border-green-100">
+            <span class="material-symbols-outlined text-green-600">check_circle</span>
+            <span class="text-slate-700 font-medium text-sm">Future-Ready Architecture — built to scale with your business</span>
+          </div>
+          <div class="flex items-center gap-3 p-3 bg-green-50 rounded-xl border border-green-100">
+            <span class="material-symbols-outlined text-green-600">check_circle</span>
+            <span class="text-slate-700 font-medium text-sm">AI-Powered Capabilities — OpenAI &amp; Google Gemini integrations</span>
+          </div>
+          <div class="flex items-center gap-3 p-3 bg-green-50 rounded-xl border border-green-100">
+            <span class="material-symbols-outlined text-green-600">check_circle</span>
+            <span class="text-slate-700 font-medium text-sm">East Africa Expertise — serving businesses across the region</span>
+          </div>
+          <div class="flex items-center gap-3 p-3 bg-green-50 rounded-xl border border-green-100">
+            <span class="material-symbols-outlined text-green-600">check_circle</span>
+            <span class="text-slate-700 font-medium text-sm">Scalable &amp; Secure — enterprise-grade, built to last</span>
+          </div>
+          <div class="flex items-center gap-3 p-3 bg-green-50 rounded-xl border border-green-100">
+            <span class="material-symbols-outlined text-green-600">check_circle</span>
+            <span class="text-slate-700 font-medium text-sm">Dedicated Support — ongoing maintenance &amp; growth partner</span>
+          </div>
+        </div>
+      </div>
+      <!-- Branding visual -->
+      <div class="relative">
+        <div class="rounded-3xl overflow-hidden shadow-2xl" style="background: linear-gradient(135deg,#111827,#1F2937);">
+          <div class="p-10 text-center">
+            <div class="w-24 h-24 mx-auto rounded-3xl flex items-center justify-center text-5xl mb-6" style="background:linear-gradient(135deg,rgba(34,197,94,0.3),rgba(34,197,94,0.15));border:2px solid rgba(34,197,94,0.3);">
+              🚀
+            </div>
+            <h3 class="text-2xl font-bold text-white mb-2">UniqueTechCamp</h3>
+            <p class="text-green-300 font-medium tracking-wider text-sm uppercase mb-8">Web Development • AI Integration • Digital Growth</p>
+            <div class="grid grid-cols-3 gap-4 text-center">
+              <div class="p-4 rounded-2xl" style="background:rgba(34,197,94,0.12);border:1px solid rgba(34,197,94,0.2);">
+                <div class="text-3xl mb-2">🌐</div>
+                <div class="text-slate-300 text-xs font-semibold">Web Dev</div>
+              </div>
+              <div class="p-4 rounded-2xl" style="background:rgba(34,197,94,0.10);border:1px solid rgba(34,197,94,0.2);">
+                <div class="text-3xl mb-2">🤖</div>
+                <div class="text-slate-300 text-xs font-semibold">AI & Bots</div>
+              </div>
+              <div class="p-4 rounded-2xl" style="background:rgba(74,222,128,0.10);border:1px solid rgba(74,222,128,0.2);">
+                <div class="text-3xl mb-2">⚙️</div>
+                <div class="text-slate-300 text-xs font-semibold">Custom Apps</div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <!-- Floating label -->
+        <div class="absolute -bottom-5 -right-5 bg-white rounded-2xl shadow-xl p-4 border border-green-100">
+          <div class="flex items-center gap-3">
+            <div class="w-10 h-10 rounded-full flex items-center justify-center text-lg" style="background:linear-gradient(135deg,#22C55E,#16A34A);">🌍</div>
+            <div>
+              <div class="font-bold text-slate-900 text-sm">East Africa's</div>
+              <div class="text-green-700 text-xs font-medium">Leading Tech Partner</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════════════════ -->
+<!--  BRAND POSITIONING STATEMENT                           -->
+<!-- ═══════════════════════════════════════════════════════ -->
+<section class="py-16 bg-slate-50">
+  <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div class="positioning-banner text-center relative z-10">
+      <div class="text-green-400 font-semibold tracking-widest uppercase text-xs mb-6">Brand Positioning</div>
+      <blockquote class="text-xl md:text-2xl lg:text-3xl font-semibold text-white leading-relaxed">
+        "UniqueTechCamp empowers businesses, institutions, and organizations with <span class="gradient-text">future-ready websites, AI-powered solutions, intelligent chatbots, and custom software</span> that drive efficiency, engagement, and sustainable digital growth."
+      </blockquote>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════════════════ -->
+<!--  MISSION & VISION                                      -->
+<!-- ═══════════════════════════════════════════════════════ -->
+<section class="py-20 bg-white">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div class="text-center mb-14">
+      <span class="section-label">Our Purpose</span>
+      <h2 class="text-3xl md:text-4xl font-bold text-slate-900">Mission &amp; Vision</h2>
+    </div>
+    <div class="grid md:grid-cols-2 gap-8">
+
+      <!-- Mission -->
+      <div class="mv-card">
+        <div class="mv-icon" style="background:linear-gradient(135deg,rgba(34,197,94,0.12),rgba(34,197,94,0.06));">🎯</div>
+        <h3 class="text-2xl font-bold text-slate-900 mb-4">Our Mission</h3>
+        <p class="text-slate-600 leading-relaxed text-lg">
+          To empower businesses and organizations with <strong>innovative web technologies and AI-powered solutions</strong>
+          that simplify operations, enhance customer engagement, and drive measurable growth.
+        </p>
+      </div>
+
+      <!-- Vision -->
+      <div class="mv-card" style="--tw-gradient: rgba(16,185,129,0.12);">
+        <div class="mv-icon" style="background:linear-gradient(135deg,rgba(16,185,129,0.12),rgba(16,185,129,0.06));">🌍</div>
+        <h3 class="text-2xl font-bold text-slate-900 mb-4">Our Vision</h3>
+        <p class="text-slate-600 leading-relaxed text-lg">
+          To become <strong>East Africa's leading technology partner</strong> in Future-Ready Web Development,
+          AI integration, and digital innovation by delivering exceptional, scalable, and future-ready solutions.
+        </p>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════════════════ -->
+<!--  CORE VALUES                                           -->
+<!-- ═══════════════════════════════════════════════════════ -->
+<section class="py-20 bg-slate-50">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div class="text-center mb-14">
+      <span class="section-label">What Drives Us</span>
+      <h2 class="text-3xl md:text-4xl font-bold text-slate-900">Our Core Values</h2>
+      <p class="text-slate-500 mt-4 max-w-xl mx-auto">These principles guide every project, every decision, and every relationship we build.</p>
+    </div>
+    <div class="grid sm:grid-cols-2 lg:grid-cols-4 gap-4">
+      <div class="value-chip">
+        <span class="text-3xl">💡</span>
+        <div>
+          <div class="font-bold text-slate-900">Innovation</div>
+          <div class="text-slate-500 text-xs mt-0.5">Pioneering modern solutions</div>
+        </div>
+      </div>
+      <div class="value-chip">
+        <span class="text-3xl">🤝</span>
+        <div>
+          <div class="font-bold text-slate-900">Integrity</div>
+          <div class="text-slate-500 text-xs mt-0.5">Honest &amp; transparent always</div>
+        </div>
+      </div>
+      <div class="value-chip">
+        <span class="text-3xl">⭐</span>
+        <div>
+          <div class="font-bold text-slate-900">Excellence</div>
+          <div class="text-slate-500 text-xs mt-0.5">Premium quality in every build</div>
+        </div>
+      </div>
+      <div class="value-chip">
+        <span class="text-3xl">🚀</span>
+        <div>
+          <div class="font-bold text-slate-900">Continuous Improvement</div>
+          <div class="text-slate-500 text-xs mt-0.5">Always evolving, always better</div>
+        </div>
+      </div>
+      <div class="value-chip">
+        <span class="text-3xl">🌱</span>
+        <div>
+          <div class="font-bold text-slate-900">Growth</div>
+          <div class="text-slate-500 text-xs mt-0.5">Growing with our clients</div>
+        </div>
+      </div>
+      <div class="value-chip">
+        <span class="text-3xl">🎯</span>
+        <div>
+          <div class="font-bold text-slate-900">Customer Success</div>
+          <div class="text-slate-500 text-xs mt-0.5">Your wins are our wins</div>
+        </div>
+      </div>
+      <div class="value-chip">
+        <span class="text-3xl">🔒</span>
+        <div>
+          <div class="font-bold text-slate-900">Reliability</div>
+          <div class="text-slate-500 text-xs mt-0.5">Dependable, stable systems</div>
+        </div>
+      </div>
+      <div class="value-chip">
+        <span class="text-3xl">❤️</span>
+        <div>
+          <div class="font-bold text-slate-900">Passion for Technology</div>
+          <div class="text-slate-500 text-xs mt-0.5">We love what we build</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════════════════ -->
+<!--  TARGET CLIENTS / SERVICES CATEGORIES                  -->
+<!-- ═══════════════════════════════════════════════════════ -->
+<section class="py-20 bg-white">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div class="text-center mb-14">
+      <span class="section-label">Who We Serve</span>
+      <h2 class="text-3xl md:text-4xl font-bold text-slate-900 mb-4">Our Target Clients &amp; Service Categories</h2>
+      <p class="text-slate-500 max-w-2xl mx-auto text-lg">
+        We serve a wide range of industries with specialized digital solutions — from traditional retail businesses to cutting-edge AI implementations.
+      </p>
+    </div>
+
+    <!-- Grid of client / service categories -->
+    <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
+
+      <!-- 1. Retail & Commerce -->
+      <div class="cat-card">
+        <div class="cat-icon" style="background:linear-gradient(135deg,rgba(249,115,22,0.12),rgba(251,146,60,0.06));">🛒</div>
+        <div class="cat-badge">Category 01</div>
+        <h3 class="font-bold text-slate-900 text-lg mb-3 cat-card-title">Retail &amp; Commerce</h3>
+        <div class="space-y-1">
+          <div class="cat-item">Furniture Stores</div>
+          <div class="cat-item">Hardware Shops</div>
+          <div class="cat-item">Pharmacies</div>
+          <div class="cat-item">Electronics Shops</div>
+          <div class="cat-item">Clothing Stores</div>
+          <div class="cat-item">Supermarkets</div>
+          <div class="cat-item">Cosmetic Shops</div>
+        </div>
+      </div>
+
+      <!-- 2. Healthcare -->
+      <div class="cat-card">
+        <div class="cat-icon" style="background:linear-gradient(135deg,rgba(239,68,68,0.12),rgba(248,113,113,0.06));">🏥</div>
+        <div class="cat-badge">Category 02</div>
+        <h3 class="font-bold text-slate-900 text-lg mb-3 cat-card-title">Healthcare</h3>
+        <div class="space-y-1">
+          <div class="cat-item">Medical Clinics</div>
+          <div class="cat-item">Dental Clinics</div>
+          <div class="cat-item">Hospitals</div>
+          <div class="cat-item">Pharmacies</div>
+          <div class="cat-item">Medical Laboratories</div>
+          <div class="cat-item">Optical Clinics</div>
+        </div>
+      </div>
+
+      <!-- 3. Hospitality & Food -->
+      <div class="cat-card">
+        <div class="cat-icon" style="background:linear-gradient(135deg,rgba(234,179,8,0.12),rgba(253,224,71,0.06));">🍽️</div>
+        <div class="cat-badge">Category 03</div>
+        <h3 class="font-bold text-slate-900 text-lg mb-3 cat-card-title">Hospitality &amp; Food</h3>
+        <div class="space-y-1">
+          <div class="cat-item">Restaurants</div>
+          <div class="cat-item">Cafés</div>
+          <div class="cat-item">Hotels</div>
+          <div class="cat-item">Resorts</div>
+          <div class="cat-item">Lodges</div>
+          <div class="cat-item">Catering Companies</div>
+        </div>
+      </div>
+
+      <!-- 4. Education -->
+      <div class="cat-card">
+        <div class="cat-icon" style="background:linear-gradient(135deg,rgba(59,130,246,0.12),rgba(96,165,250,0.06));">🎓</div>
+        <div class="cat-badge">Category 04</div>
+        <h3 class="font-bold text-slate-900 text-lg mb-3 cat-card-title">Education</h3>
+        <div class="space-y-1">
+          <div class="cat-item">Schools</div>
+          <div class="cat-item">Colleges</div>
+          <div class="cat-item">Universities</div>
+          <div class="cat-item">Driving Schools</div>
+          <div class="cat-item">Training Institutes</div>
+        </div>
+      </div>
+
+      <!-- 5. Religious Organizations -->
+      <div class="cat-card">
+        <div class="cat-icon" style="background:linear-gradient(135deg,rgba(168,85,247,0.12),rgba(196,147,255,0.06));">⛪</div>
+        <div class="cat-badge">Category 05</div>
+        <h3 class="font-bold text-slate-900 text-lg mb-3 cat-card-title">Religious Organizations</h3>
+        <div class="space-y-1">
+          <div class="cat-item">Churches</div>
+          <div class="cat-item">Ministries</div>
+          <div class="cat-item">Faith-Based Organizations</div>
+        </div>
+      </div>
+
+      <!-- 6. Professional Services -->
+      <div class="cat-card">
+        <div class="cat-icon" style="background:linear-gradient(135deg,rgba(20,184,166,0.12),rgba(45,212,191,0.06));">💼</div>
+        <div class="cat-badge">Category 06</div>
+        <h3 class="font-bold text-slate-900 text-lg mb-3 cat-card-title">Professional Services</h3>
+        <div class="space-y-1">
+          <div class="cat-item">Law Firms</div>
+          <div class="cat-item">Accounting Firms</div>
+          <div class="cat-item">Consultancy Companies</div>
+          <div class="cat-item">Insurance Agencies</div>
+        </div>
+      </div>
+
+      <!-- 7. Automotive -->
+      <div class="cat-card">
+        <div class="cat-icon" style="background:linear-gradient(135deg,rgba(100,116,139,0.12),rgba(148,163,184,0.06));">🚗</div>
+        <div class="cat-badge">Category 07</div>
+        <h3 class="font-bold text-slate-900 text-lg mb-3 cat-card-title">Automotive</h3>
+        <div class="space-y-1">
+          <div class="cat-item">Garages</div>
+          <div class="cat-item">Car Dealerships</div>
+          <div class="cat-item">Auto Parts Shops</div>
+          <div class="cat-item">Car Washes</div>
+        </div>
+      </div>
+
+      <!-- 8. Beauty & Wellness -->
+      <div class="cat-card">
+        <div class="cat-icon" style="background:linear-gradient(135deg,rgba(236,72,153,0.12),rgba(251,146,203,0.06));">💅</div>
+        <div class="cat-badge">Category 08</div>
+        <h3 class="font-bold text-slate-900 text-lg mb-3 cat-card-title">Beauty &amp; Wellness</h3>
+        <div class="space-y-1">
+          <div class="cat-item">Salons</div>
+          <div class="cat-item">Barbershops</div>
+          <div class="cat-item">Spas</div>
+          <div class="cat-item">Beauty Clinics</div>
+          <div class="cat-item">Fitness Centers</div>
+        </div>
+      </div>
+
+      <!-- 9. Property -->
+      <div class="cat-card">
+        <div class="cat-icon" style="background:linear-gradient(135deg,rgba(245,158,11,0.12),rgba(252,211,77,0.06));">🏠</div>
+        <div class="cat-badge">Category 09</div>
+        <h3 class="font-bold text-slate-900 text-lg mb-3 cat-card-title">Property</h3>
+        <div class="space-y-1">
+          <div class="cat-item">Real Estate Agencies</div>
+          <div class="cat-item">Property Management Companies</div>
+          <div class="cat-item">Construction Companies</div>
+          <div class="cat-item">Architects</div>
+        </div>
+      </div>
+
+      <!-- 10. Travel & Tourism -->
+      <div class="cat-card">
+        <div class="cat-icon" style="background:linear-gradient(135deg,rgba(16,185,129,0.12),rgba(52,211,153,0.06));">✈️</div>
+        <div class="cat-badge">Category 10</div>
+        <h3 class="font-bold text-slate-900 text-lg mb-3 cat-card-title">Travel &amp; Tourism</h3>
+        <div class="space-y-1">
+          <div class="cat-item">Travel Agencies</div>
+          <div class="cat-item">Tour Operators</div>
+          <div class="cat-item">Safari Companies</div>
+          <div class="cat-item">Ticketing Agencies</div>
+        </div>
+      </div>
+
+      <!-- 11. Home & Commercial Services -->
+      <div class="cat-card">
+        <div class="cat-icon" style="background:linear-gradient(135deg,rgba(6,182,212,0.12),rgba(34,211,238,0.06));">🏢</div>
+        <div class="cat-badge">Category 11</div>
+        <h3 class="font-bold text-slate-900 text-lg mb-3 cat-card-title">Home &amp; Commercial Services</h3>
+        <div class="space-y-1">
+          <div class="cat-item">Cleaning Companies</div>
+          <div class="cat-item">Security Companies</div>
+          <div class="cat-item">Event Planners</div>
+          <div class="cat-item">Laundry Services</div>
+        </div>
+      </div>
+
+      <!-- 12. AI Integration (Special) -->
+      <div class="cat-card special">
+        <div class="cat-icon" style="background:linear-gradient(135deg,rgba(34,197,94,0.3),rgba(34,197,94,0.15));border:1px solid rgba(34,197,94,0.3);">🤖</div>
+        <div class="cat-badge">Category 12 — Advanced</div>
+        <h3 class="font-bold text-lg mb-3 cat-card-title">AI Integration</h3>
+        <div class="space-y-1">
+          <div class="cat-item">OpenAI Integration</div>
+          <div class="cat-item">Google Gemini Integration</div>
+          <div class="cat-item">AI Business Automation</div>
+          <div class="cat-item">AI Document Processing</div>
+          <div class="cat-item">AI Search</div>
+          <div class="cat-item">AI Content Generation</div>
+          <div class="cat-item">Workflow Automation</div>
+        </div>
+      </div>
+
+      <!-- 13. AI Chatbot Development (Special) -->
+      <div class="cat-card special">
+        <div class="cat-icon" style="background:linear-gradient(135deg,rgba(16,185,129,0.3),rgba(16,185,129,0.15));border:1px solid rgba(16,185,129,0.3);">💬</div>
+        <div class="cat-badge">Category 13 — Advanced</div>
+        <h3 class="font-bold text-lg mb-3 cat-card-title">AI Chatbot Development</h3>
+        <div class="space-y-1">
+          <div class="cat-item">Website Chatbots</div>
+          <div class="cat-item">WhatsApp AI Chatbots</div>
+          <div class="cat-item">Customer Support Bots</div>
+          <div class="cat-item">FAQ Bots</div>
+          <div class="cat-item">Sales Bots</div>
+          <div class="cat-item">Booking Bots</div>
+          <div class="cat-item">AI Virtual Assistants</div>
+          <div class="cat-item">Lead Generation Bots</div>
+        </div>
+      </div>
+
+      <!-- 14. Custom Web Applications (Special) -->
+      <div class="cat-card special">
+        <div class="cat-icon" style="background:linear-gradient(135deg,rgba(74,222,128,0.3),rgba(74,222,128,0.15));border:1px solid rgba(74,222,128,0.3);">⚙️</div>
+        <div class="cat-badge">Category 14 — Advanced</div>
+        <h3 class="font-bold text-lg mb-3 cat-card-title">Custom Web Applications</h3>
+        <div class="space-y-1">
+          <div class="cat-item">School Management Systems</div>
+          <div class="cat-item">Church Management Systems</div>
+          <div class="cat-item">Hospital Management Systems</div>
+          <div class="cat-item">Clinic Management Systems</div>
+          <div class="cat-item">Inventory Systems</div>
+          <div class="cat-item">POS Systems</div>
+          <div class="cat-item">HR Systems</div>
+          <div class="cat-item">CRM Systems</div>
+          <div class="cat-item">Booking Systems</div>
+        </div>
+      </div>
+
+    </div><!-- /grid -->
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════════════════ -->
+<!--  FINAL CTA                                             -->
+<!-- ═══════════════════════════════════════════════════════ -->
+<section class="py-20 bg-slate-50">
+  <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div class="cta-section relative z-10">
+      <div class="inline-flex items-center gap-2 bg-white/15 backdrop-blur-sm border border-white/25 rounded-full px-5 py-2 text-sm text-white font-semibold mb-8">
+        <span class="material-symbols-outlined text-sm">rocket_launch</span>
+        Ready to go digital? Let's talk.
+      </div>
+      <h2 class="text-3xl md:text-5xl font-bold text-white mb-6 leading-tight">
+        Let's Build Something<br><span style="color:#86EFAC;">Extraordinary Together</span>
+      </h2>
+      <p class="text-green-100 text-lg mb-10 max-w-2xl mx-auto">
+        Whether you're a small pharmacy, a large hospital, a church, or a tech startup — we have a tailored digital solution to take your business to the next level.
+      </p>
+      <div class="flex flex-wrap justify-center gap-4">
+        <a href="{% url 'core:contact' %}" class="inline-flex items-center gap-2 bg-white text-green-700 font-bold px-8 py-4 rounded-2xl hover:bg-green-50 transition-all duration-300 hover:shadow-xl hover:-translate-y-1">
+          <span class="material-symbols-outlined">chat</span>
+          Get a Free Consultation
+        </a>
+        <a href="{% url 'services:list' %}" class="inline-flex items-center gap-2 bg-white/15 text-white font-semibold px-8 py-4 rounded-2xl border border-white/30 hover:bg-white/25 transition-all duration-300 hover:-translate-y-1 backdrop-blur-sm">
+          <span class="material-symbols-outlined">grid_view</span>
+          View All Services
+        </a>
+      </div>
+    </div>
+  </div>
+</section>
+
+{% endblock %}

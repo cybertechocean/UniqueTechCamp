@@ -1,0 +1,419 @@
+{% extends 'base.html' %}
+
+{% block title %}Our Portfolio - UniqueTechCamp | Real Projects, Real Results{% endblock %}
+{% block description %}Explore UniqueTechCamp's portfolio of successful web development, AI integration, and custom software projects across 14+ industry sectors in East Africa.{% endblock %}
+
+{% block extra_head %}
+<style>
+  /* ── Hero ── */
+  .portfolio-hero {
+    background: linear-gradient(135deg, #111827 0%, #1F2937 50%, #111827 100%);
+    position: relative;
+    overflow: hidden;
+  }
+  .portfolio-hero::before {
+    content: '';
+    position: absolute; inset: 0;
+    background:
+      radial-gradient(ellipse 700px 500px at 10% 60%, rgba(34,197,94,0.18) 0%, transparent 60%),
+      radial-gradient(ellipse 500px 400px at 90% 20%, rgba(34,197,94,0.10) 0%, transparent 60%);
+    pointer-events: none;
+  }
+  /* Floating grid lines */
+  .portfolio-hero::after {
+    content: '';
+    position: absolute; inset: 0;
+    background-image:
+      linear-gradient(rgba(34,197,94,0.05) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(34,197,94,0.05) 1px, transparent 1px);
+    background-size: 60px 60px;
+    pointer-events: none;
+  }
+  .gradient-text {
+    background: linear-gradient(135deg, #22C55E, #4ADE80, #16A34A);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+  .hero-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: rgba(34,197,94,0.12);
+    border: 1px solid rgba(34,197,94,0.3);
+    border-radius: 9999px;
+    padding: 6px 20px;
+    font-size: 0.8rem;
+    color: #86EFAC;
+    letter-spacing: 0.08em;
+    font-weight: 700;
+    text-transform: uppercase;
+  }
+  .pulse-dot {
+    width: 8px; height: 8px;
+    background: #22C55E;
+    border-radius: 50%;
+    animation: pulse-anim 2s infinite;
+    flex-shrink: 0;
+  }
+  @keyframes pulse-anim {
+    0%,100% { box-shadow: 0 0 0 0 rgba(34,197,94,0.5); }
+    50%      { box-shadow: 0 0 0 7px rgba(34,197,94,0); }
+  }
+  /* ── Hero stats ── */
+  .hero-stat {
+    background: rgba(255,255,255,0.04);
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 16px;
+    padding: 20px 24px;
+    text-align: center;
+    transition: all 0.3s ease;
+    backdrop-filter: blur(8px);
+  }
+  .hero-stat:hover {
+    background: rgba(34,197,94,0.08);
+    border-color: rgba(34,197,94,0.25);
+    transform: translateY(-3px);
+  }
+  /* ── Filter pills ── */
+  .filter-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    padding: 7px 18px;
+    border-radius: 9999px;
+    font-size: 0.82rem;
+    font-weight: 600;
+    cursor: pointer;
+    border: 1.5px solid #e5e7eb;
+    background: #fff;
+    color: #6b7280;
+    text-decoration: none;
+    transition: all 0.2s ease;
+    white-space: nowrap;
+  }
+  .filter-pill:hover {
+    border-color: #22C55E;
+    color: #16A34A;
+    background: #f0fdf4;
+  }
+  .filter-pill.active {
+    background: linear-gradient(135deg, #22C55E, #16A34A);
+    border-color: transparent;
+    color: #fff;
+    box-shadow: 0 4px 14px rgba(34,197,94,0.35);
+  }
+  /* ── Project cards ── */
+  .project-card {
+    background: #fff;
+    border-radius: 24px;
+    overflow: hidden;
+    border: 1px solid #f0fdf4;
+    box-shadow: 0 4px 24px rgba(0,0,0,0.06);
+    transition: all 0.4s cubic-bezier(0.25,0.8,0.25,1);
+    display: flex;
+    flex-direction: column;
+  }
+  .project-card:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 24px 64px rgba(34,197,94,0.15);
+    border-color: rgba(34,197,94,0.2);
+  }
+  .project-image-wrap {
+    position: relative;
+    overflow: hidden;
+    height: 260px;
+    background: linear-gradient(135deg, #1F2937, #111827);
+  }
+  .project-image-wrap img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.6s ease;
+  }
+  .project-card:hover .project-image-wrap img {
+    transform: scale(1.07);
+  }
+  .project-overlay {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(to top, rgba(17,24,39,0.85) 0%, transparent 60%);
+    display: flex;
+    align-items: flex-end;
+    padding: 20px;
+    opacity: 0;
+    transition: opacity 0.35s ease;
+  }
+  .project-card:hover .project-overlay { opacity: 1; }
+  .project-image-placeholder {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(135deg, #111827, #1F2937);
+    gap: 12px;
+  }
+  .cat-badge {
+    display: inline-block;
+    background: linear-gradient(135deg, #f0fdf4, #dcfce7);
+    border: 1px solid #bbf7d0;
+    border-radius: 9999px;
+    padding: 3px 12px;
+    font-size: 0.72rem;
+    font-weight: 700;
+    color: #16A34A;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+  }
+  .tech-tag {
+    padding: 4px 12px;
+    background: #f9fafb;
+    border: 1px solid #e5e7eb;
+    color: #4b5563;
+    font-size: 0.72rem;
+    font-weight: 600;
+    border-radius: 9999px;
+    transition: all 0.2s ease;
+  }
+  .project-card:hover .tech-tag {
+    background: #f0fdf4;
+    border-color: #bbf7d0;
+    color: #16A34A;
+  }
+  .read-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    color: #22C55E;
+    font-weight: 700;
+    font-size: 0.9rem;
+    text-decoration: none;
+    transition: all 0.25s ease;
+  }
+  .read-link:hover { gap: 10px; color: #16A34A; }
+  /* ── Empty state ── */
+  .empty-wrap {
+    text-align: center;
+    padding: 80px 20px;
+    grid-column: 1 / -1;
+  }
+  /* ── Animations ── */
+  @keyframes fadeInUp {
+    from { opacity: 0; transform: translateY(28px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+  .fade-in { animation: fadeInUp 0.6s ease both; }
+  .delay-1 { animation-delay: 0.1s; }
+  .delay-2 { animation-delay: 0.2s; }
+  .delay-3 { animation-delay: 0.3s; }
+  /* ── CTA ── */
+  .cta-wrap {
+    background: linear-gradient(135deg, #22C55E 0%, #16A34A 50%, #15803D 100%);
+    border-radius: 28px;
+    padding: 64px 48px;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+  }
+  .cta-wrap::before {
+    content: '';
+    position: absolute; inset: 0;
+    background: radial-gradient(ellipse 500px 300px at 50% 0%, rgba(255,255,255,0.15), transparent 60%);
+  }
+</style>
+{% endblock %}
+
+{% block content %}
+
+<!-- ═══════════════════════════════════════════════════ -->
+<!--  HERO SECTION                                      -->
+<!-- ═══════════════════════════════════════════════════ -->
+<section class="portfolio-hero py-24 md:py-36">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+    <div class="text-center max-w-4xl mx-auto">
+
+      <!-- Badge -->
+      <div class="mb-8 fade-in">
+        <span class="hero-badge">
+          <span class="pulse-dot"></span>
+          Real Projects. Real Results.
+        </span>
+      </div>
+
+      <!-- Headline -->
+      <h1 class="text-4xl md:text-6xl font-bold text-white leading-tight mb-6 fade-in delay-1">
+        Our <span class="gradient-text">Portfolio</span> of<br>
+        Digital Excellence
+      </h1>
+
+      <!-- Sub-heading -->
+      <p class="text-lg md:text-xl text-slate-300 max-w-2xl mx-auto leading-relaxed mb-10 fade-in delay-2">
+        Explore how we've helped businesses across <strong class="text-white">14+ industry sectors</strong> transform
+        with premium websites, AI solutions, and custom web applications.
+      </p>
+
+      <!-- CTA buttons -->
+      <div class="flex flex-wrap justify-center gap-4 fade-in delay-3">
+        <a href="{% url 'core:contact' %}" class="inline-flex items-center gap-2 bg-green-500 hover:bg-green-400 text-white font-bold px-8 py-4 rounded-2xl transition-all duration-300 hover:shadow-lg hover:shadow-green-500/30 hover:-translate-y-1">
+          <span class="material-symbols-outlined">rocket_launch</span>
+          Start Your Project
+        </a>
+        <a href="#projects" class="inline-flex items-center gap-2 bg-white/10 hover:bg-white/20 text-white font-semibold px-8 py-4 rounded-2xl border border-white/20 transition-all duration-300 hover:-translate-y-1 backdrop-blur-sm">
+          <span class="material-symbols-outlined">expand_more</span>
+          Browse Projects
+        </a>
+      </div>
+    </div>
+
+    <!-- Stats row -->
+    <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mt-20 fade-in delay-3">
+      <div class="hero-stat">
+        <div class="text-3xl font-bold gradient-text mb-1">14+</div>
+        <div class="text-slate-400 text-sm font-medium">Industries Served</div>
+      </div>
+      <div class="hero-stat">
+        <div class="text-3xl font-bold gradient-text mb-1">100%</div>
+        <div class="text-slate-400 text-sm font-medium">Client Satisfaction</div>
+      </div>
+      <div class="hero-stat">
+        <div class="text-3xl font-bold gradient-text mb-1">AI</div>
+        <div class="text-slate-400 text-sm font-medium">Powered Solutions</div>
+      </div>
+      <div class="hero-stat">
+        <div class="text-3xl font-bold gradient-text mb-1">🚀</div>
+        <div class="text-slate-400 text-sm font-medium">Future-Ready Builds</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════════════ -->
+<!--  PROJECTS GRID                                     -->
+<!-- ═══════════════════════════════════════════════════ -->
+<section class="py-20 bg-slate-50" id="projects">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+
+    <!-- Section label -->
+    <div class="text-center mb-14">
+      <span style="display:inline-block;background:linear-gradient(135deg,rgba(34,197,94,0.15),rgba(34,197,94,0.08));border:1px solid rgba(34,197,94,0.25);border-radius:9999px;padding:4px 18px;font-size:0.75rem;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;color:#16A34A;margin-bottom:16px;">
+        Our Work
+      </span>
+      <h2 class="text-3xl md:text-4xl font-bold text-slate-900 mb-4">Featured Projects</h2>
+      <p class="text-slate-500 max-w-xl mx-auto text-lg">
+        Each project is built with precision, creativity, and a deep understanding of the client's industry.
+      </p>
+    </div>
+
+    <!-- Projects grid -->
+    <div class="grid md:grid-cols-2 gap-8">
+      {% for project in projects %}
+      <div class="project-card">
+
+        <!-- Image / placeholder -->
+        <div class="project-image-wrap">
+          {% if project.featured_image %}
+          <img src="{{ project.featured_image.url }}" alt="{{ project.title }}">
+          {% else %}
+          <div class="project-image-placeholder">
+            <span class="material-symbols-outlined text-green-500" style="font-size:3.5rem;">web</span>
+            <span class="text-slate-400 font-semibold text-sm">{{ project.title }}</span>
+          </div>
+          {% endif %}
+          <!-- Overlay on hover -->
+          <div class="project-overlay">
+            <a href="{% url 'portfolio:detail' project.slug %}" class="inline-flex items-center gap-2 bg-green-500 text-white font-bold px-5 py-2.5 rounded-xl text-sm hover:bg-green-400 transition-colors">
+              <span class="material-symbols-outlined text-sm">open_in_new</span>
+              View Case Study
+            </a>
+          </div>
+        </div>
+
+        <!-- Content -->
+        <div class="p-8 flex flex-col flex-grow">
+          <div class="flex items-start justify-between mb-4 gap-3">
+            <div>
+              {% if project.category %}
+              <span class="cat-badge mb-3 block">{{ project.category.name }}</span>
+              {% endif %}
+              <h2 class="font-bold text-2xl text-slate-900 leading-snug">{{ project.title }}</h2>
+              {% if project.client_name %}
+              <p class="text-sm text-slate-400 mt-1 font-medium">
+                <span class="material-symbols-outlined text-xs align-middle text-green-500">business</span>
+                Client: {{ project.client_name }}
+              </p>
+              {% endif %}
+            </div>
+          </div>
+
+          <p class="text-slate-600 text-sm leading-relaxed mb-6 flex-grow line-clamp-3">{{ project.short_description }}</p>
+
+          <!-- Tech stack tags -->
+          {% if project.get_technologies_list %}
+          <div class="flex flex-wrap gap-2 mb-6">
+            {% for tech in project.get_technologies_list %}
+            <span class="tech-tag">{{ tech }}</span>
+            {% endfor %}
+          </div>
+          {% endif %}
+
+          <!-- Link -->
+          <div class="pt-5 border-t border-slate-100">
+            <a href="{% url 'portfolio:detail' project.slug %}" class="read-link">
+              Read Case Study
+              <span class="material-symbols-outlined" style="font-size:1rem;">arrow_forward</span>
+            </a>
+          </div>
+        </div>
+      </div>
+      {% empty %}
+      <div class="empty-wrap">
+        <div class="text-6xl mb-4">🚀</div>
+        <h3 class="text-xl font-bold text-slate-700 mb-2">Projects Coming Soon</h3>
+        <p class="text-slate-500 max-w-md mx-auto mb-6">
+          Our portfolio is being built. Check back soon or contact us to discuss your project requirements.
+        </p>
+        <a href="{% url 'core:contact' %}" class="inline-flex items-center gap-2 bg-green-500 hover:bg-green-400 text-white font-bold px-6 py-3 rounded-xl transition-all">
+          <span class="material-symbols-outlined">chat</span>
+          Start a Project with Us
+        </a>
+      </div>
+      {% endfor %}
+    </div>
+
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════════════ -->
+<!--  CTA SECTION                                       -->
+<!-- ═══════════════════════════════════════════════════ -->
+<section class="py-20 bg-white">
+  <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div class="cta-wrap relative z-10">
+      <div class="inline-flex items-center gap-2 bg-white/15 backdrop-blur-sm border border-white/25 rounded-full px-5 py-2 text-sm text-white font-semibold mb-8">
+        <span class="material-symbols-outlined text-sm">rocket_launch</span>
+        Ready to build something great?
+      </div>
+      <h2 class="text-3xl md:text-5xl font-bold text-white mb-5 leading-tight">
+        Your Project Could Be<br>
+        <span style="color:#86EFAC;">Next on This List</span>
+      </h2>
+      <p class="text-green-100 text-lg mb-10 max-w-xl mx-auto">
+        Let's talk about your vision. We'll design and build a digital experience your clients will love.
+      </p>
+      <div class="flex flex-wrap justify-center gap-4">
+        <a href="{% url 'core:contact' %}" class="inline-flex items-center gap-2 bg-white text-green-700 font-bold px-8 py-4 rounded-2xl hover:bg-green-50 transition-all duration-300 hover:shadow-xl hover:-translate-y-1">
+          <span class="material-symbols-outlined">chat</span>
+          Get a Free Consultation
+        </a>
+        <a href="{% url 'services:list' %}" class="inline-flex items-center gap-2 bg-white/15 text-white font-semibold px-8 py-4 rounded-2xl border border-white/30 hover:bg-white/25 transition-all duration-300 hover:-translate-y-1 backdrop-blur-sm">
+          <span class="material-symbols-outlined">grid_view</span>
+          View Our Services
+        </a>
+      </div>
+    </div>
+  </div>
+</section>
+
+{% endblock %}
