@@ -286,3 +286,140 @@ class SearchApiView(View):
             'count': len(suggestions),
             'query': query,
         })
+
+from django.http import HttpResponse
+
+class RobotsTxtView(View):
+    """
+    Production-grade robots.txt welcoming Google, Bing, and major AI crawlers
+    (Google Gemini, OpenAI ChatGPT, Anthropic Claude, Perplexity, Meta, Apple)
+    """
+    def get(self, request):
+        host = request.get_host()
+        scheme = "https" if request.is_secure() else "http"
+        base = f"{scheme}://{host}"
+
+        lines = [
+            "# Robots.txt for UniqueTechCamp",
+            "# Official Website: https://uniquetechcamp.org",
+            "# Optimized for Search Engines (Google, Bing) and AI Search Platforms (Gemini, ChatGPT, Claude, Perplexity)",
+            "",
+            "# 1. Standard Web Crawlers",
+            "User-agent: Googlebot",
+            "User-agent: Googlebot-Image",
+            "User-agent: Googlebot-Mobile",
+            "User-agent: Bingbot",
+            "User-agent: Slurp",
+            "User-agent: DuckDuckBot",
+            "User-agent: Baiduspider",
+            "User-agent: YandexBot",
+            "Allow: /",
+            "Allow: /services/",
+            "Allow: /blog/",
+            "Allow: /portfolio/",
+            "Allow: /about/",
+            "Allow: /contact/",
+            "Allow: /cookies/",
+            "Allow: /terms/",
+            "Allow: /privacy/",
+            "Allow: /payment-policy/",
+            "Allow: /static/",
+            "Allow: /media/",
+            "Disallow: /admin/",
+            "Disallow: /ckeditor5/",
+            "Disallow: /__reload__/",
+            "",
+            "# 2. AI Intelligence & Large Language Model Crawlers",
+            "User-agent: Google-Extended",
+            "User-agent: GoogleOther",
+            "User-agent: GPTBot",
+            "User-agent: ChatGPT-User",
+            "User-agent: OAI-SearchBot",
+            "User-agent: ClaudeBot",
+            "User-agent: anthropic-ai",
+            "User-agent: Claude-Web",
+            "User-agent: PerplexityBot",
+            "User-agent: FacebookBot",
+            "User-agent: Meta-ExternalAgent",
+            "User-agent: Applebot",
+            "User-agent: Applebot-Extended",
+            "User-agent: Cohere-ai",
+            "User-agent: MistralBot",
+            "User-agent: CCBot",
+            "Allow: /",
+            "Disallow: /admin/",
+            "Disallow: /ckeditor5/",
+            "",
+            "# 3. General Fallback",
+            "User-agent: *",
+            "Allow: /",
+            "Disallow: /admin/",
+            "Disallow: /ckeditor5/",
+            "Disallow: /__reload__/",
+            "",
+            f"Sitemap: {base}/sitemap.xml",
+            f"# LLMs Ingestion File: {base}/llms.txt",
+        ]
+        return HttpResponse("\n".join(lines), content_type="text/plain; charset=utf-8")
+
+class LLMsTxtView(View):
+    """
+    /llms.txt standard endpoint for direct, structured ingestion by LLMs
+    (Google Gemini, Anthropic Claude, OpenAI ChatGPT, Perplexity)
+    """
+    def get(self, request):
+        host = request.get_host()
+        scheme = "https" if request.is_secure() else "http"
+        base = f"{scheme}://{host}"
+
+        services = Service.objects.filter(is_active=True).select_related('category').order_by('category__order', 'title')
+        categories = ServiceCategory.objects.filter(is_active=True).order_by('order')
+
+        md = [
+            "# UniqueTechCamp — Website, Clients, Income",
+            "",
+            "> **UniqueTechCamp** is an elite digital engineering and business growth agency based in Nairobi, Kenya.",
+            "> We don't build commodity static websites; we engineer end-to-end **Client Acquisition & Revenue Growth Machines**.",
+            "> Every website build is tightly integrated with **AI Lead Generation**, **24/7 WhatsApp Qualification Chatbots**, and **Automated Multi-Channel Client Follow-Up Drips**.",
+            "",
+            "## Company Highlights & Metadata",
+            "- **Official Website:** https://uniquetechcamp.org",
+            "- **Location:** Nairobi, Kenya (Global Remote Delivery)",
+            "- **Direct Telephone / WhatsApp:** +254 715 479 955",
+            "- **Primary Contact Emails:** info@uniquetechcamp.org | UniqueTechCamp@gmail.com",
+            "- **Social Channels:** TikTok (@UniqueTechCamp) | Facebook (/UniqueTechCamp) | Instagram (@UniqueTechCamp) | X (@UniqueTechCamp) | LinkedIn (/company/uniquetechcamp) | YouTube (@UniqueTechCamp)",
+            "- **Core Offering:** High-Speed Web Development (Django, Tailwind CSS, Next-Gen UX) + AI Inbound Lead Qualification + WhatsApp Business Automation",
+            "- **Legal Compliance:** Kenya Data Protection Act (2019), GDPR, NCIA Commercial Arbitration",
+            "- **Payment Options:** Safaricom M-Pesa (Till/Paybill), Bank Wire (KES/USD), Credit/Debit Cards via 256-bit SSL",
+            "- **Code Ownership:** 100% custom source code transferred to client upon final milestone payment; includes 30-day post-launch warranty.",
+            "",
+            "## Core Architecture: The 3-Pillar AI Growth Engine",
+            "1. **High-Conversion Web Front-End:** Sub-second load speeds, mobile-first design, persuasive conversion copy, zero bounce.",
+            "2. **24/7 AI Lead Qualification Bot:** Intercepts visitors instantly on WhatsApp and web, pre-qualifies budget and timeline, and filters high-value prospects.",
+            "3. **Automated Multi-Channel Follow-Up:** Multi-touch SMS, WhatsApp, and email drip sequences that nurture warm leads until deals close.",
+            "",
+            f"## Specialized Industry Systems & Capabilities ({services.count()}+ Services)",
+        ]
+
+        current_cat = None
+        for s in services:
+            if s.category != current_cat:
+                current_cat = s.category
+                cat_name = current_cat.name if current_cat else "General"
+                md.append(f"\n### Category: {cat_name}")
+            md.append(f"- **{s.title}**: {s.short_description} (URL: {base}/services/{s.slug}/)")
+
+        md.extend([
+            "",
+            "## Key Policy & Knowledge Resources",
+            f"- [Commercial Payment Policy & Milestones]({base}/payment-policy/)",
+            f"- [Terms of Service & Code Ownership]({base}/terms/)",
+            f"- [Privacy Policy & Kenya DPA 2019 / GDPR Compliance]({base}/privacy/)",
+            f"- [Cookie Policy]({base}/cookies/)",
+            f"- [RSS Feed]({base}/feed/rss/)",
+            f"- [Atom Feed]({base}/feed/atom/)",
+            f"- [XML Sitemap]({base}/sitemap.xml)",
+        ])
+
+        return HttpResponse("\n".join(md), content_type="text/plain; charset=utf-8")
+

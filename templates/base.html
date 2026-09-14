@@ -7,6 +7,44 @@
     <title>{% block title %}UniqueTechCamp - Website, Clients, Income | Web & AI Growth Systems{% endblock %}</title>
     <meta name="description" content="{% block description %}UniqueTechCamp builds high-performance web applications integrated with AI Lead Generation, 24/7 WhatsApp qualification bots, and automated follow-up systems.{% endblock %}">
     
+    <!-- SEO & Metadata -->
+    <link rel="canonical" href="{% block canonical %}{{ request.build_absolute_uri }}{% endblock %}">
+    <meta name="keywords" content="{% block keywords %}Web Development Nairobi, AI Lead Generation Kenya, WhatsApp Business Automation, Custom Software Kenya, AI Chatbots, Digital Growth Agency, E-commerce Web Development, Clinic Management Systems, Website Clients Income, UniqueTechCamp{% endblock %}">
+    <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1">
+    <meta name="author" content="UniqueTechCamp">
+    
+    <!-- Geo-Targeting (Nairobi, Kenya) -->
+    <meta name="geo.region" content="KE-110">
+    <meta name="geo.placename" content="Nairobi">
+    <meta name="geo.position" content="-1.286389;36.817223">
+    <meta name="ICBM" content="-1.286389, 36.817223">
+
+    <!-- Open Graph / Facebook -->
+    <meta property="og:locale" content="en_GB">
+    <meta property="og:type" content="{% block og_type %}website{% endblock %}">
+    <meta property="og:title" content="{% block og_title %}{% block title_og %}UniqueTechCamp - Website, Clients, Income | Web & AI Growth Systems{% endblock %}{% endblock %}">
+    <meta property="og:description" content="{% block og_description %}UniqueTechCamp builds high-performance web applications integrated with AI Lead Generation, 24/7 WhatsApp qualification bots, and automated follow-up systems.{% endblock %}">
+    <meta property="og:url" content="{{ request.build_absolute_uri }}">
+    <meta property="og:site_name" content="UniqueTechCamp">
+    <meta property="og:image" content="{% block og_image %}{{ request.scheme }}://{{ request.get_host }}{% static 'images/logo-rounded.png' %}{% endblock %}">
+    <meta property="og:image:width" content="1024">
+    <meta property="og:image:height" content="1024">
+    <meta property="og:image:alt" content="UniqueTechCamp Logo - Website, Clients, Income">
+
+    <!-- Twitter Card -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:site" content="@UniqueTechCamp">
+    <meta name="twitter:creator" content="@UniqueTechCamp">
+    <meta name="twitter:title" content="{% block twitter_title %}UniqueTechCamp - Web Development & AI Growth Systems{% endblock %}">
+    <meta name="twitter:description" content="{% block twitter_description %}Turn every website visitor into a paying customer with AI Lead Gen, 24/7 WhatsApp qualification bots, and automated follow-up systems.{% endblock %}">
+    <meta name="twitter:image" content="{% block twitter_image %}{{ request.scheme }}://{{ request.get_host }}{% static 'images/logo-rounded.png' %}{% endblock %}">
+
+    <!-- RSS & Syndication Feeds -->
+    <link rel="alternate" type="application/rss+xml" title="UniqueTechCamp Blog RSS Feed" href="{% url 'latest_posts_rss' %}">
+    <link rel="alternate" type="application/atom+xml" title="UniqueTechCamp Blog Atom Feed" href="{% url 'latest_posts_atom' %}">
+    <link rel="alternate" type="application/rss+xml" title="UniqueTechCamp Services RSS Feed" href="{% url 'services_rss' %}">
+    <link rel="sitemap" type="application/xml" title="Sitemap" href="{% url 'django.contrib.sitemaps.views.sitemap' %}">
+    
     <!-- Crisp Multi-Resolution Favicons & PWA Manifest -->
     <link rel="icon" type="image/x-icon" href="{% static 'favicon.ico' %}">
     <link rel="icon" type="image/png" sizes="16x16" href="{% static 'favicon-16x16.png' %}">
@@ -25,6 +63,79 @@
 
     <!-- Lucide Icons (FOR ALL OTHER PARTS OF WEBSITE) -->
     <script src="https://unpkg.com/lucide@latest"></script>
+
+    <!-- Global JSON-LD Schemas -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@graph": [
+        {
+          "@type": "Organization",
+          "@id": "{{ request.scheme }}://{{ request.get_host }}/#organization",
+          "name": "UniqueTechCamp",
+          "legalName": "UniqueTechCamp Limited",
+          "url": "{{ request.scheme }}://{{ request.get_host }}/",
+          "logo": {
+            "@type": "ImageObject",
+            "@id": "{{ request.scheme }}://{{ request.get_host }}/#logo",
+            "url": "{{ request.scheme }}://{{ request.get_host }}{% static 'images/logo-rounded.png' %}",
+            "caption": "UniqueTechCamp - Website, Clients, Income"
+          },
+          "image": {
+            "@id": "{{ request.scheme }}://{{ request.get_host }}/#logo"
+          },
+          "description": "UniqueTechCamp engineers high-converting web applications integrated with AI Lead Generation, 24/7 WhatsApp qualification chatbots, and automated follow-up systems.",
+          "telephone": "+254715479955",
+          "email": "info@uniquetechcamp.org",
+          "address": {
+            "@type": "PostalAddress",
+            "streetAddress": "CBD",
+            "addressLocality": "Nairobi",
+            "addressRegion": "Nairobi County",
+            "addressCountry": "KE"
+          },
+          "sameAs": [
+            "https://www.tiktok.com/@UniqueTechCamp",
+            "https://www.facebook.com/UniqueTechCamp",
+            "https://www.instagram.com/UniqueTechCamp",
+            "https://x.com/UniqueTechCamp",
+            "https://www.linkedin.com/company/uniquetechcamp",
+            "https://www.youtube.com/@UniqueTechCamp",
+            "https://wa.me/254715479955"
+          ],
+          "knowsAbout": [
+            "Web Development",
+            "Artificial Intelligence Systems",
+            "AI Lead Generation",
+            "WhatsApp Chatbot Automation",
+            "E-commerce Growth Engines",
+            "Custom Web Applications",
+            "SEO & Conversion Rate Optimization"
+          ]
+        },
+        {
+          "@type": "WebSite",
+          "@id": "{{ request.scheme }}://{{ request.get_host }}/#website",
+          "url": "{{ request.scheme }}://{{ request.get_host }}/",
+          "name": "UniqueTechCamp",
+          "description": "Website, Clients, Income — High-Performance Web & AI Systems",
+          "publisher": {
+            "@id": "{{ request.scheme }}://{{ request.get_host }}/#organization"
+          },
+          "potentialAction": {
+            "@type": "SearchAction",
+            "target": {
+              "@type": "EntryPoint",
+              "urlTemplate": "{{ request.scheme }}://{{ request.get_host }}/search/?q={search_term_string}"
+            },
+            "query-input": "required name=search_term_string"
+          },
+          "inLanguage": "en-GB"
+        }
+      ]
+    }
+    </script>
+    {% block schema_json %}{% endblock %}
 
     {% tailwind_css %}
     

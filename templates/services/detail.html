@@ -3,6 +3,90 @@
 
 {% block title %}{{ service.title }} - AI Growth & Web System | UniqueTechCamp{% endblock %}
 {% block description %}{{ service.short_description }}{% endblock %}
+{% block twitter_title %}{{ service.title }} - AI Growth & Web System{% endblock %}
+{% block twitter_description %}{{ service.short_description }}{% endblock %}
+
+{% block schema_json %}
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "BreadcrumbList",
+      "itemListElement": [
+        {
+          "@type": "ListItem",
+          "position": 1,
+          "name": "Home",
+          "item": "{{ request.scheme }}://{{ request.get_host }}/"
+        },
+        {
+          "@type": "ListItem",
+          "position": 2,
+          "name": "Services",
+          "item": "{{ request.scheme }}://{{ request.get_host }}{% url 'services:list' %}"
+        },
+        {
+          "@type": "ListItem",
+          "position": 3,
+          "name": "{{ service.title|escapejs }}",
+          "item": "{{ request.scheme }}://{{ request.get_host }}{{ request.path }}"
+        }
+      ]
+    },
+    {
+      "@type": "Service",
+      "@id": "{{ request.scheme }}://{{ request.get_host }}{{ request.path }}#service",
+      "name": "{{ service.title|escapejs }}",
+      "description": "{{ service.short_description|escapejs }}",
+      "provider": {
+        "@type": "Organization",
+        "@id": "{{ request.scheme }}://{{ request.get_host }}/#organization",
+        "name": "UniqueTechCamp"
+      },
+      "serviceType": "Web Development & AI Growth System",
+      "category": "{{ service.category.name|default:'Growth System'|escapejs }}",
+      "areaServed": {
+        "@type": "Country",
+        "name": "Worldwide"
+      },
+      "hasOfferCatalog": {
+        "@type": "OfferCatalog",
+        "name": "AI-Powered Customer Acquisition Deliverables",
+        "itemListElement": [
+          {% if service.features_list %}
+            {% for feature in service.features_list %}
+            {
+              "@type": "Offer",
+              "itemOffered": {
+                "@type": "Service",
+                "name": "{{ feature|escapejs }}"
+              }
+            }{% if not forloop.last %},{% endif %}
+            {% endfor %}
+          {% else %}
+            {
+              "@type": "Offer",
+              "itemOffered": {
+                "@type": "Service",
+                "name": "24/7 AI WhatsApp Qualification Bot"
+              }
+            },
+            {
+              "@type": "Offer",
+              "itemOffered": {
+                "@type": "Service",
+                "name": "Automated Lead Capture & CRM Sync"
+              }
+            }
+          {% endif %}
+        ]
+      }
+    }
+  ]
+}
+</script>
+{% endblock %}
 
 {% block content %}
 <!-- Hero Section -->

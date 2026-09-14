@@ -8,3 +8,6 @@ django-tailwind>=3.8.0
 django-browser-reload>=1.12.1
 django-unfold>=0.106.0
 django-ckeditor-5>=0.2.20
+pymysql>=1.1.0
+cryptography>=42.0.0
+python-dotenv>=1.0.0

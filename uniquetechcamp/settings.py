@@ -43,8 +43,26 @@ DEBUG = env.bool("DEBUG", default=True)
 
 ALLOWED_HOSTS = env.list(
     "ALLOWED_HOSTS",
-    default=["127.0.0.1", "localhost", "testserver", "uniquetechcamp.org"],
+    default=["127.0.0.1", "localhost", "testserver", "uniquetechcamp.org", "www.uniquetechcamp.org"],
 )
+if "testserver" not in ALLOWED_HOSTS:
+    ALLOWED_HOSTS.append("testserver")
+
+CSRF_TRUSTED_ORIGINS = [
+    origin.strip() for origin in env.list(
+        "CSRF_TRUSTED_ORIGINS",
+        default=[
+            "https://uniquetechcamp.org",
+            "https://www.uniquetechcamp.org",
+            "http://uniquetechcamp.org",
+            "http://www.uniquetechcamp.org",
+            "http://localhost:8000",
+            "http://127.0.0.1:8000",
+        ]
+    ) if origin.strip()
+]
+
+SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
 
 # ------------------------------------------------------------------------------
 # Installed Applications
@@ -63,6 +81,7 @@ INSTALLED_APPS = [
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
+    "django.contrib.sitemaps",
 
     # Third-party Apps
     "tailwind",
@@ -118,26 +137,51 @@ TEMPLATES = [
 WSGI_APPLICATION = "uniquetechcamp.wsgi.application"
 
 # ------------------------------------------------------------------------------
-# Database (PostgreSQL)
+# Database (MariaDB / MySQL with utf8mb4 full emoji support & SQLite fallback)
 # ------------------------------------------------------------------------------
 
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+if env("DATABASE_URL", default=None):
+    DATABASES = {
+        "default": env.db("DATABASE_URL")
+    }
+elif env("DB_ENGINE", default=None):
+    DATABASES = {
+        "default": {
+            "ENGINE": env("DB_ENGINE"),
+            "NAME": env("DB_NAME", default="uniquetechcamp_db"),
+            "USER": env("DB_USER", default="uniquetechcamp_user"),
+            "PASSWORD": env("DB_PASSWORD", default=""),
+            "HOST": env("DB_HOST", default="localhost"),
+            "PORT": env("DB_PORT", default="3306"),
+        }
+    }
+else:
+    DATABASES = {
+        "default": env.db(
+            "DATABASE_URL",
+            default=f"sqlite:///{BASE_DIR / 'db.sqlite3'}"
+        )
+    }
+
+# Ensure MariaDB / MySQL handles emojis with utf8mb4 charset and collation
+if DATABASES["default"]["ENGINE"] == "django.db.backends.mysql":
+    DATABASES["default"].setdefault("OPTIONS", {})
+    DATABASES["default"]["OPTIONS"]["charset"] = "utf8mb4"
+    DATABASES["default"]["OPTIONS"]["init_command"] = (
+        "SET default_storage_engine=INNODB, character_set_connection=utf8mb4, collation_connection=utf8mb4_unicode_ci"
+    )
+
+# ------------------------------------------------------------------------------
+# Production Caching
+# ------------------------------------------------------------------------------
+
+CACHES = {
+    "default": {
+        "BACKEND": "django.core.cache.backends.db.DatabaseCache",
+        "LOCATION": "utc_cache_table",
+        "TIMEOUT": 300,
     }
 }
-
-# DATABASES = {
-#     "default": {
-#         "ENGINE": "django.db.backends.postgresql",
-#         "NAME": os.getenv("DB_NAME"),
-#         "USER": os.getenv("DB_USER"),
-#         "PASSWORD": os.getenv("DB_PASSWORD"),
-#         "HOST": os.getenv("DB_HOST"),
-#         "PORT": os.getenv("DB_PORT"),
-#     }
-# }
 
 # ------------------------------------------------------------------------------
 # Password Validation
@@ -159,12 +203,12 @@ AUTH_PASSWORD_VALIDATORS = [
 ]
 
 # ------------------------------------------------------------------------------
-# Internationalization
+# Internationalization (UK English & Nairobi Kenya Timezone)
 # ------------------------------------------------------------------------------
 
-LANGUAGE_CODE = "en-us"
+LANGUAGE_CODE = "en-gb"
 
-TIME_ZONE = "UTC"
+TIME_ZONE = "Africa/Nairobi"
 
 USE_I18N = True
 
@@ -301,4 +345,4 @@ EMAIL_HOST_PASSWORD = env("EMAIL_HOST_PASSWORD", default="")
 DEFAULT_FROM_EMAIL = env("DEFAULT_FROM_EMAIL", default="UniqueTechCamp <info@uniquetechcamp.org>")
 SERVER_EMAIL = env("SERVER_EMAIL", default="UniqueTechCamp <info@uniquetechcamp.org>")
 ADMIN_EMAIL_PRIMARY = "info@uniquetechcamp.org"
-ADMIN_EMAIL_GMAIL = "UniqueTechCamp@gmail.com"
+ADMIN_EMAIL_GMAIL = "UniqueTechCamp@gmail.com"
