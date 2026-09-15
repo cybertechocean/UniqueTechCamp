@@ -284,12 +284,12 @@
 
                     <a href="{% url 'portfolio:list' %}" 
                        class="px-3.5 py-2 rounded-xl font-medium transition-all {% if '/portfolio/' in request.path %}bg-white/10 text-emerald-400 font-semibold shadow-inner{% else %}text-slate-200 hover:text-white hover:bg-white/5{% endif %}">
-                        Case Studies
+                        Portfolio/Projects
                     </a>
 
                     <a href="{% url 'blog:list' %}" 
                        class="px-3.5 py-2 rounded-xl font-medium transition-all {% if '/blog/' in request.path %}bg-white/10 text-emerald-400 font-semibold shadow-inner{% else %}text-slate-200 hover:text-white hover:bg-white/5{% endif %}">
-                        Insights
+                        Blog/Insights
                     </a>
 
                     <a href="{% url 'core:about' %}" 
@@ -312,7 +312,7 @@
                     <!-- Radiant Primary CTA Button -->
                     <a href="{% url 'core:contact' %}" 
                        class="btn-primary py-2.5 px-5 text-xs rounded-xl shadow-emerald-500/25">
-                        <span>Deploy System</span>
+                        <span>Create Website</span>
                         <i data-lucide="sparkles" class="w-3.5 h-3.5 animate-pulse"></i>
                     </a>
                 </div>
@@ -342,7 +342,7 @@
                     <span class="px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-400 text-[10px] font-bold border border-emerald-500/30">100+</span>
                 </a>
                 <a href="{% url 'portfolio:list' %}" class="flex items-center justify-between px-4 py-3 text-sm font-semibold rounded-xl {% if '/portfolio/' in request.path %}bg-emerald-500/20 text-emerald-400 border border-emerald-500/30{% else %}text-slate-200 hover:bg-white/5{% endif %}">
-                    <span class="flex items-center gap-3"><i data-lucide="briefcase" class="w-4 h-4 text-emerald-400"></i> Case Studies & Results</span>
+                    <span class="flex items-center gap-3"><i data-lucide="briefcase" class="w-4 h-4 text-emerald-400"></i> Portfolio/Projects & Results</span>
                     <i data-lucide="chevron-right" class="w-4 h-4 text-slate-500"></i>
                 </a>
                 <a href="{% url 'blog:list' %}" class="flex items-center justify-between px-4 py-3 text-sm font-semibold rounded-xl {% if '/blog/' in request.path %}bg-emerald-500/20 text-emerald-400 border border-emerald-500/30{% else %}text-slate-200 hover:bg-white/5{% endif %}">
@@ -386,31 +386,31 @@
     <!-- Native App-Style Mobile Bottom Navigation Dock (MOBILE VIEWPORT ONLY) -->
     <aside class="block lg:hidden fixed bottom-0 left-0 right-0 z-40 bg-slate-950/90 backdrop-blur-xl border-t border-slate-800/80 shadow-[0_-8px_30px_rgba(0,0,0,0.5)] safe-pb" aria-label="Mobile Bottom Navigation">
         <div class="grid grid-cols-4 text-center py-2 px-2 max-w-md mx-auto">
-            <!-- 1. Home -->
-            <a href="{% url 'core:home' %}" class="flex flex-col items-center justify-center py-1 transition-all {% if request.path == '/' %}text-emerald-400 font-bold{% else %}text-slate-400 hover:text-white{% endif %}">
-                <i data-lucide="home" class="w-5 h-5 mb-1"></i>
-                <span class="text-[10px] tracking-tight">Home</span>
-            </a>
-
-            <!-- 2. Services -->
+            <!-- 1. Services -->
             <a href="{% url 'services:list' %}" class="flex flex-col items-center justify-center py-1 transition-all relative {% if '/services/' in request.path %}text-emerald-400 font-bold{% else %}text-slate-400 hover:text-white{% endif %}">
                 <i data-lucide="layout-grid" class="w-5 h-5 mb-1"></i>
                 <span class="text-[10px] tracking-tight">Services</span>
                 <span class="absolute top-0 right-3 w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
             </a>
 
-            <!-- 3. Search -->
+            <!-- 2. Search -->
             <a href="{% url 'core:search' %}" class="flex flex-col items-center justify-center py-1 transition-all {% if '/search/' in request.path %}text-emerald-400 font-bold{% else %}text-slate-400 hover:text-white{% endif %}">
                 <i data-lucide="search" class="w-5 h-5 mb-1"></i>
                 <span class="text-[10px] tracking-tight">Search</span>
             </a>
 
-            <!-- 4. WhatsApp Direct Inquire -->
-            <a href="https://wa.me/254715479955?text=Hello%20UniqueTechCamp!%20I%20am%20interested%20in%20deploying%20a%20Web%20%26%20AI%20Client%20Acquisition%20System." 
+            <!-- 3. WhatsApp Direct Chat -->
+            <a href="https://wa.me/254715479955?text=Hello%20UniqueTechCamp!%20I%20am%20interested%20in%20having%20a%20Web%20%26%20AI%20Client%20Acquisition%20System." 
                target="_blank" rel="noopener noreferrer" 
                class="flex flex-col items-center justify-center py-1 text-[#25D366] hover:text-emerald-400 transition-all font-semibold">
                 <i class="fa-brands fa-whatsapp text-xl mb-0.5"></i>
-                <span class="text-[10px] tracking-tight font-bold">Inquire</span>
+                <span class="text-[10px] tracking-tight font-bold">WhatsApp</span>
+            </a>
+
+            <!-- 4. Phone Call -->
+            <a href="tel:+254715479955" class="flex flex-col items-center justify-center py-1 text-[#25D366] hover:text-emerald-400 transition-all font-semibold">
+                <i data-lucide="phone" class="w-5 h-5 mb-1"></i>
+                <span class="text-[10px] tracking-tight font-bold">Call</span>
             </a>
         </div>
     </aside>
@@ -571,10 +571,10 @@
                     <ul class="space-y-3 font-support text-xs text-slate-400">
                         <li><a href="{% url 'core:home' %}" class="hover:text-emerald-400 transition-colors">Home Engine</a></li>
                         <li><a href="{% url 'services:list' %}" class="hover:text-emerald-400 transition-colors">100+ Services & Systems</a></li>
-                        <li><a href="{% url 'portfolio:list' %}" class="hover:text-emerald-400 transition-colors">Client Case Studies</a></li>
-                        <li><a href="{% url 'blog:list' %}" class="hover:text-emerald-400 transition-colors">Growth & Tech Insights</a></li>
+                        <li><a href="{% url 'portfolio:list' %}" class="hover:text-emerald-400 transition-colors">Portfolio/Projects</a></li>
+                        <li><a href="{% url 'blog:list' %}" class="hover:text-emerald-400 transition-colors">Growth & Blog/Insights</a></li>
                         <li><a href="{% url 'core:about' %}" class="hover:text-emerald-400 transition-colors">About Us</a></li>
-                        <li><a href="{% url 'core:search' %}" class="hover:text-emerald-400 transition-colors">Universal Search</a></li>
+                        <li><a href="{% url 'core:search' %}" class="hover:text-emerald-400 transition-colors">Search Anything</a></li>
                     </ul>
                 </div>
                 
