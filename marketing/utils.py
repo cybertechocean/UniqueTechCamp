@@ -1,14 +1,22 @@
 import io
 import csv
-import openpyxl
-from openpyxl.styles import Font, PatternFill, Alignment, Border, Side
-from openpyxl.utils import get_column_letter
 
 def generate_excel_template():
     """
     Generate an ultra-clean, professionally styled Excel (.xlsx) template file in memory.
     Contains clear column headers, width adjustments, styling, and sample rows.
     """
+    try:
+        import openpyxl
+        from openpyxl.styles import Font, PatternFill, Alignment, Border, Side
+    except ImportError:
+        # Graceful fallback: return a CSV template if openpyxl is not yet installed
+        output = io.StringIO()
+        writer = csv.writer(output)
+        writer.writerow(["Full Name", "Email Address", "Subject Line", "Personalized Message"])
+        writer.writerow(["Eng. David Kariuki", "david.kariuki@apexventures.co.ke", "Custom Web Architecture & AI Systems for Apex Ventures", "Hello David,\n\nWe noticed Apex Ventures is actively expanding. At UniqueTechCamp, we engineer high-performance web applications.\n\nBest regards,\nUniqueTechCamp Team"])
+        return output.getvalue().encode('utf-8')
+
     wb = openpyxl.Workbook()
     ws = wb.active
     ws.title = "Bulk Email List"
@@ -153,6 +161,10 @@ def parse_spreadsheet(file_obj, default_subject=""):
 
     else:
         # Parse Excel (.xlsx) via openpyxl
+        try:
+            import openpyxl
+        except ImportError:
+            raise RuntimeError("The 'openpyxl' Python package is required to read Excel .xlsx files. Please install openpyxl in your Python environment or upload as .csv.")
         wb = openpyxl.load_workbook(file_obj, data_only=True)
         ws = wb.active
 
