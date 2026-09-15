@@ -1,6 +1,6 @@
 from django.views.generic import ListView, DetailView
 from django.db.models import Q
-from .models import Service, ServiceCategory
+from .models import Service, ServiceCategory, ServiceImage
 import urllib.parse
 
 
@@ -10,7 +10,9 @@ class ServiceListView(ListView):
     context_object_name = 'services'
 
     def get_queryset(self):
-        qs = Service.objects.filter(is_active=True).select_related('category').prefetch_related('gallery_images')
+        qs = Service.objects.filter(is_active=True).select_related('category')
+        if hasattr(Service, 'gallery_images'):
+            qs = qs.prefetch_related('gallery_images')
 
         # ── Category filter ──────────────────────────────────────────
         category_slug = self.request.GET.get('category', '').strip()
@@ -56,7 +58,17 @@ class ServiceDetailView(DetailView):
     context_object_name = 'service'
 
     def get_queryset(self):
-        return Service.objects.filter(is_active=True).select_related('category').prefetch_related('gallery_images', 'features', 'faqs')
+        qs = Service.objects.filter(is_active=True).select_related('category')
+        prefetches = []
+        if hasattr(Service, 'gallery_images'):
+            prefetches.append('gallery_images')
+        if hasattr(Service, 'features'):
+            prefetches.append('features')
+        if hasattr(Service, 'faqs'):
+            prefetches.append('faqs')
+        if prefetches:
+            qs = qs.prefetch_related(*prefetches)
+        return qs
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
