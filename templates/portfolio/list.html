@@ -313,8 +313,8 @@
 
         <!-- Image / placeholder -->
         <div class="project-image-wrap">
-          {% if project.featured_image %}
-          <img src="{{ project.featured_image.url }}" alt="{{ project.title }}">
+          {% if project.get_image_url %}
+          <img src="{{ project.get_image_url }}" alt="{{ project.title }}" loading="lazy" decoding="async">
           {% else %}
           <div class="project-image-placeholder">
             <span class="material-symbols-outlined text-green-500" style="font-size:3.5rem;">web</span>
@@ -339,10 +339,17 @@
               {% endif %}
               <h2 class="font-bold text-2xl text-slate-900 leading-snug">{{ project.title }}</h2>
               {% if project.client_name %}
-              <p class="text-sm text-slate-400 mt-1 font-medium">
-                <span class="material-symbols-outlined text-xs align-middle text-green-500">business</span>
-                Client: {{ project.client_name }}
-              </p>
+              <div class="flex flex-wrap items-center gap-3 text-xs text-slate-500 mt-1.5 font-medium">
+                <span class="flex items-center gap-1">
+                  <span class="material-symbols-outlined text-sm text-green-500">business</span>
+                  Client: {{ project.client_name }}
+                </span>
+                <span>•</span>
+                <span class="flex items-center gap-1">
+                  <span class="material-symbols-outlined text-sm text-green-500">calendar_month</span>
+                  {{ project.date|date:"M Y" }}
+                </span>
+              </div>
               {% endif %}
             </div>
           </div>

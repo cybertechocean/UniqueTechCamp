@@ -5,8 +5,21 @@ class Testimonial(models.Model):
     company = models.CharField(max_length=200, blank=True)
     content = models.TextField()
     rating = models.PositiveSmallIntegerField(default=5)
-    image = models.ImageField(upload_to='testimonials/', blank=True, null=True)
+    image = models.ImageField(upload_to='testimonials/', blank=True, null=True, help_text="Upload image file from computer")
+    image_url = models.URLField(max_length=500, blank=True, null=True, help_text="Or paste an external image URL")
     created_at = models.DateTimeField(auto_now_add=True)
+
+    @property
+    def get_image_url(self):
+        """Returns uploaded image URL if present, otherwise external image URL, or None."""
+        if self.image:
+            try:
+                return self.image.url
+            except Exception:
+                pass
+        if self.image_url:
+            return self.image_url
+        return None
 
     def __str__(self):
         return f"{self.client_name} - {self.company}"

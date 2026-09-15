@@ -19,7 +19,7 @@
             </div>
             <div class="flex-1 min-w-[150px]">
                 <h4 class="text-gray-400 font-support text-sm mb-1">Date</h4>
-                <p class="font-heading font-bold">{{ project.created_at|date:"F Y" }}</p>
+                <p class="font-heading font-bold">{{ project.date|date:"F Y" }}</p>
             </div>
             {% if project.live_demo_url %}
             <div class="flex-1 min-w-[150px]">
@@ -34,9 +34,9 @@
 </div>
 
 <!-- Featured Image -->
-{% if project.featured_image %}
+{% if project.get_image_url %}
 <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 -mt-10 relative z-20">
-    <img src="{{ project.featured_image.url }}" alt="{{ project.title }}" class="w-full h-auto max-h-[600px] object-cover rounded-2xl shadow-2xl">
+    <img src="{{ project.get_image_url }}" alt="{{ project.title }}" loading="lazy" decoding="async" class="w-full h-auto max-h-[600px] object-cover rounded-2xl shadow-2xl">
 </div>
 {% endif %}
 
@@ -70,14 +70,16 @@
                 <h2 class="text-3xl font-heading font-bold text-secondary mb-8">Gallery</h2>
                 <div class="grid sm:grid-cols-2 gap-6">
                     {% for screenshot in project.screenshots.all %}
+                    {% if screenshot.get_image_url %}
                     <div class="group relative overflow-hidden rounded-xl border border-gray-100 shadow-sm cursor-pointer">
-                        <img src="{{ screenshot.image.url }}" alt="{{ screenshot.caption|default:project.title }}" class="w-full h-64 object-cover transform group-hover:scale-105 transition-transform duration-500">
+                        <img src="{{ screenshot.get_image_url }}" alt="{{ screenshot.caption|default:project.title }}" loading="lazy" decoding="async" class="w-full h-64 object-cover transform group-hover:scale-105 transition-transform duration-500">
                         {% if screenshot.caption %}
                         <div class="absolute bottom-0 left-0 w-full p-4 bg-gradient-to-t from-black/80 to-transparent translate-y-full group-hover:translate-y-0 transition-transform duration-300">
                             <p class="text-white text-sm font-support">{{ screenshot.caption }}</p>
                         </div>
                         {% endif %}
                     </div>
+                    {% endif %}
                     {% endfor %}
                 </div>
             </div>

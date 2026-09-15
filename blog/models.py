@@ -24,7 +24,8 @@ class Post(models.Model):
     author_role = models.CharField(max_length=100, default="Lead Systems Architect")
     excerpt = models.TextField(max_length=400, help_text="Short summary for search snippets and preview cards")
     content = CKEditor5Field('Content', config_name='extends')
-    featured_image = models.ImageField(upload_to='blog/', blank=True, null=True)
+    featured_image = models.ImageField(upload_to='blog/', blank=True, null=True, help_text="Upload image file from computer")
+    image_url = models.URLField(max_length=500, blank=True, null=True, help_text="Or paste an external image URL (e.g. Unsplash, CDN)")
     read_time = models.CharField(max_length=30, default="5 min read")
     tags = models.CharField(max_length=255, blank=True, help_text="Comma-separated keywords (e.g. AI Systems, Lead Generation, WhatsApp)")
     is_published = models.BooleanField(default=True)
@@ -40,6 +41,18 @@ class Post(models.Model):
 
     def __str__(self):
         return self.title
+
+    @property
+    def get_image_url(self):
+        """Returns uploaded featured image URL if present, otherwise external image URL, or None."""
+        if self.featured_image:
+            try:
+                return self.featured_image.url
+            except Exception:
+                pass
+        if self.image_url:
+            return self.image_url
+        return None
 
     def get_absolute_url(self):
         return reverse('blog:detail', kwargs={'slug': self.slug})

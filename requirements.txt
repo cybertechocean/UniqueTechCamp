@@ -11,3 +11,5 @@ django-ckeditor-5>=0.2.20
 pymysql>=1.1.0
 cryptography>=42.0.0
 python-dotenv>=1.0.0
+openpyxl>=3.1.2
+
