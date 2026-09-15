@@ -296,24 +296,29 @@
                        class="px-3.5 py-2 rounded-xl font-medium transition-all {% if '/about/' in request.path %}bg-white/10 text-emerald-400 font-semibold shadow-inner{% else %}text-slate-200 hover:text-white hover:bg-white/5{% endif %}">
                         About
                     </a>
+
+                    <a href="{% url 'appointments:book' %}" 
+                       class="px-3.5 py-2 rounded-xl font-medium transition-all {% if '/appointments/' in request.path %}bg-white/10 text-emerald-400 font-semibold shadow-inner{% else %}text-slate-200 hover:text-white hover:bg-white/5{% endif %}">
+                        Book/Consult
+                    </a>
                 </nav>
 
                 <!-- Desktop Action Group -->
-                <div class="hidden sm:flex items-center gap-3">
+                <div class="hidden sm:flex items-center gap-2.5">
                     <!-- Universal Quick Search Trigger -->
                     <a href="{% url 'core:search' %}" 
-                       class="flex items-center gap-2 px-3.5 py-2 rounded-xl bg-slate-900/90 hover:bg-slate-800 border border-slate-800 hover:border-slate-700 text-slate-300 hover:text-white transition-all text-xs font-medium group shadow-inner" 
+                       class="flex items-center gap-2 px-3 py-2 rounded-xl bg-slate-900/90 hover:bg-slate-800 border border-slate-800 hover:border-slate-700 text-slate-300 hover:text-white transition-all text-xs font-medium group shadow-inner" 
                        title="Search services, AI systems & insights (Press ⌘K or /)">
                         <i data-lucide="search" class="w-4 h-4 text-emerald-400 group-hover:scale-110 transition-transform"></i>
                         <span class="hidden md:inline">Search</span>
                         <kbd class="hidden md:inline-block px-1.5 py-0.5 text-[10px] font-mono font-semibold text-slate-400 bg-slate-800 border border-slate-700 rounded-md">⌘K</kbd>
                     </a>
 
-                    <!-- Radiant Primary CTA Button -->
-                    <a href="{% url 'core:contact' %}" 
-                       class="btn-primary py-2.5 px-5 text-xs rounded-xl shadow-emerald-500/25">
-                        <span>Create Website</span>
-                        <i data-lucide="sparkles" class="w-3.5 h-3.5 animate-pulse"></i>
+                    <!-- Book Consultation CTA Button -->
+                    <a href="{% url 'appointments:book' %}" 
+                       class="btn-primary py-2.5 px-4 text-xs rounded-xl shadow-emerald-500/25 inline-flex items-center gap-1.5">
+                        <i data-lucide="calendar" class="w-3.5 h-3.5"></i>
+                        <span>Book/Consult</span>
                     </a>
                 </div>
 
@@ -352,6 +357,11 @@
                 <a href="{% url 'core:about' %}" class="flex items-center justify-between px-4 py-3 text-sm font-semibold rounded-xl {% if '/about/' in request.path %}bg-emerald-500/20 text-emerald-400 border border-emerald-500/30{% else %}text-slate-200 hover:bg-white/5{% endif %}">
                     <span class="flex items-center gap-3"><i data-lucide="info" class="w-4 h-4 text-emerald-400"></i> About UniqueTechCamp</span>
                     <i data-lucide="chevron-right" class="w-4 h-4 text-slate-500"></i>
+                </a>
+
+                <a href="{% url 'appointments:book' %}" class="flex items-center justify-between px-4 py-3 text-sm font-semibold rounded-xl {% if '/appointments/' in request.path %}bg-emerald-500/20 text-emerald-400 border border-emerald-500/30{% else %}text-slate-200 hover:bg-white/5{% endif %}">
+                    <span class="flex items-center gap-3"><i data-lucide="calendar-check" class="w-4 h-4 text-emerald-400"></i> Book Free Consultation</span>
+                    <span class="px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-400 text-[10px] font-bold border border-emerald-500/30">100% Free</span>
                 </a>
                 
                 <div class="pt-3 border-t border-slate-800 grid grid-cols-2 gap-3">
@@ -407,10 +417,10 @@
                 <span class="text-[10px] tracking-tight font-bold">WhatsApp</span>
             </a>
 
-            <!-- 4. Phone Call -->
-            <a href="tel:+254715479955" class="flex flex-col items-center justify-center py-1 text-[#25D366] hover:text-emerald-400 transition-all font-semibold">
-                <i data-lucide="phone" class="w-5 h-5 mb-1"></i>
-                <span class="text-[10px] tracking-tight font-bold">Call</span>
+            <!-- 4. Book / Consult -->
+            <a href="{% url 'appointments:book' %}" class="flex flex-col items-center justify-center py-1 transition-all font-semibold {% if '/appointments/' in request.path %}text-emerald-400 font-bold{% else %}text-slate-400 hover:text-white{% endif %}">
+                <i data-lucide="calendar" class="w-5 h-5 mb-1 text-emerald-400"></i>
+                <span class="text-[10px] tracking-tight font-bold text-emerald-400">Consult</span>
             </a>
         </div>
     </aside>
@@ -438,6 +448,21 @@
 
             <!-- Priority Direct Actions -->
             <div class="space-y-2 mb-4">
+                <!-- 0. Book Consultation Card -->
+                <a href="{% url 'appointments:book' %}" 
+                   class="flex items-center justify-between p-3 rounded-2xl bg-gradient-to-r from-emerald-500/20 to-green-500/10 hover:from-emerald-500/30 hover:to-green-500/20 border border-emerald-500/40 text-white transition-all group">
+                    <div class="flex items-center gap-3">
+                        <div class="w-9 h-9 rounded-xl bg-gradient-to-tr from-emerald-500 to-green-500 text-white flex items-center justify-center shrink-0 shadow-md">
+                            <i data-lucide="calendar-check" class="w-5 h-5"></i>
+                        </div>
+                        <div>
+                            <div class="text-xs font-bold text-white group-hover:text-emerald-400 transition-colors">Book Free Consultation</div>
+                            <div class="text-[10px] text-emerald-300/90">Pick date & strategy window</div>
+                        </div>
+                    </div>
+                    <i data-lucide="arrow-up-right" class="w-4 h-4 text-emerald-400 group-hover:translate-x-0.5 transition-transform"></i>
+                </a>
+
                 <!-- 1. WhatsApp Priority Card -->
                 <a href="https://wa.me/254715479955?text=Hello%20UniqueTechCamp!%20I%20would%20like%20to%20consult%20on%20an%20AI%20growth%20system." 
                    target="_blank" rel="noopener noreferrer" 
@@ -573,6 +598,7 @@
                         <li><a href="{% url 'services:list' %}" class="hover:text-emerald-400 transition-colors">100+ Services & Systems</a></li>
                         <li><a href="{% url 'portfolio:list' %}" class="hover:text-emerald-400 transition-colors">Portfolio/Projects</a></li>
                         <li><a href="{% url 'blog:list' %}" class="hover:text-emerald-400 transition-colors">Growth & Blog/Insights</a></li>
+                        <li><a href="{% url 'appointments:book' %}" class="hover:text-emerald-400 transition-colors flex items-center gap-1.5"><span class="w-1.5 h-1.5 rounded-full bg-emerald-400"></span>Book Free Consultation</a></li>
                         <li><a href="{% url 'core:about' %}" class="hover:text-emerald-400 transition-colors">About Us</a></li>
                         <li><a href="{% url 'core:search' %}" class="hover:text-emerald-400 transition-colors">Search Anything</a></li>
                     </ul>

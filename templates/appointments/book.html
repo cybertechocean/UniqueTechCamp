@@ -1,0 +1,447 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Book a Free Strategy Consultation | UniqueTechCamp{% endblock %}
+{% block description %}Schedule a 1-on-1 strategic consultation with UniqueTechCamp technical architects. Review your web application, AI lead qualification, and software requirements.{% endblock %}
+
+{% block extra_head %}
+<style>
+  /* ── Radio & Chip styling ── */
+  .slot-chip input[type="radio"],
+  .channel-card input[type="radio"] {
+    position: absolute;
+    opacity: 0;
+    pointer-events: none;
+  }
+  .slot-chip label {
+    display: block;
+    padding: 12px 14px;
+    border-radius: 14px;
+    border: 1.5px solid #e2e8f0;
+    background: #ffffff;
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: #334155;
+    cursor: pointer;
+    transition: all 0.25s ease;
+    text-align: center;
+  }
+  .slot-chip input[type="radio"]:checked + label {
+    border-color: #22c55e;
+    background: #f0fdf4;
+    color: #15803d;
+    box-shadow: 0 4px 14px rgba(34, 197, 94, 0.2);
+    transform: translateY(-2px);
+  }
+  .channel-card label {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 16px 18px;
+    border-radius: 16px;
+    border: 1.5px solid #e2e8f0;
+    background: #ffffff;
+    cursor: pointer;
+    transition: all 0.25s ease;
+  }
+  .channel-card input[type="radio"]:checked + label {
+    border-color: #22c55e;
+    background: #f0fdf4;
+    box-shadow: 0 4px 16px rgba(34, 197, 94, 0.2);
+    transform: translateY(-2px);
+  }
+  .channel-card input[type="radio"]:checked + label .channel-icon {
+    background: linear-gradient(135deg, #22c55e, #16a34a);
+    color: #ffffff;
+  }
+</style>
+{% endblock %}
+
+{% block content %}
+<!-- Hero Section -->
+<section class="bg-gradient-to-b from-slate-950 via-slate-900 to-slate-950 text-white pt-16 pb-28 relative overflow-hidden">
+  <div class="absolute -top-32 -left-32 w-80 h-80 bg-emerald-500/15 rounded-full blur-3xl pointer-events-none"></div>
+  <div class="absolute -bottom-32 -right-32 w-80 h-80 bg-primary/20 rounded-full blur-3xl pointer-events-none"></div>
+
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10 text-center">
+    <div class="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-emerald-500/15 border border-emerald-500/30 text-emerald-400 text-xs font-extrabold uppercase tracking-widest mb-6">
+      <span class="material-symbols-outlined text-sm">calendar_month</span>
+      Direct Access to Solutions Architects
+    </div>
+    <h1 class="text-3xl sm:text-5xl lg:text-6xl font-heading font-extrabold tracking-tight mb-5 leading-tight">
+      Schedule Your <span class="text-emerald-400">Free Consultation</span>
+    </h1>
+    <p class="text-base sm:text-lg text-slate-300 max-w-2xl mx-auto leading-relaxed">
+      Book a comprehensive strategy & technical discovery session. We'll map out the architecture, AI qualification funnel, timeline, and exact cost blueprint for your project.
+    </p>
+
+    <!-- Trust Strip -->
+    <div class="flex flex-wrap items-center justify-center gap-6 mt-8 text-xs font-semibold text-slate-400">
+      <span class="flex items-center gap-1.5"><i data-lucide="check-circle" class="w-4 h-4 text-emerald-400"></i> 100% Free Initial Discovery</span>
+      <span class="flex items-center gap-1.5"><i data-lucide="shield-check" class="w-4 h-4 text-emerald-400"></i> Strict NDA Confidentiality</span>
+      <span class="flex items-center gap-1.5"><i data-lucide="calendar" class="w-4 h-4 text-emerald-400"></i> Instant Calendar Sync (.ICS)</span>
+    </div>
+  </div>
+</section>
+
+<!-- Main Form Section -->
+<section class="pb-24 -mt-14 relative z-20">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <form id="appointment-booking-form" method="POST" action="{% url 'appointments:book' %}" class="grid lg:grid-cols-12 gap-8 items-start">
+      {% csrf_token %}
+
+      <!-- LEFT COLUMN: Booking Inputs -->
+      <div class="lg:col-span-8 bg-white border border-slate-200/80 rounded-3xl shadow-xl p-6 sm:p-10 space-y-10">
+
+        <!-- STEP 1: Select Service / Solution -->
+        <div>
+          <div class="flex items-center justify-between mb-4">
+            <div class="flex items-center gap-3">
+              <span class="w-8 h-8 rounded-xl bg-emerald-500 text-white flex items-center justify-center text-sm font-bold shadow-md shadow-emerald-500/25">1</span>
+              <div>
+                <h3 class="text-lg font-bold text-slate-900">Select Specific Service or Solution</h3>
+                <p class="text-xs text-slate-500">Pick what you would like to explore or consult upon</p>
+              </div>
+            </div>
+            {% if selected_service %}
+            <span class="hidden sm:inline-flex items-center gap-1 text-[11px] font-bold text-emerald-600 bg-emerald-50 px-2.5 py-1 rounded-full border border-emerald-200">
+              <span class="material-symbols-outlined text-xs">check</span> Pre-selected from Service Page
+            </span>
+            {% endif %}
+          </div>
+
+          <div class="relative">
+            <select id="service_id" name="service_id" class="w-full px-4 py-3.5 rounded-2xl border border-slate-300 bg-slate-50 focus:bg-white focus:border-emerald-500 focus:ring-4 focus:ring-emerald-500/10 transition-all text-sm font-medium text-slate-900 appearance-none cursor-pointer">
+              <option value="" {% if not selected_service %}selected{% endif %}>
+                🎯 General Consultation (Web Development, AI Systems & Custom Blueprints)
+              </option>
+              {% for s in services %}
+              <option value="{{ s.id }}" data-title="{{ s.title }}" data-icon="{{ s.icon_name }}" {% if selected_service and selected_service.id == s.id %}selected{% endif %}>
+                {{ s.category.name|default:"Solutions" }} &rsaquo; {{ s.title }}
+              </option>
+              {% endfor %}
+            </select>
+            <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-4 text-slate-500">
+              <span class="material-symbols-outlined">expand_more</span>
+            </div>
+          </div>
+          
+          {% if selected_service %}
+          <div class="mt-3 p-3.5 rounded-2xl bg-emerald-50/70 border border-emerald-200 flex items-start gap-3">
+            <div class="w-9 h-9 rounded-xl bg-emerald-500 text-white flex items-center justify-center shrink-0">
+              <span class="material-symbols-outlined text-lg">{{ selected_service.icon_name|default:"layers" }}</span>
+            </div>
+            <div class="flex-1 min-w-0">
+              <div class="text-xs font-bold text-emerald-900">{{ selected_service.title }}</div>
+              <div class="text-[11px] text-emerald-700 line-clamp-1">{{ selected_service.short_description }}</div>
+            </div>
+          </div>
+          {% endif %}
+        </div>
+
+        <hr class="border-slate-100">
+
+        <!-- STEP 2: Date & Time Window -->
+        <div>
+          <div class="flex items-center gap-3 mb-6">
+            <span class="w-8 h-8 rounded-xl bg-emerald-500 text-white flex items-center justify-center text-sm font-bold shadow-md shadow-emerald-500/25">2</span>
+            <div>
+              <h3 class="text-lg font-bold text-slate-900">Preferred Date & Consultation Window</h3>
+              <p class="text-xs text-slate-500">All times in Nairobi / East Africa Time (EAT • UTC+3)</p>
+            </div>
+          </div>
+
+          <div class="grid sm:grid-cols-12 gap-6">
+            <!-- Date Picker -->
+            <div class="sm:col-span-5">
+              <label for="preferred_date" class="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-2">
+                Consultation Date <span class="text-rose-500">*</span>
+              </label>
+              <input type="date" id="preferred_date" name="preferred_date" min="{{ min_date }}" max="{{ max_date }}" value="{{ min_date }}" required class="w-full px-4 py-3.5 rounded-2xl border border-slate-300 bg-slate-50 focus:bg-white focus:border-emerald-500 focus:ring-4 focus:ring-emerald-500/10 transition-all text-sm font-semibold text-slate-900 cursor-pointer">
+              <p class="text-[11px] text-slate-400 mt-2">Monday through Saturday available</p>
+            </div>
+
+            <!-- Time Slots -->
+            <div class="sm:col-span-7">
+              <label class="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-2">
+                Select Time Window <span class="text-rose-500">*</span>
+              </label>
+              <div class="grid grid-cols-2 gap-2.5">
+                {% for slot_val, slot_label in time_slots %}
+                <div class="slot-chip">
+                  <input type="radio" id="slot_{{ forloop.counter }}" name="preferred_time_slot" value="{{ slot_val }}" {% if forloop.counter == 2 %}checked{% endif %}>
+                  <label for="slot_{{ forloop.counter }}">
+                    <span class="block text-xs font-bold">{{ slot_val }}</span>
+                    <span class="block text-[10px] text-slate-400 font-normal">EAT (UTC+3)</span>
+                  </label>
+                </div>
+                {% endfor %}
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <hr class="border-slate-100">
+
+        <!-- STEP 3: Meeting Channel -->
+        <div>
+          <div class="flex items-center gap-3 mb-6">
+            <span class="w-8 h-8 rounded-xl bg-emerald-500 text-white flex items-center justify-center text-sm font-bold shadow-md shadow-emerald-500/25">3</span>
+            <div>
+              <h3 class="text-lg font-bold text-slate-900">Choose Consultation Platform</h3>
+              <p class="text-xs text-slate-500">How would you like our solutions architects to connect with you?</p>
+            </div>
+          </div>
+
+          <div class="grid sm:grid-cols-2 gap-3.5">
+            <!-- Google Meet -->
+            <div class="channel-card">
+              <input type="radio" id="ch_meet" name="meeting_type" value="google_meet" checked>
+              <label for="ch_meet">
+                <div class="channel-icon w-10 h-10 rounded-xl bg-slate-100 text-slate-600 flex items-center justify-center shrink-0 transition-colors">
+                  <i data-lucide="video" class="w-5 h-5"></i>
+                </div>
+                <div class="flex-1">
+                  <div class="text-xs font-bold text-slate-900">Google Meet (Recommended)</div>
+                  <div class="text-[11px] text-slate-500">Screen sharing & live architecture review</div>
+                </div>
+              </label>
+            </div>
+
+            <!-- WhatsApp -->
+            <div class="channel-card">
+              <input type="radio" id="ch_wa" name="meeting_type" value="whatsapp_call">
+              <label for="ch_wa">
+                <div class="channel-icon w-10 h-10 rounded-xl bg-slate-100 text-[#25D366] flex items-center justify-center shrink-0 transition-colors">
+                  <i class="fa-brands fa-whatsapp text-lg"></i>
+                </div>
+                <div class="flex-1">
+                  <div class="text-xs font-bold text-slate-900">WhatsApp Call</div>
+                  <div class="text-[11px] text-slate-500">Direct voice/video via official desk</div>
+                </div>
+              </label>
+            </div>
+
+            <!-- Phone -->
+            <div class="channel-card">
+              <input type="radio" id="ch_phone" name="meeting_type" value="phone">
+              <label for="ch_phone">
+                <div class="channel-icon w-10 h-10 rounded-xl bg-slate-100 text-slate-600 flex items-center justify-center shrink-0 transition-colors">
+                  <i data-lucide="phone-call" class="w-5 h-5"></i>
+                </div>
+                <div class="flex-1">
+                  <div class="text-xs font-bold text-slate-900">Direct Phone Call</div>
+                  <div class="text-[11px] text-slate-500">We call your provided mobile line</div>
+                </div>
+              </label>
+            </div>
+
+            <!-- Office -->
+            <div class="channel-card">
+              <input type="radio" id="ch_office" name="meeting_type" value="office">
+              <label for="ch_office">
+                <div class="channel-icon w-10 h-10 rounded-xl bg-slate-100 text-slate-600 flex items-center justify-center shrink-0 transition-colors">
+                  <i data-lucide="building" class="w-5 h-5"></i>
+                </div>
+                <div class="flex-1">
+                  <div class="text-xs font-bold text-slate-900">In-Person Meeting</div>
+                  <div class="text-[11px] text-slate-500">UniqueTechCamp HQ, Nairobi CBD</div>
+                </div>
+              </label>
+            </div>
+          </div>
+        </div>
+
+        <hr class="border-slate-100">
+
+        <!-- STEP 4: Client Information & Requirements -->
+        <div>
+          <div class="flex items-center gap-3 mb-6">
+            <span class="w-8 h-8 rounded-xl bg-emerald-500 text-white flex items-center justify-center text-sm font-bold shadow-md shadow-emerald-500/25">4</span>
+            <div>
+              <h3 class="text-lg font-bold text-slate-900">Your Contact & Project Scope</h3>
+              <p class="text-xs text-slate-500">Details to prepare the exact technical roadmap</p>
+            </div>
+          </div>
+
+          <div class="grid sm:grid-cols-2 gap-5 mb-5">
+            <div>
+              <label for="full_name" class="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-2">
+                Full Name <span class="text-rose-500">*</span>
+              </label>
+              <input type="text" id="full_name" name="full_name" required placeholder="e.g. Dr. Alex Mwangi" class="w-full px-4 py-3.5 rounded-2xl border border-slate-300 bg-slate-50 focus:bg-white focus:border-emerald-500 focus:ring-4 focus:ring-emerald-500/10 transition-all text-sm font-medium text-slate-900">
+            </div>
+
+            <div>
+              <label for="email" class="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-2">
+                Email Address <span class="text-rose-500">*</span>
+              </label>
+              <input type="email" id="email" name="email" required placeholder="e.g. alex@company.com" class="w-full px-4 py-3.5 rounded-2xl border border-slate-300 bg-slate-50 focus:bg-white focus:border-emerald-500 focus:ring-4 focus:ring-emerald-500/10 transition-all text-sm font-medium text-slate-900">
+            </div>
+
+            <div>
+              <label for="phone" class="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-2">
+                WhatsApp / Phone (With Country Code) <span class="text-rose-500">*</span>
+              </label>
+              <input type="tel" id="phone" name="phone" required placeholder="e.g. +254 712 345 678" class="w-full px-4 py-3.5 rounded-2xl border border-slate-300 bg-slate-50 focus:bg-white focus:border-emerald-500 focus:ring-4 focus:ring-emerald-500/10 transition-all text-sm font-medium text-slate-900">
+            </div>
+
+            <div>
+              <label for="company_name" class="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-2">
+                Company / Organization <span class="text-slate-400 font-normal">(Optional)</span>
+              </label>
+              <input type="text" id="company_name" name="company_name" placeholder="e.g. Apex Health Ltd / Startup" class="w-full px-4 py-3.5 rounded-2xl border border-slate-300 bg-slate-50 focus:bg-white focus:border-emerald-500 focus:ring-4 focus:ring-emerald-500/10 transition-all text-sm font-medium text-slate-900">
+            </div>
+          </div>
+
+          <div>
+            <label for="project_description" class="block text-xs font-bold uppercase tracking-wider text-slate-700 mb-2">
+              Project Description / Specific Requirements <span class="text-rose-500">*</span>
+            </label>
+            <textarea id="project_description" name="project_description" rows="4" required placeholder="Briefly describe what you want to achieve, features you need (e.g. AI chatbot, M-Pesa integration, custom client dashboard), or current bottlenecks you are facing..." class="w-full px-4 py-3.5 rounded-2xl border border-slate-300 bg-slate-50 focus:bg-white focus:border-emerald-500 focus:ring-4 focus:ring-emerald-500/10 transition-all text-sm font-medium text-slate-900"></textarea>
+          </div>
+        </div>
+
+        <!-- Submit Button -->
+        <div>
+          <button type="submit" id="submit-booking-btn" class="w-full py-4 px-8 rounded-2xl bg-gradient-to-r from-emerald-500 to-green-600 hover:from-emerald-600 hover:to-green-700 text-white font-heading font-extrabold text-base shadow-xl shadow-emerald-500/25 transition-all duration-300 flex items-center justify-center gap-3 cursor-pointer">
+            <span>Confirm & Reserve Consultation</span>
+            <i data-lucide="calendar-check" class="w-5 h-5"></i>
+          </button>
+          <p class="text-center text-xs text-slate-400 mt-3">
+            Zero fees • Instant confirmation via email with attached <code class="text-emerald-600 font-semibold">.ics</code> calendar invite
+          </p>
+        </div>
+
+      </div>
+
+      <!-- RIGHT COLUMN: Sticky Real-time Summary Card -->
+      <div class="lg:col-span-4 sticky top-28 space-y-6">
+        <div class="bg-slate-900 text-white border border-slate-800 rounded-3xl p-6 shadow-2xl relative overflow-hidden">
+          <div class="absolute top-0 right-0 w-32 h-32 bg-emerald-500/10 rounded-full blur-2xl pointer-events-none"></div>
+
+          <div class="flex items-center gap-2.5 pb-4 border-b border-slate-800 mb-5">
+            <span class="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-ping"></span>
+            <h4 class="text-xs font-bold uppercase tracking-wider text-slate-300">Live Booking Preview</h4>
+          </div>
+
+          <div class="space-y-4 text-xs">
+            <div>
+              <span class="text-slate-400 block mb-1">Target Service:</span>
+              <div id="preview-service" class="font-bold text-emerald-400 text-sm">
+                {{ selected_service.title|default:"General Tech Consultation" }}
+              </div>
+            </div>
+
+            <div>
+              <span class="text-slate-400 block mb-1">Date & Window:</span>
+              <div id="preview-datetime" class="font-bold text-white text-sm">
+                {{ min_date }} • 10:30 - 11:30 EAT
+              </div>
+            </div>
+
+            <div>
+              <span class="text-slate-400 block mb-1">Meeting Platform:</span>
+              <div id="preview-channel" class="font-bold text-sky-400 flex items-center gap-1.5">
+                <i data-lucide="video" class="w-4 h-4"></i> Google Meet
+              </div>
+            </div>
+
+            <div class="pt-4 border-t border-slate-800">
+              <div class="p-3.5 rounded-2xl bg-slate-800/80 border border-slate-700/80">
+                <div class="text-[11px] font-bold text-emerald-300 mb-1 flex items-center gap-1">
+                  <i data-lucide="sparkles" class="w-3.5 h-3.5"></i> Included in This Session:
+                </div>
+                <ul class="text-[11px] text-slate-300 space-y-1.5 list-disc list-inside">
+                  <li>Full architectural evaluation</li>
+                  <li>AI Lead Qualification mapping</li>
+                  <li>Custom cost & timeline breakdown</li>
+                  <li>Direct answers from lead engineers</li>
+                </ul>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Direct WhatsApp Quick-Escalation Card -->
+        <div class="bg-gradient-to-br from-[#25D366]/15 via-emerald-950/20 to-slate-900 border border-[#25D366]/30 rounded-3xl p-6 text-white shadow-xl">
+          <div class="flex items-center gap-3 mb-3">
+            <div class="w-10 h-10 rounded-2xl bg-[#25D366] text-white flex items-center justify-center shadow-lg shadow-[#25D366]/30">
+              <i class="fa-brands fa-whatsapp text-xl"></i>
+            </div>
+            <div>
+              <h5 class="text-xs font-bold text-white">Need Urgent Answers?</h5>
+              <p class="text-[10px] text-slate-400">Speak directly with an architect right now</p>
+            </div>
+          </div>
+          <p class="text-xs text-slate-300 mb-4 leading-relaxed">
+            If your project has immediate deadlines or RFP requirements, skip the queue and chat with our team on WhatsApp.
+          </p>
+          <a href="https://wa.me/254715479955?text=Hello%20UniqueTechCamp!%20I%20have%20an%20urgent%20consultation%20inquiry." target="_blank" rel="noopener noreferrer" class="w-full py-3 px-4 rounded-xl bg-[#25D366] hover:bg-[#20bd5a] text-slate-950 text-xs font-bold transition-all flex items-center justify-center gap-2 shadow-lg">
+            <span>Direct WhatsApp Desk</span>
+            <i data-lucide="arrow-up-right" class="w-4 h-4"></i>
+          </a>
+        </div>
+
+      </div>
+
+    </form>
+  </div>
+</section>
+
+{% endblock %}
+
+{% block extra_scripts %}
+<script>
+  (function () {
+    'use strict';
+
+    const serviceSelect = document.getElementById('service_id');
+    const dateInput = document.getElementById('preferred_date');
+    const slotRadios = document.querySelectorAll('input[name="preferred_time_slot"]');
+    const channelRadios = document.querySelectorAll('input[name="meeting_type"]');
+
+    const previewService = document.getElementById('preview-service');
+    const previewDateTime = document.getElementById('preview-datetime');
+    const previewChannel = document.getElementById('preview-channel');
+
+    function updatePreview() {
+      // 1. Service
+      const opt = serviceSelect.options[serviceSelect.selectedIndex];
+      previewService.textContent = opt ? (opt.getAttribute('data-title') || opt.text) : 'General Tech Consultation';
+
+      // 2. Date & Time
+      const dateVal = dateInput.value;
+      let slotVal = '10:30 - 11:30';
+      slotRadios.forEach(r => { if (r.checked) slotVal = r.value; });
+      previewDateTime.textContent = (dateVal || 'Upcoming Date') + ' • ' + slotVal + ' EAT';
+
+      // 3. Channel
+      let chVal = 'google_meet';
+      channelRadios.forEach(r => { if (r.checked) chVal = r.value; });
+      const channelLabels = {
+        'google_meet': 'Google Meet',
+        'whatsapp_call': 'WhatsApp Call',
+        'phone': 'Direct Phone Call',
+        'office': 'In-Person (Nairobi CBD)'
+      };
+      previewChannel.textContent = channelLabels[chVal] || 'Video Conference';
+    }
+
+    serviceSelect.addEventListener('change', updatePreview);
+    dateInput.addEventListener('change', updatePreview);
+    slotRadios.forEach(r => r.addEventListener('change', updatePreview));
+    channelRadios.forEach(r => r.addEventListener('change', updatePreview));
+
+    updatePreview();
+
+    // Prevent double submissions
+    const form = document.getElementById('appointment-booking-form');
+    const submitBtn = document.getElementById('submit-booking-btn');
+    form.addEventListener('submit', function () {
+      submitBtn.disabled = true;
+      submitBtn.innerHTML = '<span class="material-symbols-outlined text-base animate-spin">progress_activity</span> Reserving Calendar Slot…';
+    });
+  })();
+</script>
+{% endblock %}

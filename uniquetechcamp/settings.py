@@ -94,6 +94,8 @@ INSTALLED_APPS = [
     "services",
     "portfolio",
     "blog",
+    "appointments",
+    "marketing",
 ]
 
 # ------------------------------------------------------------------------------

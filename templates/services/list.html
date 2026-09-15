@@ -473,11 +473,15 @@
         <h2 class="text-xl font-bold mb-3 service-title" style="color:{% if service.is_featured %}#f1f5f9{% else %}#0f172a{% endif %};">{{ service.title }}</h2>
         <p class="service-desc flex-grow text-sm leading-relaxed mb-6" style="color:{% if service.is_featured %}#94a3b8{% else %}#6b7280{% endif %};">{{ service.short_description }}</p>
 
-        <!-- Link -->
-        <div class="pt-5 mt-auto border-t {% if service.is_featured %}border-slate-700{% else %}border-slate-100{% endif %}">
+        <!-- Action Buttons -->
+        <div class="pt-5 mt-auto border-t {% if service.is_featured %}border-slate-700{% else %}border-slate-100{% endif %} flex flex-wrap items-center justify-between gap-2">
           <a href="{% url 'services:detail' service.slug %}" class="explore-link">
             Explore Service
             <span class="material-symbols-outlined" style="font-size:1rem;">arrow_forward</span>
+          </a>
+          <a href="{% url 'appointments:book' %}?service={{ service.slug }}" class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold transition-all shadow-sm {% if service.is_featured %}bg-emerald-400 hover:bg-emerald-300 text-slate-950 shadow-emerald-500/25{% else %}bg-emerald-50 hover:bg-emerald-100 text-emerald-700 border border-emerald-200 hover:border-emerald-300{% endif %}" title="Book a free consultation on {{ service.title }}">
+            <span class="material-symbols-outlined text-sm">calendar_month</span>
+            Book/Consult
           </a>
         </div>
       </div>

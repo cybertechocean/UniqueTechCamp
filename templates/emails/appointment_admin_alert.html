@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>[Staff Alert] New Consultation Booked - UniqueTechCamp</title>
+</head>
+<body style="margin: 0; padding: 0; background-color: #090d16; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; color: #f8fafc; line-height: 1.6;">
+
+  <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0" style="background-color: #090d16; padding: 40px 15px;">
+    <tr>
+      <td align="center">
+        
+        <table role="presentation" width="100%" style="max-width: 620px; background-color: #111827; border-radius: 24px; overflow: hidden; border: 1px solid #1f2937; box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.7);">
+          
+          <!-- Top Accent Line -->
+          <tr>
+            <td style="height: 4px; background: linear-gradient(90deg, #f59e0b, #e11d48, #9333ea);"></td>
+          </tr>
+
+          <!-- Header -->
+          <tr>
+            <td style="padding: 30px 40px 20px 40px; border-bottom: 1px solid #1f2937;">
+              <span style="display: inline-block; padding: 4px 12px; border-radius: 9999px; background-color: rgba(245, 158, 11, 0.15); border: 1px solid rgba(245, 158, 11, 0.3); color: #fbbf24; font-size: 11px; font-weight: 800; text-transform: uppercase; margin-bottom: 10px;">
+                🚨 New Inbound Lead / Consultation
+              </span>
+              <h1 style="margin: 0; font-size: 22px; font-weight: 800; color: #ffffff;">
+                Consultation Request: <span style="color: #38bdf8;">{{ appointment.full_name }}</span>
+              </h1>
+              <p style="margin: 4px 0 0 0; font-size: 12px; color: #9ca3af;">
+                Reference: <strong style="color: #ffffff; font-family: monospace;">{{ appointment.booking_reference }}</strong> • Logged: {{ appointment.created_at|date:"M d, Y H:i" }} EAT
+              </p>
+            </td>
+          </tr>
+
+          <!-- Client Quick Actions -->
+          <tr>
+            <td style="padding: 24px 40px 16px 40px;">
+              <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0">
+                <tr>
+                  <td style="padding-right: 8px;">
+                    <a href="{{ whatsapp_link }}" target="_blank" style="display: block; text-align: center; background-color: #25D366; color: #022c22; text-decoration: none; font-weight: 700; font-size: 12px; padding: 12px; border-radius: 10px;">
+                      💬 Chat on WhatsApp
+                    </a>
+                  </td>
+                  <td style="padding-left: 8px;">
+                    <a href="tel:{{ appointment.phone }}" style="display: block; text-align: center; background-color: #3b82f6; color: #ffffff; text-decoration: none; font-weight: 700; font-size: 12px; padding: 12px; border-radius: 10px;">
+                      📞 Call Direct
+                    </a>
+                  </td>
+                </tr>
+              </table>
+            </td>
+          </tr>
+
+          <!-- Lead Details Table -->
+          <tr>
+            <td style="padding: 0 40px 24px 40px;">
+              <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0" style="background-color: #1f2937; border-radius: 16px; border: 1px solid #374151;">
+                <tr>
+                  <td style="padding: 12px 18px; border-bottom: 1px solid #374151; font-size: 11px; color: #9ca3af; font-weight: 700; text-transform: uppercase; width: 35%;">
+                    Target Service
+                  </td>
+                  <td style="padding: 12px 18px; border-bottom: 1px solid #374151; font-size: 13px; color: #ffffff; font-weight: 700;">
+                    {{ appointment.service_name }}
+                  </td>
+                </tr>
+                <tr>
+                  <td style="padding: 12px 18px; border-bottom: 1px solid #374151; font-size: 11px; color: #9ca3af; font-weight: 700; text-transform: uppercase;">
+                    Client Email
+                  </td>
+                  <td style="padding: 12px 18px; border-bottom: 1px solid #374151; font-size: 13px; color: #38bdf8;">
+                    <a href="mailto:{{ appointment.email }}" style="color: #38bdf8; text-decoration: none;">{{ appointment.email }}</a>
+                  </td>
+                </tr>
+                <tr>
+                  <td style="padding: 12px 18px; border-bottom: 1px solid #374151; font-size: 11px; color: #9ca3af; font-weight: 700; text-transform: uppercase;">
+                    Phone / WhatsApp
+                  </td>
+                  <td style="padding: 12px 18px; border-bottom: 1px solid #374151; font-size: 13px; color: #ffffff;">
+                    {{ appointment.phone }}
+                  </td>
+                </tr>
+                {% if appointment.company_name %}
+                <tr>
+                  <td style="padding: 12px 18px; border-bottom: 1px solid #374151; font-size: 11px; color: #9ca3af; font-weight: 700; text-transform: uppercase;">
+                    Organization
+                  </td>
+                  <td style="padding: 12px 18px; border-bottom: 1px solid #374151; font-size: 13px; color: #ffffff;">
+                    {{ appointment.company_name }}
+                  </td>
+                </tr>
+                {% endif %}
+                <tr>
+                  <td style="padding: 12px 18px; border-bottom: 1px solid #374151; font-size: 11px; color: #9ca3af; font-weight: 700; text-transform: uppercase;">
+                    Requested Date
+                  </td>
+                  <td style="padding: 12px 18px; border-bottom: 1px solid #374151; font-size: 13px; color: #34d399; font-weight: 700;">
+                    {{ appointment.preferred_date|date:"l, F d, Y" }} @ {{ appointment.preferred_time_slot }}
+                  </td>
+                </tr>
+                <tr>
+                  <td style="padding: 12px 18px; border-bottom: 1px solid #374151; font-size: 11px; color: #9ca3af; font-weight: 700; text-transform: uppercase;">
+                    Meeting Type
+                  </td>
+                  <td style="padding: 12px 18px; border-bottom: 1px solid #374151; font-size: 13px; color: #ffffff;">
+                    {{ appointment.meeting_type_display_name }}
+                  </td>
+                </tr>
+                <tr>
+                  <td style="padding: 14px 18px; font-size: 11px; color: #9ca3af; font-weight: 700; text-transform: uppercase; vertical-align: top;">
+                    Project Scope
+                  </td>
+                  <td style="padding: 14px 18px; font-size: 13px; color: #e2e8f0; line-height: 1.6;">
+                    {{ appointment.project_description|linebreaksbr }}
+                  </td>
+                </tr>
+              </table>
+            </td>
+          </tr>
+
+          <!-- Admin Portal Link -->
+          <tr>
+            <td style="padding: 0 40px 30px 40px; text-align: center;">
+              <a href="{{ admin_url }}" style="display: inline-block; background-color: #374151; border: 1px solid #4b5563; color: #ffffff; text-decoration: none; font-weight: 600; font-size: 13px; padding: 10px 24px; border-radius: 8px;">
+                Manage Appointment in Django Admin &rarr;
+              </a>
+            </td>
+          </tr>
+
+          <!-- Footer -->
+          <tr>
+            <td style="padding: 18px 40px; background-color: #0b0f19; border-top: 1px solid #1f2937; text-align: center; font-size: 11px; color: #6b7280;">
+              UniqueTechCamp Automated Notification Engine
+            </td>
+          </tr>
+
+        </table>
+
+      </td>
+    </tr>
+  </table>
+
+</body>
+</html>
