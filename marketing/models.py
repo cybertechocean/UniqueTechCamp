@@ -29,6 +29,15 @@ class BulkCampaign(models.Model):
         max_length=200,
         help_text="Campaign name e.g. 'October 2026 Tech & AI Outreach'"
     )
+    sender_choice = models.CharField(
+        max_length=20,
+        choices=[
+            ('email1', 'Email 1: info@uniquetechcamp.org (Primary)'),
+            ('email2', 'Email 2: UniqueTechCamp@gmail.com (Alternative)'),
+        ],
+        default='email1',
+        help_text="Choose which email account to send from"
+    )
     sender_name = models.CharField(
         max_length=150,
         default="UniqueTechCamp Solutions",
@@ -116,3 +125,78 @@ class CampaignRecipient(models.Model):
 
     def __str__(self):
         return f"{self.name or self.email} - {self.status}"
+
+
+class EmailLog(models.Model):
+    """
+    Comprehensive persistent log of all single, system, and marketing email dispatches.
+    Allows viewing, editing, and 1-click resending of failed emails.
+    """
+    SENDER_CHOICES = [
+        ('email1', 'Email 1: info@uniquetechcamp.org (Primary)'),
+        ('email2', 'Email 2: UniqueTechCamp@gmail.com (Alternative - Google App Password)'),
+    ]
+    EMAIL_TYPE_CHOICES = [
+        ('single', 'Single / Custom Email'),
+        ('welcome', 'Welcome Email'),
+        ('campaign', 'Marketing Campaign'),
+        ('appointment', 'Appointment Booking'),
+        ('contact', 'Contact Form Autoresponder'),
+        ('system', 'System Notification'),
+    ]
+    STATUS_CHOICES = [
+        ('pending', 'Pending Dispatch'),
+        ('sent', 'Sent Successfully'),
+        ('failed', 'Delivery Failed'),
+    ]
+
+    sender_choice = models.CharField(
+        max_length=20,
+        choices=SENDER_CHOICES,
+        default='email1',
+        help_text="Email account used for sending"
+    )
+    from_email = models.CharField(max_length=255, help_text="From address header")
+    to_email = models.EmailField(help_text="Recipient's email address")
+    recipient_name = models.CharField(max_length=150, blank=True, help_text="Recipient's name")
+    subject = models.CharField(max_length=255, help_text="Subject line")
+    body_text = models.TextField(blank=True, help_text="Plain text email body")
+    body_html = models.TextField(blank=True, help_text="HTML formatted email body")
+
+    attachment = models.FileField(
+        upload_to='marketing/attachments/%Y/%m/',
+        null=True,
+        blank=True,
+        help_text="Attached file (e.g. PDF, Document, Image)"
+    )
+    attachment_name = models.CharField(max_length=255, blank=True, help_text="Original attachment filename")
+
+    email_type = models.CharField(
+        max_length=30,
+        choices=EMAIL_TYPE_CHOICES,
+        default='single',
+        help_text="Category of this email"
+    )
+    status = models.CharField(
+        max_length=20,
+        choices=STATUS_CHOICES,
+        default='pending',
+        db_index=True
+    )
+    error_message = models.TextField(blank=True, help_text="Error message if delivery failed")
+    retry_count = models.PositiveIntegerField(default=0, help_text="Number of resend attempts")
+
+    created_at = models.DateTimeField(auto_now_add=True, db_index=True)
+    sent_at = models.DateTimeField(null=True, blank=True)
+
+    class Meta:
+        ordering = ['-created_at']
+        verbose_name = 'Email Log'
+        verbose_name_plural = 'Email Logs'
+
+    def __str__(self):
+        return f"[{self.get_status_display()}] {self.to_email} - {self.subject[:40]}"
+
+    @property
+    def has_attachment(self):
+        return bool(self.attachment)

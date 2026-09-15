@@ -343,16 +343,39 @@ CKEDITOR_5_CONFIGS = {
 CKEDITOR_5_FILE_UPLOAD_PERMISSION = "staff"
 
 # ------------------------------------------------------------------------------
-# Email Backend Configuration (SMTP / Gmail App Password)
+# Dual Email Senders Configuration
+# Email 1 (Primary): info@uniquetechcamp.org
+# Email 2 (Alternative): UniqueTechCamp@gmail.com (Google App Password)
 # ------------------------------------------------------------------------------
 
 EMAIL_BACKEND = env("EMAIL_BACKEND", default="django.core.mail.backends.smtp.EmailBackend")
-EMAIL_HOST = env("EMAIL_HOST", default="smtp.gmail.com")
-EMAIL_PORT = env.int("EMAIL_PORT", default=587)
-EMAIL_USE_TLS = env.bool("EMAIL_USE_TLS", default=True)
-EMAIL_HOST_USER = env("EMAIL_HOST_USER", default="UniqueTechCamp@gmail.com")
-EMAIL_HOST_PASSWORD = env("EMAIL_HOST_PASSWORD", default="")
-DEFAULT_FROM_EMAIL = env("DEFAULT_FROM_EMAIL", default="UniqueTechCamp <info@uniquetechcamp.org>")
-SERVER_EMAIL = env("SERVER_EMAIL", default="UniqueTechCamp <info@uniquetechcamp.org>")
+
+# Email 1: Primary (info@uniquetechcamp.org)
+EMAIL1_HOST = env("EMAIL1_HOST", default="mail.uniquetechcamp.org")
+EMAIL1_PORT = env.int("EMAIL1_PORT", default=465)
+EMAIL1_USE_TLS = env.bool("EMAIL1_USE_TLS", default=False)
+EMAIL1_USE_SSL = env.bool("EMAIL1_USE_SSL", default=True)
+EMAIL1_HOST_USER = env("EMAIL1_HOST_USER", default="info@uniquetechcamp.org")
+EMAIL1_HOST_PASSWORD = env("EMAIL1_HOST_PASSWORD", default="")
+EMAIL1_FROM_EMAIL = env("EMAIL1_FROM_EMAIL", default="UniqueTechCamp <info@uniquetechcamp.org>")
+
+# Email 2: Alternative (UniqueTechCamp@gmail.com via Google App Password)
+EMAIL2_HOST = env("EMAIL2_HOST", default="smtp.gmail.com")
+EMAIL2_PORT = env.int("EMAIL2_PORT", default=587)
+EMAIL2_USE_TLS = env.bool("EMAIL2_USE_TLS", default=True)
+EMAIL2_USE_SSL = env.bool("EMAIL2_USE_SSL", default=False)
+EMAIL2_HOST_USER = env("EMAIL2_HOST_USER", default="UniqueTechCamp@gmail.com")
+EMAIL2_HOST_PASSWORD = env("EMAIL2_HOST_PASSWORD", default=env("EMAIL_HOST_PASSWORD", default="fral qgtd bqxm pmun"))
+EMAIL2_FROM_EMAIL = env("EMAIL2_FROM_EMAIL", default="UniqueTechCamp <UniqueTechCamp@gmail.com>")
+
+# Default Django fallback SMTP configuration
+EMAIL_HOST = env("EMAIL_HOST", default=EMAIL2_HOST if not EMAIL1_HOST_PASSWORD else EMAIL1_HOST)
+EMAIL_PORT = env.int("EMAIL_PORT", default=EMAIL2_PORT if not EMAIL1_HOST_PASSWORD else EMAIL1_PORT)
+EMAIL_USE_TLS = env.bool("EMAIL_USE_TLS", default=EMAIL2_USE_TLS if not EMAIL1_HOST_PASSWORD else EMAIL1_USE_TLS)
+EMAIL_USE_SSL = env.bool("EMAIL_USE_SSL", default=EMAIL2_USE_SSL if not EMAIL1_HOST_PASSWORD else EMAIL1_USE_SSL)
+EMAIL_HOST_USER = env("EMAIL_HOST_USER", default=EMAIL2_HOST_USER if not EMAIL1_HOST_PASSWORD else EMAIL1_HOST_USER)
+EMAIL_HOST_PASSWORD = env("EMAIL_HOST_PASSWORD", default=EMAIL2_HOST_PASSWORD if not EMAIL1_HOST_PASSWORD else EMAIL1_HOST_PASSWORD)
+DEFAULT_FROM_EMAIL = env("DEFAULT_FROM_EMAIL", default=EMAIL1_FROM_EMAIL)
+SERVER_EMAIL = env("SERVER_EMAIL", default=EMAIL1_FROM_EMAIL)
 ADMIN_EMAIL_PRIMARY = "info@uniquetechcamp.org"
 ADMIN_EMAIL_GMAIL = "UniqueTechCamp@gmail.com"
