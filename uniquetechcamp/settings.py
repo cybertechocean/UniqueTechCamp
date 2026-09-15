@@ -168,7 +168,7 @@ if DATABASES["default"]["ENGINE"] == "django.db.backends.mysql":
     DATABASES["default"].setdefault("OPTIONS", {})
     DATABASES["default"]["OPTIONS"]["charset"] = "utf8mb4"
     DATABASES["default"]["OPTIONS"]["init_command"] = (
-        "SET default_storage_engine=INNODB, character_set_connection=utf8mb4, collation_connection=utf8mb4_unicode_ci"
+        "SET NAMES utf8mb4 COLLATE utf8mb4_unicode_ci, default_storage_engine=INNODB"
     )
 
 # ------------------------------------------------------------------------------

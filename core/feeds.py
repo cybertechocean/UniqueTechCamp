@@ -38,7 +38,7 @@ class LatestPostsAtomFeed(LatestPostsFeed):
 class ServicesFeed(Feed):
     title = "UniqueTechCamp - Complete Service Catalogue & AI Growth Systems"
     link = "/services/"
-    description = "100+ specialized industry web development systems integrated with AI Lead Generation, WhatsApp Qualification, and automated follow-ups."
+    description = "100+ specialized industry web development systems integrated with AI Lead Generation, WhatsApp/Email Lead Qualification, and automated follow-ups."
     language = "en-gb"
 
     def items(self):

@@ -378,8 +378,8 @@ class LLMsTxtView(View):
         md = [
             "# UniqueTechCamp — Website, Clients, Income",
             "",
-            "> **UniqueTechCamp** is an elite digital engineering and business growth agency based in Nairobi, Kenya.",
-            "> We don't build commodity static websites; we engineer end-to-end **Client Acquisition & Revenue Growth Machines**.",
+            "> **UniqueTechCamp** is an elite digital development/engineering and business growth agency based in Nairobi, Kenya.",
+            "> We don't build static websites; we develop/engineer end-to-end **Client Acquisition & Revenue Growth Machines**.",
             "> Every website build is tightly integrated with **AI Lead Generation**, **24/7 WhatsApp Qualification Chatbots**, and **Automated Multi-Channel Client Follow-Up Drips**.",
             "",
             "## Company Highlights & Metadata",

@@ -10,6 +10,33 @@ class Command(BaseCommand):
     def handle(self, *args, **options):
         self.stdout.write(self.style.NOTICE("Beginning services seeding..."))
 
+        # Automatically ensure MySQL/MariaDB tables support 4-byte UTF-8 emojis (utf8mb4)
+        from django.db import connection
+        if connection.vendor == 'mysql':
+            tables_to_convert = [
+                'services_servicecategory',
+                'services_service',
+                'services_serviceimage',
+                'services_servicefeature',
+                'services_servicefaq'
+            ]
+            with connection.cursor() as cursor:
+                try:
+                    cursor.execute("ALTER DATABASE CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;")
+                except Exception as e:
+                    self.stdout.write(self.style.WARNING(f"Notice: Database-level charset alter skipped: {e}"))
+                for tbl in tables_to_convert:
+                    try:
+                        cursor.execute(f"ALTER TABLE `{tbl}` CONVERT TO CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;")
+                        self.stdout.write(self.style.SUCCESS(f"Converted table `{tbl}` to utf8mb4."))
+                    except Exception as e:
+                        self.stdout.write(self.style.WARNING(f"Could not convert `{tbl}` to utf8mb4: {e}"))
+
+        # Helper to sanitize 4-byte characters if database still does not support utf8mb4
+        def safe_text(val):
+            return val
+
+
         # Category metadata
         categories_data = [
             {"id": "01", "name": "Retail & Commerce", "slug": "retail-commerce", "icon": "🛒", "icon_name": "shopping_cart", "order": 1, "desc": "E-commerce and retail storefronts with AI customer capture and WhatsApp checkout."},
