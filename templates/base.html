@@ -58,6 +58,9 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
     
+    <!-- Google Material Symbols Outlined (For Services, Portfolio, Categories & Action Icons) -->
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
+
     <!-- FontAwesome 6.6.0 (STRICTLY FOR SOCIAL MEDIA ICONS) -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css" integrity="sha512-Kc323vGBEqzTmouAECnVceyQqyqdsSiqLQISBL29aUW4U/M7pSPA/gEUZQqv1cwx4OnYxTxve5UMg5GT6L4JJg==" crossorigin="anonymous" referrerpolicy="no-referrer" />
 
@@ -140,6 +143,25 @@
     {% tailwind_css %}
     
     <style>
+        /* Google Material Symbols Outlined Configuration */
+        .material-symbols-outlined {
+            font-family: 'Material Symbols Outlined' !important;
+            font-weight: normal;
+            font-style: normal;
+            font-size: 24px;
+            line-height: 1;
+            letter-spacing: normal;
+            text-transform: none;
+            display: inline-block;
+            white-space: nowrap;
+            word-wrap: normal;
+            direction: ltr;
+            -webkit-font-feature-settings: 'liga';
+            -webkit-font-smoothing: antialiased;
+            vertical-align: middle;
+            user-select: none;
+        }
+
         /* Modern Scrollbar */
         ::-webkit-scrollbar { width: 8px; height: 8px; }
         ::-webkit-scrollbar-track { background: #f1f5f9; }
@@ -605,10 +627,15 @@
         </div>
     <!-- Scripts -->
     <script>
-        // Initialize Lucide Icons
-        if (window.lucide) {
-            lucide.createIcons();
+        // Initialize Lucide Icons Robustly
+        function initLucideIcons() {
+            if (typeof lucide !== 'undefined' && lucide.createIcons) {
+                lucide.createIcons();
+            }
         }
+        initLucideIcons();
+        document.addEventListener('DOMContentLoaded', initLucideIcons);
+        window.addEventListener('load', initLucideIcons);
 
         // Navbar Scroll Progress
         const scrollProgress = document.getElementById('scroll-progress');

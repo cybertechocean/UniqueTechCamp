@@ -10,7 +10,7 @@ class ServiceListView(ListView):
     context_object_name = 'services'
 
     def get_queryset(self):
-        qs = Service.objects.filter(is_active=True).select_related('category')
+        qs = Service.objects.filter(is_active=True).select_related('category').prefetch_related('gallery_images')
 
         # ── Category filter ──────────────────────────────────────────
         category_slug = self.request.GET.get('category', '').strip()
@@ -54,6 +54,9 @@ class ServiceDetailView(DetailView):
     model = Service
     template_name = 'services/detail.html'
     context_object_name = 'service'
+
+    def get_queryset(self):
+        return Service.objects.filter(is_active=True).select_related('category').prefetch_related('gallery_images', 'features', 'faqs')
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)

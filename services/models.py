@@ -29,12 +29,13 @@ class Service(models.Model):
     )
     title = models.CharField(max_length=200)
     slug = models.SlugField(unique=True)
-    icon_name = models.CharField(max_length=50, help_text="Google Material Symbol name")
+    icon_name = models.CharField(max_length=50, help_text="Google Material Symbol name (e.g. language, hiking, volunteer_activism)")
     short_description = models.CharField(max_length=255)
     overview = models.TextField()
     benefits = models.TextField(help_text="One benefit per line")
     process = models.TextField(help_text="One process step per line")
-    featured_image = models.ImageField(upload_to='services/', blank=True, null=True)
+    featured_image = models.ImageField(upload_to='services/', blank=True, null=True, help_text="Upload image file from computer")
+    image_url = models.URLField(max_length=500, blank=True, null=True, help_text="Or paste an external image URL (e.g. Unsplash, CDN)")
     order = models.IntegerField(default=0)
     is_active = models.BooleanField(default=True)
     is_featured = models.BooleanField(default=False, help_text="Show this service as featured/highlighted")
@@ -45,11 +46,52 @@ class Service(models.Model):
     def __str__(self):
         return self.title
 
+    @property
+    def get_image_url(self):
+        """Returns uploaded featured image URL if present, otherwise external image URL, or None."""
+        if self.featured_image:
+            try:
+                return self.featured_image.url
+            except Exception:
+                pass
+        if self.image_url:
+            return self.image_url
+        return None
+
     def get_benefits_list(self):
         return [b.strip() for b in self.benefits.split('\n') if b.strip()]
 
     def get_process_list(self):
         return [p.strip() for p in self.process.split('\n') if p.strip()]
+
+
+class ServiceImage(models.Model):
+    service = models.ForeignKey(Service, related_name='gallery_images', on_delete=models.CASCADE)
+    image = models.ImageField(upload_to='services/gallery/', blank=True, null=True, help_text="Upload image file from computer")
+    image_url = models.URLField(max_length=500, blank=True, null=True, help_text="Or paste an external image URL")
+    caption = models.CharField(max_length=255, blank=True, help_text="Optional title or caption for this visual")
+    order = models.IntegerField(default=0)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ['order', 'created_at']
+        verbose_name = 'Service Gallery Image'
+        verbose_name_plural = 'Service Gallery Images'
+
+    @property
+    def get_image_url(self):
+        if self.image:
+            try:
+                return self.image.url
+            except Exception:
+                pass
+        if self.image_url:
+            return self.image_url
+        return None
+
+    def __str__(self):
+        return f"{self.service.title} - Image {self.id} ({self.caption or 'Untitled'})"
+
 
 class ServiceFeature(models.Model):
     service = models.ForeignKey(Service, related_name='features', on_delete=models.CASCADE)
@@ -59,6 +101,7 @@ class ServiceFeature(models.Model):
 
     def __str__(self):
         return f"{self.service.title} - {self.title}"
+
 
 class ServiceFAQ(models.Model):
     service = models.ForeignKey(Service, related_name='faqs', on_delete=models.CASCADE)

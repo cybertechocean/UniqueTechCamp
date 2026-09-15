@@ -420,19 +420,53 @@
       {% for service in services %}
       <div class="service-card {% if service.is_featured %}featured{% endif %}" data-title="{{ service.title|lower }}" data-desc="{{ service.short_description|lower }}" data-cat="{% if service.category %}{{ service.category.name|lower }}{% endif %}" style="animation-delay: {{ forloop.counter0 }}0ms;">
 
-        <!-- Icon -->
-        <div class="service-icon-wrap">
-          <span class="material-symbols-outlined text-3xl {% if service.is_featured %}text-green-300{% else %}text-green-600{% endif %}">{{ service.icon_name }}</span>
+        {% if service.get_image_url %}
+        <!-- Featured Image Showcase -->
+        <div class="relative w-full h-48 rounded-xl overflow-hidden mb-4 bg-slate-900 shadow-inner group">
+          <img src="{{ service.get_image_url }}" alt="{{ service.title }}" loading="lazy" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
+          <div class="absolute inset-0 bg-gradient-to-t from-slate-950/70 via-slate-950/20 to-transparent pointer-events-none"></div>
+          
+          <!-- Category pill on top left -->
+          {% if service.category %}
+          <div class="absolute top-3 left-3 z-10">
+            <span class="cat-pill shadow-sm !mb-0">{{ service.category.icon }} {{ service.category.name }}</span>
+          </div>
+          {% endif %}
+
+          <!-- Badges on top right -->
+          <div class="absolute top-3 right-3 flex items-center gap-1.5 z-10">
+            {% if service.is_featured %}
+            <span class="bg-gradient-to-r from-emerald-500 to-green-600 text-white text-[10px] font-extrabold uppercase px-2.5 py-1 rounded-full shadow-md">✨ Featured</span>
+            {% endif %}
+            {% if service.gallery_images.all|length %}
+            <span class="bg-slate-900/80 backdrop-blur-md border border-white/20 text-white text-[10px] font-semibold px-2 py-0.5 rounded-full flex items-center gap-1 shadow">
+              <span class="material-symbols-outlined text-[13px] text-emerald-400">photo_library</span>
+              +{{ service.gallery_images.all|length }}
+            </span>
+            {% endif %}
+          </div>
+
+          <!-- Bottom floating icon badge -->
+          <div class="service-icon-wrap !w-10 !h-10 !mb-0 absolute bottom-3 right-3 shadow-lg backdrop-blur-md bg-white/90 border border-white/40">
+            <span class="material-symbols-outlined text-xl text-emerald-600">{{ service.icon_name }}</span>
+          </div>
+        </div>
+        {% else %}
+        <!-- Icon & Category (fallback when no image) -->
+        <div class="flex items-center justify-between mb-4">
+          <div class="service-icon-wrap !mb-0">
+            <span class="material-symbols-outlined text-3xl {% if service.is_featured %}text-green-300{% else %}text-green-600{% endif %}">{{ service.icon_name }}</span>
+          </div>
+          {% if service.is_featured %}
+          <span class="bg-gradient-to-r from-emerald-500 to-green-600 text-white text-[10px] font-extrabold uppercase px-2.5 py-1 rounded-full shadow-sm">✨ Featured</span>
+          {% endif %}
         </div>
 
-        <!-- Category pill -->
         {% if service.category %}
-        <span class="cat-pill">{{ service.category.icon }} {{ service.category.name }}</span>
+        <div>
+          <span class="cat-pill">{{ service.category.icon }} {{ service.category.name }}</span>
+        </div>
         {% endif %}
-
-        <!-- Featured badge -->
-        {% if service.is_featured %}
-        <span style="position:absolute;top:16px;right:16px;background:linear-gradient(135deg,#22C55E,#16A34A);color:#fff;font-size:0.68rem;font-weight:800;letter-spacing:0.08em;padding:3px 10px;border-radius:9999px;text-transform:uppercase;">✨ Featured</span>
         {% endif %}
 
         <!-- Title & Description -->
