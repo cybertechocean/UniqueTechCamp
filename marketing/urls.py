@@ -6,6 +6,13 @@ from .views import (
     CampaignSendTestView,
     CampaignStartSendingView,
     CampaignStatusApiView,
+    SendSingleEmailView,
+    EmailLogListView,
+    EmailLogResendView,
+    EmailLogEditView,
+    EmailLogDeleteView,
+    ResendAllFailedEmailsView,
+    SyncWelcomeLogsView,
 )
 
 app_name = 'marketing'
@@ -17,4 +24,17 @@ urlpatterns = [
     path('campaign/<int:pk>/test/', CampaignSendTestView.as_view(), name='send_test'),
     path('campaign/<int:pk>/start/', CampaignStartSendingView.as_view(), name='start_sending'),
     path('api/campaign/<int:pk>/status/', CampaignStatusApiView.as_view(), name='campaign_status_api'),
+    
+    # Single / Custom Email Composer
+    path('send-single/', SendSingleEmailView.as_view(), name='send_single'),
+    
+    # Centralized Email Logs
+    path('emails-log/', EmailLogListView.as_view(), name='emails_log'),
+    path('emails-log/<int:pk>/resend/', EmailLogResendView.as_view(), name='email_resend'),
+    path('emails-log/<int:pk>/edit/', EmailLogEditView.as_view(), name='email_edit'),
+    path('emails-log/<int:pk>/delete/', EmailLogDeleteView.as_view(), name='email_delete'),
+    path('emails-log/resend-all-failed/', ResendAllFailedEmailsView.as_view(), name='resend_all_failed'),
+    path('emails-log/sync-welcome/', SyncWelcomeLogsView.as_view(), name='sync_welcome_logs'),
 ]
+
+

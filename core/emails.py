@@ -67,22 +67,21 @@ def send_welcome_email(recipient_email, user_name=None, user=None, temporary_pas
         html_content = render_to_string("emails/welcome_email.html", context)
         text_content = render_to_string("emails/welcome_email.txt", context)
     except Exception:
-        # Fallback to plain text rendering
         html_content = render_to_string("emails/welcome_email.html", context)
         text_content = strip_tags(html_content)
 
-    msg = EmailMultiAlternatives(
-        subject=subject,
-        body=text_content,
-        from_email=DEFAULT_FROM,
-        to=[recipient_email]
-    )
-    msg.attach_alternative(html_content, "text/html")
-    
     try:
-        msg.send(fail_silently=False)
-        logger.info(f"Welcome email successfully sent to {recipient_email}")
-        return True
+        from marketing.email_service import send_robust_email
+        success, _ = send_robust_email(
+            to_email=recipient_email,
+            subject=subject,
+            body_text=text_content,
+            body_html=html_content,
+            sender_choice='email1',
+            recipient_name=user_name,
+            email_type='welcome'
+        )
+        return success
     except Exception as e:
         logger.error(f"Failed to send welcome email to {recipient_email}: {e}")
         return False
@@ -120,18 +119,19 @@ def send_password_reset_email(user, request=None):
         html_content = render_to_string("registration/password_reset_email.html", context)
         text_content = strip_tags(html_content)
 
-    msg = EmailMultiAlternatives(
-        subject=subject,
-        body=text_content,
-        from_email=DEFAULT_FROM,
-        to=[user.email]
-    )
-    msg.attach_alternative(html_content, "text/html")
-
     try:
-        msg.send(fail_silently=False)
-        logger.info(f"Password reset email successfully sent to {user.email}")
-        return True
+        from marketing.email_service import send_robust_email
+        success, _ = send_robust_email(
+            to_email=user.email,
+            subject=subject,
+            body_text=text_content,
+            body_html=html_content,
+            sender_choice='email1',
+            recipient_name=user.get_full_name() or user.username,
+            email_type='system'
+        )
+        return success
     except Exception as e:
         logger.error(f"Failed to send password reset email to {user.email}: {e}")
         return False
+

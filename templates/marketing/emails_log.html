@@ -1,0 +1,444 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Email Logs & Delivery Status | UniqueTechCamp Management Studio{% endblock %}
+{% block description %}Track, inspect, and resend all outgoing emails, inspect delivery errors, and switch between Email 1 and Email 2 senders.{% endblock %}
+
+{% block content %}
+<section class="py-12 bg-slate-950 text-white min-h-screen">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+
+    <!-- Top Bar -->
+    <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-6 pb-6 border-b border-slate-800 mb-8">
+      <div>
+        <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-sky-500/15 border border-sky-500/30 text-sky-400 text-xs font-bold uppercase tracking-wider mb-2">
+          <span class="material-symbols-outlined text-sm">receipt_long</span>
+          Audit & Delivery Tracker
+        </div>
+        <h1 class="text-3xl sm:text-4xl font-heading font-extrabold text-white">
+          Email Logs & <span class="text-sky-400">Resend Center</span>
+        </h1>
+        <p class="text-sm text-slate-400 mt-1">
+          Inspect every outgoing message, trace delivery errors, edit failed messages, and retry with 1-click using either Email 1 or Email 2.
+        </p>
+      </div>
+
+      <!-- Quick Action Buttons -->
+      <div class="shrink-0 flex flex-wrap items-center gap-3">
+        {% if failed_count > 0 %}
+          <form method="POST" action="{% url 'marketing:resend_all_failed' %}" onsubmit="return confirm('Retry sending all {{ failed_count }} failed emails?');">
+            {% csrf_token %}
+            <button type="submit" class="py-3 px-5 rounded-2xl bg-rose-500/20 hover:bg-rose-500/30 border border-rose-500/50 text-rose-300 font-heading font-bold text-xs sm:text-sm transition-all flex items-center gap-2">
+              <span class="material-symbols-outlined text-base animate-spin">refresh</span>
+              <span>Resend All Failed ({{ failed_count }})</span>
+            </button>
+          </form>
+        {% endif %}
+
+        <!-- Sync Unsent Welcome Emails Button -->
+        <form method="POST" action="{% url 'marketing:sync_welcome_logs' %}">
+          {% csrf_token %}
+          <button type="submit" class="py-3 px-4 rounded-2xl bg-slate-900 hover:bg-slate-800 border border-slate-700 text-slate-200 font-heading font-medium text-xs sm:text-sm transition-all flex items-center gap-2" title="Scan registered users and import any unsent welcome emails into this log">
+            <span class="material-symbols-outlined text-base text-amber-400">auto_fix_high</span>
+            <span>Sync Unsent Welcome Emails</span>
+          </button>
+        </form>
+
+        <a href="{% url 'marketing:send_single' %}" 
+           class="py-3 px-5 rounded-2xl bg-emerald-500 hover:bg-emerald-600 text-slate-950 font-heading font-bold text-xs sm:text-sm shadow-lg shadow-emerald-500/25 transition-all flex items-center gap-2">
+          <span class="material-symbols-outlined text-base">send</span>
+          <span>Send Single Email</span>
+        </a>
+
+        <a href="{% url 'marketing:dashboard' %}" 
+           class="py-3 px-4 rounded-2xl bg-slate-900 hover:bg-slate-800 border border-slate-800 text-slate-300 hover:text-white font-heading font-semibold text-xs sm:text-sm transition-all flex items-center gap-2">
+          <span class="material-symbols-outlined text-base text-emerald-400">campaign</span>
+          <span>Bulk Broadcasts</span>
+        </a>
+      </div>
+
+    </div>
+
+    <!-- Navigation Tabs Bar -->
+    <div class="flex items-center gap-3 mb-8 overflow-x-auto pb-2 border-b border-slate-800/60">
+      <a href="{% url 'marketing:dashboard' %}" class="px-5 py-2.5 rounded-xl bg-slate-900/80 hover:bg-slate-800 text-slate-300 hover:text-white font-heading font-medium text-xs sm:text-sm border border-slate-800 transition-all flex items-center gap-2">
+        <span class="material-symbols-outlined text-base text-slate-400">campaign</span>
+        <span>Bulk Broadcasts</span>
+      </a>
+      <a href="{% url 'marketing:send_single' %}" class="px-5 py-2.5 rounded-xl bg-slate-900/80 hover:bg-slate-800 text-slate-300 hover:text-white font-heading font-medium text-xs sm:text-sm border border-slate-800 transition-all flex items-center gap-2">
+        <span class="material-symbols-outlined text-base text-emerald-400">mail</span>
+        <span>Send Single / Custom Email</span>
+      </a>
+      <a href="{% url 'marketing:emails_log' %}" class="px-5 py-2.5 rounded-xl bg-sky-500/20 text-sky-300 font-heading font-bold text-xs sm:text-sm border border-sky-500/40 flex items-center gap-2">
+        <span class="material-symbols-outlined text-base text-sky-400">receipt_long</span>
+        <span>Delivery Logs & Retries</span>
+        {% if failed_count > 0 %}
+          <span class="px-2 py-0.5 rounded-full bg-rose-500 text-white text-[10px] font-extrabold animate-pulse">
+            {{ failed_count }}
+          </span>
+        {% endif %}
+      </a>
+    </div>
+
+    <!-- Metrics Cards -->
+    <div class="grid grid-cols-2 sm:grid-cols-4 gap-5 mb-8">
+      <div class="bg-slate-900/90 border border-slate-800 rounded-3xl p-5 shadow-xl">
+        <div class="text-[11px] font-bold text-slate-400 uppercase tracking-wider mb-1">Total Logs</div>
+        <div class="text-3xl font-heading font-extrabold text-white">{{ total_count }}</div>
+        <div class="text-[11px] text-slate-400 mt-1 flex items-center gap-1">
+          All recorded dispatches
+        </div>
+      </div>
+
+      <div class="bg-slate-900/90 border border-slate-800 rounded-3xl p-5 shadow-xl">
+        <div class="text-[11px] font-bold text-slate-400 uppercase tracking-wider mb-1">Sent Successfully</div>
+        <div class="text-3xl font-heading font-extrabold text-emerald-400">{{ sent_count }}</div>
+        <div class="text-[11px] text-emerald-400 mt-1 flex items-center gap-1">
+          <i data-lucide="check-circle" class="w-3.5 h-3.5"></i> Delivered
+        </div>
+      </div>
+
+      <div class="bg-slate-900/90 border border-slate-800 rounded-3xl p-5 shadow-xl">
+        <div class="text-[11px] font-bold text-slate-400 uppercase tracking-wider mb-1">Failed Deliveries</div>
+        <div class="text-3xl font-heading font-extrabold {% if failed_count > 0 %}text-rose-400{% else %}text-slate-400{% endif %}">{{ failed_count }}</div>
+        <div class="text-[11px] text-rose-400 mt-1 flex items-center gap-1">
+          {% if failed_count > 0 %}Action required: review & resend{% else %}No failures detected{% endif %}
+        </div>
+      </div>
+
+      <div class="bg-slate-900/90 border border-slate-800 rounded-3xl p-5 shadow-xl">
+        <div class="text-[11px] font-bold text-slate-400 uppercase tracking-wider mb-1">Pending</div>
+        <div class="text-3xl font-heading font-extrabold text-amber-400">{{ pending_count }}</div>
+        <div class="text-[11px] text-slate-400 mt-1">Queued / in dispatch</div>
+      </div>
+    </div>
+
+    <!-- Filter & Search Toolbar -->
+    <div class="bg-slate-900/90 border border-slate-800 rounded-3xl p-5 mb-8 shadow-xl">
+      <form method="GET" action="{% url 'marketing:emails_log' %}" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
+        
+        <!-- Search Query -->
+        <div class="lg:col-span-2">
+          <label for="q" class="block text-[11px] font-bold uppercase tracking-wider text-slate-400 mb-1.5">Search Logs</label>
+          <div class="relative">
+            <input type="text" id="q" name="q" value="{{ query }}" placeholder="Search recipient, name, subject, or error..." class="w-full pl-10 pr-4 py-2.5 rounded-xl border border-slate-700 bg-slate-950 focus:border-sky-500 text-xs text-white placeholder:text-slate-600">
+            <span class="material-symbols-outlined absolute left-3 top-2.5 text-base text-slate-500">search</span>
+          </div>
+        </div>
+
+        <!-- Filter by Status -->
+        <div>
+          <label for="status" class="block text-[11px] font-bold uppercase tracking-wider text-slate-400 mb-1.5">Status</label>
+          <select id="status" name="status" onchange="this.form.submit()" class="w-full px-3 py-2.5 rounded-xl border border-slate-700 bg-slate-950 focus:border-sky-500 text-xs text-white">
+            <option value="all" {% if status_filter == 'all' %}selected{% endif %}>All Statuses</option>
+            <option value="failed" {% if status_filter == 'failed' %}selected{% endif %}>🔴 Failed Only</option>
+            <option value="sent" {% if status_filter == 'sent' %}selected{% endif %}>🟢 Sent Successfully</option>
+            <option value="pending" {% if status_filter == 'pending' %}selected{% endif %}>🟡 Pending</option>
+          </select>
+        </div>
+
+        <!-- Filter by Sender -->
+        <div>
+          <label for="sender" class="block text-[11px] font-bold uppercase tracking-wider text-slate-400 mb-1.5">Sender Account</label>
+          <select id="sender" name="sender" onchange="this.form.submit()" class="w-full px-3 py-2.5 rounded-xl border border-slate-700 bg-slate-950 focus:border-sky-500 text-xs text-white">
+            <option value="all" {% if sender_filter == 'all' %}selected{% endif %}>All Senders</option>
+            <option value="email1" {% if sender_filter == 'email1' %}selected{% endif %}>Email 1: info@uniquetechcamp.org</option>
+            <option value="email2" {% if sender_filter == 'email2' %}selected{% endif %}>Email 2: UniqueTechCamp@gmail.com</option>
+          </select>
+        </div>
+
+        <!-- Filter by Type -->
+        <div>
+          <label for="type" class="block text-[11px] font-bold uppercase tracking-wider text-slate-400 mb-1.5">Email Type</label>
+          <select id="type" name="type" onchange="this.form.submit()" class="w-full px-3 py-2.5 rounded-xl border border-slate-700 bg-slate-950 focus:border-sky-500 text-xs text-white">
+            <option value="all" {% if type_filter == 'all' %}selected{% endif %}>All Types</option>
+            <option value="welcome" {% if type_filter == 'welcome' %}selected{% endif %}>Welcome Email</option>
+            <option value="single" {% if type_filter == 'single' %}selected{% endif %}>Single / Custom</option>
+            <option value="campaign" {% if type_filter == 'campaign' %}selected{% endif %}>Marketing Campaign</option>
+            <option value="appointment" {% if type_filter == 'appointment' %}selected{% endif %}>Appointment Booking</option>
+            <option value="system" {% if type_filter == 'system' %}selected{% endif %}>System / Reset</option>
+          </select>
+        </div>
+
+      </form>
+    </div>
+
+    <!-- LOGS TABLE -->
+    <div class="bg-slate-900/90 border border-slate-800 rounded-3xl shadow-2xl overflow-hidden mb-8">
+      <div class="overflow-x-auto">
+        <table class="w-full text-left text-xs text-slate-300">
+          <thead>
+            <tr class="border-b border-slate-800 bg-slate-950/60 text-[11px] uppercase tracking-wider text-slate-400 font-bold">
+              <th class="py-4 px-4">Status</th>
+              <th class="py-4 px-4">Sender</th>
+              <th class="py-4 px-4">Recipient</th>
+              <th class="py-4 px-4">Subject</th>
+              <th class="py-4 px-4">Type</th>
+              <th class="py-4 px-4">Date / Retries</th>
+              <th class="py-4 px-4 text-right">Actions</th>
+            </tr>
+          </thead>
+          <tbody class="divide-y divide-slate-800/60 font-medium">
+            {% for log in logs %}
+            <tr class="hover:bg-slate-800/40 transition-colors {% if log.status == 'failed' %}bg-rose-950/10{% endif %}">
+              
+              <!-- Status Badge -->
+              <td class="py-4 px-4 whitespace-nowrap">
+                {% if log.status == 'sent' %}
+                  <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[10px] font-extrabold uppercase bg-emerald-500/15 text-emerald-400 border border-emerald-500/30">
+                    <span class="w-1.5 h-1.5 rounded-full bg-emerald-400"></span>
+                    Sent
+                  </span>
+                {% elif log.status == 'failed' %}
+                  <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[10px] font-extrabold uppercase bg-rose-500/20 text-rose-400 border border-rose-500/40 animate-pulse" title="{{ log.error_message }}">
+                    <span class="w-1.5 h-1.5 rounded-full bg-rose-400"></span>
+                    Failed
+                  </span>
+                {% else %}
+                  <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[10px] font-extrabold uppercase bg-amber-500/15 text-amber-400 border border-amber-500/30">
+                    <span class="w-1.5 h-1.5 rounded-full bg-amber-400"></span>
+                    Pending
+                  </span>
+                {% endif %}
+              </td>
+
+              <!-- Sender Badge -->
+              <td class="py-4 px-4 whitespace-nowrap">
+                {% if log.sender_choice == 'email1' %}
+                  <span class="px-2 py-0.5 rounded-lg bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 text-[10px] font-bold font-mono">
+                    Email 1 (info@)
+                  </span>
+                {% else %}
+                  <span class="px-2 py-0.5 rounded-lg bg-sky-500/10 text-sky-400 border border-sky-500/20 text-[10px] font-bold font-mono">
+                    Email 2 (Gmail)
+                  </span>
+                {% endif %}
+              </td>
+
+              <!-- Recipient -->
+              <td class="py-4 px-4">
+                <div class="font-bold text-white">{{ log.to_email }}</div>
+                {% if log.recipient_name %}
+                  <div class="text-[11px] text-slate-400">{{ log.recipient_name }}</div>
+                {% endif %}
+              </td>
+
+              <!-- Subject & Attachment Indicator -->
+              <td class="py-4 px-4 max-w-xs">
+                <div class="truncate text-slate-200 font-semibold" title="{{ log.subject }}">
+                  {{ log.subject }}
+                </div>
+                <div class="flex items-center gap-2 mt-0.5">
+                  {% if log.attachment %}
+                    <span class="inline-flex items-center gap-1 text-[10px] text-amber-400 font-mono">
+                      <span class="material-symbols-outlined text-xs">attach_file</span>
+                      {{ log.attachment_name|default:"Attachment"|truncatechars:18 }}
+                    </span>
+                  {% endif %}
+
+                  {% if log.error_message and log.status == 'failed' %}
+                    <span class="text-[10px] text-rose-400 truncate max-w-[200px]" title="{{ log.error_message }}">
+                      ⚠️ {{ log.error_message }}
+                    </span>
+                  {% endif %}
+                </div>
+              </td>
+
+              <!-- Type -->
+              <td class="py-4 px-4 whitespace-nowrap">
+                <span class="px-2 py-0.5 rounded-md bg-slate-800 text-slate-300 text-[10px] font-semibold uppercase">
+                  {{ log.get_email_type_display }}
+                </span>
+              </td>
+
+              <!-- Date & Retries -->
+              <td class="py-4 px-4 whitespace-nowrap text-slate-400 text-[11px]">
+                <div>{{ log.created_at|date:"M d, Y H:i" }}</div>
+                {% if log.retry_count > 0 %}
+                  <div class="text-amber-400 text-[10px]">Retried {{ log.retry_count }}x</div>
+                {% endif %}
+              </td>
+
+              <!-- Actions -->
+              <td class="py-4 px-4 text-right whitespace-nowrap">
+                <div class="inline-flex items-center gap-1.5">
+                  
+                  <!-- View Details Button -->
+                  <button type="button" onclick="openLogModal('{{ log.id }}', '{{ log.to_email|escapejs }}', '{{ log.recipient_name|escapejs }}', '{{ log.subject|escapejs }}', '{{ log.body_text|escapejs }}', '{{ log.error_message|escapejs }}', '{{ log.get_sender_choice_display|escapejs }}', '{% if log.attachment %}{{ log.attachment.url }}{% endif %}', '{{ log.attachment_name|escapejs }}')" class="p-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-white transition-colors" title="View email content & details">
+                    <span class="material-symbols-outlined text-sm">visibility</span>
+                  </button>
+
+                  <!-- 1-Click Resend Button -->
+                  <a href="{% url 'marketing:email_resend' log.id %}" onclick="return confirm('Resend email to {{ log.to_email }} now?');" class="p-2 rounded-xl bg-emerald-500/20 hover:bg-emerald-500/30 text-emerald-400 border border-emerald-500/30 transition-colors" title="1-Click Quick Resend">
+                    <span class="material-symbols-outlined text-sm">refresh</span>
+                  </a>
+
+                  <!-- Edit & Resend -->
+                  <a href="{% url 'marketing:email_edit' log.id %}" class="p-2 rounded-xl bg-sky-500/20 hover:bg-sky-500/30 text-sky-400 border border-sky-500/30 transition-colors" title="Edit recipient/body or switch sender before resending">
+                    <span class="material-symbols-outlined text-sm">edit</span>
+                  </a>
+
+                  <!-- Delete -->
+                  <form method="POST" action="{% url 'marketing:email_delete' log.id %}" class="inline" onsubmit="return confirm('Delete this email log record?');">
+                    {% csrf_token %}
+                    <button type="submit" class="p-2 rounded-xl bg-slate-800 hover:bg-rose-500/20 text-slate-400 hover:text-rose-400 transition-colors" title="Delete record">
+                      <span class="material-symbols-outlined text-sm">delete</span>
+                    </button>
+                  </form>
+
+                </div>
+              </td>
+
+            </tr>
+            {% empty %}
+            <tr>
+              <td colspan="7" class="py-12 text-center text-slate-500 text-xs">
+                No email logs found matching the selected criteria.
+              </td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Pagination -->
+      {% if logs.has_other_pages %}
+      <div class="flex items-center justify-between p-4 border-t border-slate-800 bg-slate-950/40 text-xs text-slate-400">
+        <div>
+          Showing page {{ logs.number }} of {{ logs.paginator.num_pages }}
+        </div>
+        <div class="flex items-center gap-2">
+          {% if logs.has_previous %}
+            <a href="?page={{ logs.previous_page_number }}&status={{ status_filter }}&sender={{ sender_filter }}&type={{ type_filter }}&q={{ query }}" class="px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-white font-semibold">Previous</a>
+          {% endif %}
+          {% if logs.has_next %}
+            <a href="?page={{ logs.next_page_number }}&status={{ status_filter }}&sender={{ sender_filter }}&type={{ type_filter }}&q={{ query }}" class="px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-white font-semibold">Next</a>
+          {% endif %}
+        </div>
+      </div>
+      {% endif %}
+    </div>
+
+  </div>
+</section>
+
+<!-- VIEW DETAILS MODAL -->
+<div id="log-modal" class="fixed inset-0 z-50 hidden bg-slate-950/80 backdrop-blur-sm flex items-center justify-center p-4">
+  <div class="bg-slate-900 border border-slate-800 rounded-3xl p-6 sm:p-8 max-w-2xl w-full shadow-2xl relative max-h-[90vh] overflow-y-auto">
+    <div class="flex items-center justify-between pb-4 border-b border-slate-800 mb-6">
+      <div class="flex items-center gap-2.5 text-sky-400">
+        <span class="material-symbols-outlined text-2xl">mark_email_read</span>
+        <h3 class="font-heading font-bold text-lg text-white">Email Dispatch Inspector</h3>
+      </div>
+      <button type="button" onclick="closeLogModal()" class="text-slate-400 hover:text-white">
+        <span class="material-symbols-outlined text-2xl">close</span>
+      </button>
+    </div>
+
+    <div class="space-y-4 text-xs">
+      <div>
+        <div class="text-slate-400 uppercase tracking-wider font-bold text-[10px]">Sender Account</div>
+        <div id="modal-sender" class="font-mono text-white text-sm font-semibold mt-0.5"></div>
+      </div>
+
+      <div class="grid sm:grid-cols-2 gap-4">
+        <div>
+          <div class="text-slate-400 uppercase tracking-wider font-bold text-[10px]">Recipient Email</div>
+          <div id="modal-recipient" class="font-bold text-white text-sm mt-0.5"></div>
+        </div>
+        <div>
+          <div class="text-slate-400 uppercase tracking-wider font-bold text-[10px]">Recipient Name</div>
+          <div id="modal-name" class="text-slate-300 mt-0.5"></div>
+        </div>
+      </div>
+
+      <div>
+        <div class="text-slate-400 uppercase tracking-wider font-bold text-[10px]">Subject Line</div>
+        <div id="modal-subject" class="font-bold text-emerald-400 text-sm mt-0.5"></div>
+      </div>
+
+      <!-- Error alert if any -->
+      <div id="modal-error-box" class="p-3.5 rounded-2xl bg-rose-500/15 border border-rose-500/30 text-rose-300 hidden">
+        <div class="font-bold text-rose-400 text-xs mb-1 flex items-center gap-1.5">
+          <span class="material-symbols-outlined text-sm">error</span>
+          Delivery Error Trace:
+        </div>
+        <div id="modal-error" class="font-mono text-[11px] whitespace-pre-wrap"></div>
+      </div>
+
+      <!-- Attachment Box if any -->
+      <div id="modal-attachment-box" class="p-3.5 rounded-2xl bg-amber-500/10 border border-amber-500/20 text-amber-300 hidden">
+        <div class="font-bold text-amber-400 text-xs mb-1 flex items-center gap-1.5">
+          <span class="material-symbols-outlined text-sm">attachment</span>
+          Attached File:
+        </div>
+        <a id="modal-attachment-link" href="#" target="_blank" class="text-amber-300 underline font-mono text-xs flex items-center gap-1 hover:text-amber-200">
+          <span id="modal-attachment-name"></span> &rarr;
+        </a>
+      </div>
+
+      <div>
+        <div class="text-slate-400 uppercase tracking-wider font-bold text-[10px] mb-1">Message Content</div>
+        <div id="modal-body" class="p-4 rounded-2xl bg-slate-950 border border-slate-800 text-slate-300 whitespace-pre-wrap font-sans text-xs leading-relaxed max-h-60 overflow-y-auto"></div>
+      </div>
+    </div>
+
+    <div class="pt-6 border-t border-slate-800 mt-6 flex items-center justify-end gap-3">
+      <button type="button" onclick="closeLogModal()" class="py-2.5 px-5 rounded-xl bg-slate-800 hover:bg-slate-700 text-white font-semibold text-xs">
+        Close
+      </button>
+      <a id="modal-edit-link" href="#" class="py-2.5 px-5 rounded-xl bg-sky-500 hover:bg-sky-600 text-slate-950 font-bold text-xs flex items-center gap-1.5">
+        <span class="material-symbols-outlined text-sm">edit</span>
+        <span>Edit & Resend</span>
+      </a>
+    </div>
+
+  </div>
+</div>
+{% endblock %}
+
+{% block extra_scripts %}
+<script>
+  function openLogModal(id, recipient, name, subject, body, error, sender, attachUrl, attachName) {
+    document.getElementById('modal-sender').textContent = sender || 'Email 1 (Primary)';
+    document.getElementById('modal-recipient').textContent = recipient;
+    document.getElementById('modal-name').textContent = name || 'Not specified';
+    document.getElementById('modal-subject').textContent = subject;
+    document.getElementById('modal-body').textContent = body;
+    document.getElementById('modal-edit-link').href = `/marketing/emails-log/${id}/edit/`;
+
+    const errorBox = document.getElementById('modal-error-box');
+    const errorText = document.getElementById('modal-error');
+    if (error && error.trim() !== '') {
+      errorText.textContent = error;
+      errorBox.classList.remove('hidden');
+    } else {
+      errorBox.classList.add('hidden');
+    }
+
+    const attachBox = document.getElementById('modal-attachment-box');
+    const attachLink = document.getElementById('modal-attachment-link');
+    const attachNameElem = document.getElementById('modal-attachment-name');
+    if (attachUrl && attachUrl.trim() !== '') {
+      attachLink.href = attachUrl;
+      attachNameElem.textContent = attachName || 'View Attachment';
+      attachBox.classList.remove('hidden');
+    } else {
+      attachBox.classList.add('hidden');
+    }
+
+    document.getElementById('log-modal').classList.remove('hidden');
+  }
+
+  function closeLogModal() {
+    document.getElementById('log-modal').classList.add('hidden');
+  }
+
+  // Close modal on escape
+  document.addEventListener('keydown', function(e) {
+    if (e.key === 'Escape') {
+      closeLogModal();
+    }
+  });
+</script>
+{% endblock %}

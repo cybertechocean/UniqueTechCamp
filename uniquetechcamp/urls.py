@@ -3,6 +3,8 @@ from django.urls import path, include
 from django.conf import settings
 from django.conf.urls.static import static
 from django.contrib.sitemaps.views import sitemap
+from django.views.generic import RedirectView
+
 
 from core.sitemaps import (
     StaticViewSitemap,
@@ -91,6 +93,8 @@ urlpatterns = [
     path('blog/', include('blog.urls')),
     path('appointments/', include('appointments.urls')),
     path('marketing/', include('marketing.urls')),
+    path('send-single/', RedirectView.as_view(url='/marketing/send-single/', permanent=False)),
+    path('emails-log/', RedirectView.as_view(url='/marketing/emails-log/', permanent=False)),
     path('ckeditor5/', include('django_ckeditor_5.urls')),
 ]
 

@@ -1,0 +1,320 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Send Single / Custom Email | UniqueTechCamp Management Studio{% endblock %}
+{% block description %}Compose and dispatch personalized single emails with attachments using Email 1 (info@uniquetechcamp.org) or Email 2 (UniqueTechCamp@gmail.com).{% endblock %}
+
+{% block content %}
+<section class="py-12 bg-slate-950 text-white min-h-screen">
+  <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+
+    <!-- Top Bar -->
+    <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-6 pb-6 border-b border-slate-800 mb-8">
+      <div>
+        <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-500/15 border border-emerald-500/30 text-emerald-400 text-xs font-bold uppercase tracking-wider mb-2">
+          <span class="material-symbols-outlined text-sm">mail</span>
+          Single Direct Outreach
+        </div>
+        <h1 class="text-3xl sm:text-4xl font-heading font-extrabold text-white">
+          Send Custom <span class="text-emerald-400">Email</span>
+        </h1>
+        <p class="text-sm text-slate-400 mt-1">
+          Compose individual high-impact emails with attachments, select your sender account, or send official branded welcome emails.
+        </p>
+      </div>
+
+      <!-- Quick Action Buttons -->
+      <div class="shrink-0 flex flex-wrap items-center gap-3">
+        <a href="{% url 'marketing:emails_log' %}" 
+           class="py-3 px-5 rounded-2xl bg-slate-800 hover:bg-slate-700 border border-slate-700 text-white font-heading font-bold text-xs sm:text-sm transition-all flex items-center gap-2">
+          <span class="material-symbols-outlined text-base text-sky-400">history_edu</span>
+          <span>View Email Logs</span>
+        </a>
+        <a href="{% url 'marketing:dashboard' %}" 
+           class="py-3 px-4 rounded-2xl bg-slate-900 hover:bg-slate-800 border border-slate-800 text-slate-300 hover:text-white font-heading font-semibold text-xs sm:text-sm transition-all flex items-center gap-2">
+          <span class="material-symbols-outlined text-base text-emerald-400">campaign</span>
+          <span>Bulk Broadcasts</span>
+        </a>
+      </div>
+    </div>
+
+    <!-- Navigation Tabs Bar -->
+    <div class="flex items-center gap-3 mb-8 overflow-x-auto pb-2 border-b border-slate-800/60">
+      <a href="{% url 'marketing:dashboard' %}" class="px-5 py-2.5 rounded-xl bg-slate-900/80 hover:bg-slate-800 text-slate-300 hover:text-white font-heading font-medium text-xs sm:text-sm border border-slate-800 transition-all flex items-center gap-2">
+        <span class="material-symbols-outlined text-base text-slate-400">campaign</span>
+        <span>Bulk Broadcasts</span>
+      </a>
+      <a href="{% url 'marketing:send_single' %}" class="px-5 py-2.5 rounded-xl bg-emerald-500/20 text-emerald-300 font-heading font-bold text-xs sm:text-sm border border-emerald-500/40 flex items-center gap-2">
+        <span class="material-symbols-outlined text-base text-emerald-400">send</span>
+        <span>Send Single / Custom Email</span>
+      </a>
+      <a href="{% url 'marketing:emails_log' %}" class="px-5 py-2.5 rounded-xl bg-slate-900/80 hover:bg-slate-800 text-slate-300 hover:text-white font-heading font-medium text-xs sm:text-sm border border-slate-800 transition-all flex items-center gap-2">
+        <span class="material-symbols-outlined text-base text-sky-400">receipt_long</span>
+        <span>Email Delivery Logs</span>
+      </a>
+    </div>
+
+    <!-- Main Grid: Composer Form (8 cols) + Helper Cards (4 cols) -->
+    <div class="grid lg:grid-cols-12 gap-8 items-start">
+      
+      <!-- LEFT: Email Composer Form -->
+      <div class="lg:col-span-8 bg-slate-900/90 border border-slate-800 rounded-3xl p-6 sm:p-8 shadow-2xl">
+        <form method="POST" action="{% url 'marketing:send_single' %}" enctype="multipart/form-data" class="space-y-6" id="single-email-form">
+          {% csrf_token %}
+
+          <!-- SENDER SELECTION (EMAIL 1 VS EMAIL 2) -->
+          <div>
+            <label class="block text-xs font-bold uppercase tracking-wider text-slate-300 mb-2.5">
+              Choose Sender Account <span class="text-rose-500">*</span>
+            </label>
+            <div class="grid sm:grid-cols-2 gap-4">
+              <!-- Email 1: Primary -->
+              <label class="relative flex flex-col p-4 rounded-2xl border-2 cursor-pointer transition-all bg-slate-950/70 hover:bg-slate-950 border-slate-800 has-[:checked]:border-emerald-500 has-[:checked]:bg-emerald-500/10">
+                <input type="radio" name="sender_choice" value="email1" {% if sender_choice == 'email1' or not sender_choice %}checked{% endif %} class="sr-only">
+                <div class="flex items-center justify-between mb-1">
+                  <span class="text-xs font-bold text-emerald-400 uppercase tracking-wider flex items-center gap-1.5">
+                    <span class="material-symbols-outlined text-sm">verified</span>
+                    Email 1 (Primary)
+                  </span>
+                  <span class="w-4 h-4 rounded-full border border-slate-600 flex items-center justify-center peer-checked:bg-emerald-500"></span>
+                </div>
+                <div class="font-mono text-sm font-bold text-white mt-1">info@uniquetechcamp.org</div>
+                <div class="text-[11px] text-slate-400 mt-1">Official Domain Address & cPanel Mail</div>
+              </label>
+
+              <!-- Email 2: Alternative Gmail -->
+              <label class="relative flex flex-col p-4 rounded-2xl border-2 cursor-pointer transition-all bg-slate-950/70 hover:bg-slate-950 border-slate-800 has-[:checked]:border-emerald-500 has-[:checked]:bg-emerald-500/10">
+                <input type="radio" name="sender_choice" value="email2" {% if sender_choice == 'email2' %}checked{% endif %} class="sr-only">
+                <div class="flex items-center justify-between mb-1">
+                  <span class="text-xs font-bold text-sky-400 uppercase tracking-wider flex items-center gap-1.5">
+                    <span class="material-symbols-outlined text-sm">lock</span>
+                    Email 2 (Alternative)
+                  </span>
+                  <span class="w-4 h-4 rounded-full border border-slate-600 flex items-center justify-center"></span>
+                </div>
+                <div class="font-mono text-sm font-bold text-white mt-1">UniqueTechCamp@gmail.com</div>
+                <div class="text-[11px] text-slate-400 mt-1">Google App Password Authenticated</div>
+              </label>
+            </div>
+          </div>
+
+          <!-- RECIPIENT FIELDS -->
+          <div class="grid sm:grid-cols-2 gap-5">
+            <div>
+              <label for="to_email" class="block text-xs font-bold uppercase tracking-wider text-slate-300 mb-2">
+                Recipient Email <span class="text-rose-500">*</span>
+              </label>
+              <input type="email" id="to_email" name="to_email" value="{{ to_email }}" required placeholder="client@example.com" class="w-full px-4 py-3.5 rounded-2xl border border-slate-700 bg-slate-950 focus:bg-slate-900 focus:border-emerald-500 focus:ring-4 focus:ring-emerald-500/10 transition-all text-sm font-medium text-white placeholder:text-slate-600">
+            </div>
+
+            <div>
+              <label for="recipient_name" class="block text-xs font-bold uppercase tracking-wider text-slate-300 mb-2">
+                Recipient Name <span class="text-slate-500 font-normal">(Optional)</span>
+              </label>
+              <input type="text" id="recipient_name" name="recipient_name" value="{{ recipient_name }}" placeholder="e.g. Dr. Jane Doe" class="w-full px-4 py-3.5 rounded-2xl border border-slate-700 bg-slate-950 focus:bg-slate-900 focus:border-emerald-500 focus:ring-4 focus:ring-emerald-500/10 transition-all text-sm font-medium text-white placeholder:text-slate-600">
+            </div>
+          </div>
+
+          <!-- EMAIL FORMAT / PRESET -->
+          <div>
+            <label for="email_format" class="block text-xs font-bold uppercase tracking-wider text-slate-300 mb-2">
+              Email Layout Format <span class="text-rose-500">*</span>
+            </label>
+            <select id="email_format" name="email_format" onchange="toggleFormatFields(this.value)" class="w-full px-4 py-3.5 rounded-2xl border border-slate-700 bg-slate-950 focus:bg-slate-900 focus:border-emerald-500 focus:ring-4 focus:ring-emerald-500/10 transition-all text-sm font-semibold text-white">
+              <option value="branded" {% if preset == 'branded' %}selected{% endif %}>UniqueTechCamp Branded (Top Logo + 9 Social Channels + Support Box)</option>
+              <option value="welcome" {% if preset == 'welcome' %}selected{% endif %}>Official High-Converting Welcome Email Layout</option>
+              <option value="plain" {% if preset == 'plain' %}selected{% endif %}>Clean Direct Message (Minimalist Text)</option>
+            </select>
+          </div>
+
+          <!-- SUBJECT LINE -->
+          <div>
+            <label for="subject" class="block text-xs font-bold uppercase tracking-wider text-slate-300 mb-2">
+              Subject Line <span class="text-rose-500">*</span>
+            </label>
+            <input type="text" id="subject" name="subject" value="{{ subject }}" required placeholder="e.g. Project Proposal & Technical Scope - UniqueTechCamp" class="w-full px-4 py-3.5 rounded-2xl border border-slate-700 bg-slate-950 focus:bg-slate-900 focus:border-emerald-500 focus:ring-4 focus:ring-emerald-500/10 transition-all text-sm font-medium text-white placeholder:text-slate-600">
+          </div>
+
+          <!-- MESSAGE BODY -->
+          <div>
+            <label for="message" class="block text-xs font-bold uppercase tracking-wider text-slate-300 mb-2">
+              Message Content <span class="text-rose-500">*</span>
+            </label>
+            <textarea id="message" name="message" rows="8" required placeholder="Write your personalized message here. Paragraph breaks are automatically preserved in formatted layout..." class="w-full px-4 py-3.5 rounded-2xl border border-slate-700 bg-slate-950 focus:bg-slate-900 focus:border-emerald-500 focus:ring-4 focus:ring-emerald-500/10 transition-all text-sm font-normal text-white placeholder:text-slate-600 leading-relaxed">{{ message }}</textarea>
+          </div>
+
+          <!-- OPTIONAL CALL-TO-ACTION BUTTON -->
+          <div id="cta-fields" class="grid sm:grid-cols-2 gap-5 p-5 rounded-2xl bg-slate-950/70 border border-slate-800/80">
+            <div>
+              <label for="cta_text" class="block text-xs font-bold uppercase tracking-wider text-slate-300 mb-1.5">
+                CTA Button Text <span class="text-slate-500 font-normal">(Optional)</span>
+              </label>
+              <input type="text" id="cta_text" name="cta_text" value="{{ cta_text }}" placeholder="e.g. Review Quotation Online →" class="w-full px-4 py-3 rounded-xl border border-slate-700 bg-slate-900 focus:border-emerald-500 text-xs text-white">
+            </div>
+
+            <div>
+              <label for="cta_url" class="block text-xs font-bold uppercase tracking-wider text-slate-300 mb-1.5">
+                CTA Button URL <span class="text-slate-500 font-normal">(Optional)</span>
+              </label>
+              <input type="url" id="cta_url" name="cta_url" value="{{ cta_url }}" placeholder="https://uniquetechcamp.org/..." class="w-full px-4 py-3 rounded-xl border border-slate-700 bg-slate-900 focus:border-emerald-500 text-xs text-white">
+            </div>
+          </div>
+
+          <!-- ATTACHMENT UPLOAD (PDF, DOCX, IMAGES, ETC.) -->
+          <div>
+            <label class="block text-xs font-bold uppercase tracking-wider text-slate-300 mb-2">
+              Attach File <span class="text-slate-500 font-normal">(PDF, Document, Image, ZIP - Optional)</span>
+            </label>
+            <div class="border-2 border-dashed border-slate-700 hover:border-emerald-500 rounded-2xl p-6 text-center bg-slate-950/60 transition-colors cursor-pointer relative">
+              <input type="file" id="attachment" name="attachment" class="absolute inset-0 w-full h-full opacity-0 cursor-pointer">
+              <div class="pointer-events-none">
+                <span class="material-symbols-outlined text-3xl text-emerald-400 mb-1">attach_file</span>
+                <p class="text-sm font-semibold text-white" id="attachment-label">Click to attach a file or drag & drop</p>
+                <p class="text-[11px] text-slate-500 mt-0.5">Supports PDF documents, proposals, receipts, images up to 25MB</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- SUBMIT BUTTON -->
+          <div class="pt-4 border-t border-slate-800 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+            <div class="text-xs text-slate-400 flex items-center gap-1.5">
+              <span class="material-symbols-outlined text-sm text-emerald-400">verified_user</span>
+              <span>All dispatches are recorded in <a href="{% url 'marketing:emails_log' %}" class="text-emerald-400 underline">Email Logs</a></span>
+            </div>
+
+            <button type="submit" id="send-btn" class="py-4 px-8 rounded-2xl bg-emerald-500 hover:bg-emerald-600 text-slate-950 font-heading font-bold text-sm shadow-xl shadow-emerald-500/25 transition-all flex items-center justify-center gap-2">
+              <span class="material-symbols-outlined text-base">send</span>
+              <span>Dispatch Email Now</span>
+            </button>
+          </div>
+
+        </form>
+      </div>
+
+      <!-- RIGHT: Side Info & Guidance Cards -->
+      <div class="lg:col-span-4 space-y-6">
+        
+        <!-- Dual Sender Card -->
+        <div class="bg-slate-900/90 border border-slate-800 rounded-3xl p-6 shadow-xl">
+          <div class="flex items-center gap-2.5 mb-3 text-emerald-400">
+            <span class="material-symbols-outlined text-xl">switch_account</span>
+            <h3 class="font-heading font-bold text-base text-white">Dual Senders Active</h3>
+          </div>
+          <p class="text-xs text-slate-300 leading-relaxed">
+            You can send from either account based on your deliverability preference:
+          </p>
+
+          <div class="mt-4 space-y-3">
+            <div class="p-3.5 rounded-2xl bg-slate-950 border border-slate-800">
+              <div class="text-[11px] font-bold text-emerald-400 uppercase tracking-wider">Email 1 (Primary)</div>
+              <div class="font-mono text-xs text-white font-bold mt-0.5">info@uniquetechcamp.org</div>
+              <div class="text-[11px] text-slate-400 mt-1">Official organization mailbox. Best for professional proposals and quotes.</div>
+            </div>
+
+            <div class="p-3.5 rounded-2xl bg-slate-950 border border-slate-800">
+              <div class="text-[11px] font-bold text-sky-400 uppercase tracking-wider">Email 2 (Alternative)</div>
+              <div class="font-mono text-xs text-white font-bold mt-0.5">UniqueTechCamp@gmail.com</div>
+              <div class="text-[11px] text-slate-400 mt-1">Direct Google SMTP with App Password. Best fallback if cPanel mail undergoes maintenance.</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Quick Template Presets -->
+        <div class="bg-slate-900/90 border border-slate-800 rounded-3xl p-6 shadow-xl">
+          <div class="flex items-center gap-2.5 mb-3 text-sky-400">
+            <span class="material-symbols-outlined text-xl">auto_fix_high</span>
+            <h3 class="font-heading font-bold text-base text-white">Quick Presets</h3>
+          </div>
+          <p class="text-xs text-slate-300 mb-3">
+            Click to auto-populate message content:
+          </p>
+          <div class="space-y-2">
+            <button type="button" onclick="loadPreset('welcome')" class="w-full text-left p-3 rounded-xl bg-slate-950 hover:bg-slate-800 border border-slate-800 transition-colors text-xs font-semibold text-slate-200 flex items-center justify-between">
+              <span>🌟 Resend Welcome Email</span>
+              <span class="text-emerald-400">&rarr;</span>
+            </button>
+            <button type="button" onclick="loadPreset('quotation')" class="w-full text-left p-3 rounded-xl bg-slate-950 hover:bg-slate-800 border border-slate-800 transition-colors text-xs font-semibold text-slate-200 flex items-center justify-between">
+              <span>💼 Project Quotation & Scope</span>
+              <span class="text-emerald-400">&rarr;</span>
+            </button>
+            <button type="button" onclick="loadPreset('consultation_followup')" class="w-full text-left p-3 rounded-xl bg-slate-950 hover:bg-slate-800 border border-slate-800 transition-colors text-xs font-semibold text-slate-200 flex items-center justify-between">
+              <span>🤝 Consultation Follow-Up</span>
+              <span class="text-emerald-400">&rarr;</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Attachment Guidance -->
+        <div class="bg-slate-900/90 border border-slate-800 rounded-3xl p-6 shadow-xl">
+          <div class="flex items-center gap-2.5 mb-2 text-amber-400">
+            <span class="material-symbols-outlined text-xl">attach_file</span>
+            <h3 class="font-heading font-bold text-base text-white">Attachment Storage</h3>
+          </div>
+          <p class="text-xs text-slate-400 leading-relaxed">
+            Files attached here are securely stored in your media directory and tied to the email log, allowing you to review or resend the exact attached document at any time.
+          </p>
+        </div>
+
+      </div>
+
+    </div>
+
+  </div>
+</section>
+{% endblock %}
+
+{% block extra_scripts %}
+<script>
+  // Show selected attachment filename
+  const attachInput = document.getElementById('attachment');
+  const attachLabel = document.getElementById('attachment-label');
+  if (attachInput && attachLabel) {
+    attachInput.addEventListener('change', function () {
+      if (this.files && this.files[0]) {
+        const file = this.files[0];
+        const sizeMb = (file.size / (1024 * 1024)).toFixed(2);
+        attachLabel.textContent = `Attached: ${file.name} (${sizeMb} MB)`;
+        attachLabel.classList.add('text-emerald-400');
+      }
+    });
+  }
+
+  function toggleFormatFields(val) {
+    const ctaFields = document.getElementById('cta-fields');
+    if (val === 'plain') {
+      ctaFields.style.display = 'none';
+    } else {
+      ctaFields.style.display = 'grid';
+    }
+  }
+
+  function loadPreset(type) {
+    const subject = document.getElementById('subject');
+    const message = document.getElementById('message');
+    const format = document.getElementById('email_format');
+    const ctaText = document.getElementById('cta_text');
+    const ctaUrl = document.getElementById('cta_url');
+
+    if (type === 'welcome') {
+      format.value = 'welcome';
+      subject.value = 'Welcome to UniqueTechCamp — Website, Clients, Income';
+      message.value = 'Thank you for connecting with UniqueTechCamp. We build ultra-modern web applications, automated digital solutions, and high-performance websites.\n\nOur solutions architects are available to assist you with every phase of your project.';
+      ctaText.value = 'Explore 107 Growth Services →';
+      ctaUrl.value = 'https://uniquetechcamp.org/services/';
+    } else if (type === 'quotation') {
+      format.value = 'branded';
+      subject.value = 'UniqueTechCamp — Tailored Scope of Work & Quotation';
+      message.value = 'Hello,\n\nFollowing our review of your project requirements, we have prepared your tailored technical scope of work and quotation.\n\nPlease find the detailed proposal attached to this email. Should you require any adjustments or wish to schedule a walkthrough call, our team is ready.';
+      ctaText.value = 'Book Consultation Walkthrough →';
+      ctaUrl.value = 'https://uniquetechcamp.org/appointments/book/';
+    } else if (type === 'consultation_followup') {
+      format.value = 'branded';
+      subject.value = 'Follow-up on Your Consultation Session — UniqueTechCamp';
+      message.value = 'Hello,\n\nThank you for taking the time to speak with our technical team today. We had a great discussion regarding your project goals and architecture.\n\nHere are the action points we agreed upon:\n1. Architecture review\n2. Implementation timeline\n3. Solution deployment\n\nLet us know if you have any questions in the meantime!';
+      ctaText.value = 'Contact on WhatsApp →';
+      ctaUrl.value = 'https://wa.me/254715479955';
+    }
+    toggleFormatFields(format.value);
+  }
+</script>
+{% endblock %}

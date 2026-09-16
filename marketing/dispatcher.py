@@ -14,8 +14,7 @@ def send_single_campaign_email(recipient, from_email=None):
     Renders and dispatches a single personalized email for a campaign recipient.
     Returns (True, None) on success, or (False, error_str) on failure.
     """
-    if not from_email:
-        from_email = getattr(settings, 'DEFAULT_FROM_EMAIL', 'UniqueTechCamp Web Developers <info@uniquetechcamp.org>')
+    from .email_service import send_robust_email
 
     try:
         context = {
@@ -28,20 +27,33 @@ def send_single_campaign_email(recipient, from_email=None):
         html_content = render_to_string('emails/marketing_campaign_email.html', context)
         text_content = strip_tags(html_content)
 
-        msg = EmailMultiAlternatives(
-            subject=recipient.subject,
-            body=text_content,
-            from_email=from_email,
-            to=[recipient.email],
-        )
-        msg.attach_alternative(html_content, "text/html")
-        msg.send(fail_silently=False)
+        sender_choice = getattr(recipient.campaign, 'sender_choice', 'email1') or 'email1'
+        if not from_email:
+            from_email = f"{recipient.campaign.sender_name} <{recipient.campaign.sender_email}>"
 
-        recipient.status = 'sent'
-        recipient.sent_at = timezone.now()
-        recipient.error_message = ''
-        recipient.save(update_fields=['status', 'sent_at', 'error_message'])
-        return True, None
+        success, log = send_robust_email(
+            to_email=recipient.email,
+            subject=recipient.subject,
+            body_text=text_content,
+            body_html=html_content,
+            sender_choice=sender_choice,
+            from_email=from_email,
+            recipient_name=recipient.name,
+            email_type='campaign',
+        )
+
+        if success:
+            recipient.status = 'sent'
+            recipient.sent_at = timezone.now()
+            recipient.error_message = ''
+            recipient.save(update_fields=['status', 'sent_at', 'error_message'])
+            return True, None
+        else:
+            err_msg = log.error_message if log else "Delivery failed"
+            recipient.status = 'failed'
+            recipient.error_message = err_msg[:500]
+            recipient.save(update_fields=['status', 'error_message'])
+            return False, err_msg
 
     except Exception as e:
         err_msg = str(e)
@@ -50,6 +62,7 @@ def send_single_campaign_email(recipient, from_email=None):
         recipient.error_message = err_msg[:500]
         recipient.save(update_fields=['status', 'error_message'])
         return False, err_msg
+
 
 
 def execute_campaign(campaign_id):
@@ -123,12 +136,17 @@ def send_test_email(campaign, target_email):
     html_content = render_to_string('emails/marketing_campaign_email.html', context)
     text_content = strip_tags(html_content)
 
-    msg = EmailMultiAlternatives(
+    from .email_service import send_robust_email
+    sender_choice = getattr(campaign, 'sender_choice', 'email1') or 'email1'
+    success, _ = send_robust_email(
+        to_email=target_email,
         subject=sample_subject,
-        body=text_content,
+        body_text=text_content,
+        body_html=html_content,
+        sender_choice=sender_choice,
         from_email=from_email,
-        to=[target_email],
+        recipient_name=sample_name,
+        email_type='campaign',
     )
-    msg.attach_alternative(html_content, "text/html")
-    msg.send(fail_silently=False)
-    return True
+    return success
+

@@ -106,20 +106,19 @@ def send_appointment_emails(appointment, request=None):
         client_html = render_to_string('emails/appointment_confirmation.html', client_context)
         client_text = strip_tags(client_html)
 
-        client_msg = EmailMultiAlternatives(
+        from marketing.email_service import send_robust_email
+        send_robust_email(
+            to_email=appointment.email,
             subject=client_subject,
-            body=client_text,
-            from_email=from_email,
-            to=[appointment.email],
+            body_text=client_text,
+            body_html=client_html,
+            sender_choice='email1',
+            recipient_name=appointment.full_name,
+            attachment_content=ics_data,
+            attachment_filename=f"UniqueTechCamp-Consultation-{appointment.booking_reference}.ics",
+            attachment_content_type="text/calendar; method=REQUEST; charset=UTF-8",
+            email_type='appointment',
         )
-        client_msg.attach_alternative(client_html, "text/html")
-        # Attach iCalendar file
-        client_msg.attach(
-            f"UniqueTechCamp-Consultation-{appointment.booking_reference}.ics",
-            ics_data,
-            "text/calendar; method=REQUEST; charset=UTF-8"
-        )
-        client_msg.send(fail_silently=False)
         logger.info(f"Client consultation confirmation email dispatched for {appointment.booking_reference}")
     except Exception as e:
         logger.error(f"Error dispatching client appointment email ({appointment.booking_reference}): {e}")
@@ -137,19 +136,21 @@ def send_appointment_emails(appointment, request=None):
         admin_html = render_to_string('emails/appointment_admin_alert.html', admin_context)
         admin_text = strip_tags(admin_html)
 
-        admin_msg = EmailMultiAlternatives(
-            subject=admin_subject,
-            body=admin_text,
-            from_email=from_email,
-            to=admin_recipients,
-        )
-        admin_msg.attach_alternative(admin_html, "text/html")
-        admin_msg.attach(
-            f"Consultation-{appointment.booking_reference}.ics",
-            ics_data,
-            "text/calendar; method=REQUEST; charset=UTF-8"
-        )
-        admin_msg.send(fail_silently=False)
+        from marketing.email_service import send_robust_email
+        for admin_email in admin_recipients:
+            send_robust_email(
+                to_email=admin_email,
+                subject=admin_subject,
+                body_text=admin_text,
+                body_html=admin_html,
+                sender_choice='email1',
+                recipient_name='UniqueTechCamp Admin',
+                attachment_content=ics_data,
+                attachment_filename=f"Consultation-{appointment.booking_reference}.ics",
+                attachment_content_type="text/calendar; method=REQUEST; charset=UTF-8",
+                email_type='appointment',
+            )
         logger.info(f"Admin consultation alert email dispatched for {appointment.booking_reference}")
     except Exception as e:
         logger.error(f"Error dispatching admin consultation alert ({appointment.booking_reference}): {e}")
+
