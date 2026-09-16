@@ -14,7 +14,7 @@ from django.utils.encoding import force_bytes
 
 logger = logging.getLogger(__name__)
 
-DEFAULT_FROM = getattr(settings, 'DEFAULT_FROM_EMAIL', 'UniqueTechCamp <info@uniquetechcamp.org>')
+DEFAULT_FROM = getattr(settings, 'DEFAULT_FROM_EMAIL', 'UniqueTechCamp Web Developers <info@uniquetechcamp.org>')
 DEFAULT_SITE_URL = "https://uniquetechcamp.org"
 DEFAULT_LOGO_URL = "https://uniquetechcamp.org/static/images/logo-rounded.png"
 

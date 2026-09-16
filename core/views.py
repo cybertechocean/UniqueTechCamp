@@ -75,7 +75,7 @@ class ContactView(View):
                     f"Message:\n{message}\n\n"
                     f"Timestamp: {contact_msg.created_at}\n"
                 )
-                from_email = getattr(settings, 'DEFAULT_FROM_EMAIL', 'UniqueTechCamp <info@uniquetechcamp.org>')
+                from_email = getattr(settings, 'DEFAULT_FROM_EMAIL', 'UniqueTechCamp Web Developers <info@uniquetechcamp.org>')
                 
                 # Send to admins
                 send_mail(

@@ -49,7 +49,7 @@ class Command(BaseCommand):
                 </ul>
 
                 <h2>Turning Visitors Into Predictable Income</h2>
-                <p>When you shift your perspective from buying a commodity "website" to deploying an integrated "Customer Growth Engine", your digital presence stops being a cost center and becomes your most profitable, indefatigable sales rep.</p>
+                <p>When you shift your perspective from buying a static/generic "website" to deploying an integrated "Customer Growth Engine", your digital presence stops being a cost center and becomes your most profitable, indefatigable sales rep.</p>
                 """
             },
             {

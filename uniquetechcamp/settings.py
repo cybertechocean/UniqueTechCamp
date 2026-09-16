@@ -357,7 +357,7 @@ EMAIL1_USE_TLS = env.bool("EMAIL1_USE_TLS", default=False)
 EMAIL1_USE_SSL = env.bool("EMAIL1_USE_SSL", default=True)
 EMAIL1_HOST_USER = env("EMAIL1_HOST_USER", default="info@uniquetechcamp.org")
 EMAIL1_HOST_PASSWORD = env("EMAIL1_HOST_PASSWORD", default="")
-EMAIL1_FROM_EMAIL = env("EMAIL1_FROM_EMAIL", default="UniqueTechCamp <info@uniquetechcamp.org>")
+EMAIL1_FROM_EMAIL = env("EMAIL1_FROM_EMAIL", default="UniqueTechCamp Web Developers <info@uniquetechcamp.org>")
 
 # Email 2: Alternative (UniqueTechCamp@gmail.com via Google App Password)
 EMAIL2_HOST = env("EMAIL2_HOST", default="smtp.gmail.com")
@@ -366,7 +366,7 @@ EMAIL2_USE_TLS = env.bool("EMAIL2_USE_TLS", default=True)
 EMAIL2_USE_SSL = env.bool("EMAIL2_USE_SSL", default=False)
 EMAIL2_HOST_USER = env("EMAIL2_HOST_USER", default="UniqueTechCamp@gmail.com")
 EMAIL2_HOST_PASSWORD = env("EMAIL2_HOST_PASSWORD", default=env("EMAIL_HOST_PASSWORD", default="fral qgtd bqxm pmun"))
-EMAIL2_FROM_EMAIL = env("EMAIL2_FROM_EMAIL", default="UniqueTechCamp <UniqueTechCamp@gmail.com>")
+EMAIL2_FROM_EMAIL = env("EMAIL2_FROM_EMAIL", default="UniqueTechCamp Web Developers <UniqueTechCamp@gmail.com>")
 
 # Default Django fallback SMTP configuration
 EMAIL_HOST = env("EMAIL_HOST", default=EMAIL2_HOST if not EMAIL1_HOST_PASSWORD else EMAIL1_HOST)

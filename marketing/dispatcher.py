@@ -15,7 +15,7 @@ def send_single_campaign_email(recipient, from_email=None):
     Returns (True, None) on success, or (False, error_str) on failure.
     """
     if not from_email:
-        from_email = getattr(settings, 'DEFAULT_FROM_EMAIL', 'UniqueTechCamp <info@uniquetechcamp.org>')
+        from_email = getattr(settings, 'DEFAULT_FROM_EMAIL', 'UniqueTechCamp Web Developers <info@uniquetechcamp.org>')
 
     try:
         context = {

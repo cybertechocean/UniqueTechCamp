@@ -14,7 +14,7 @@
 
 **UniqueTechCamp Limited** ([UniqueTechCamp.org](https://uniquetechcamp.org)) is an elite digital engineering firm based in Nairobi, Kenya. 
 
-We do not sell commodity "brochure" websites. We build **complete business growth engines** that combine custom, ultra-fast web applications with **24/7 AI Lead Generation, WhatsApp Lead Qualification, and Automated Multi-Channel Follow-up**. 
+We do not sell static/generic "brochure" websites. We build **complete business growth engines** that combine custom, ultra-fast web applications with **24/7 AI Lead Generation, WhatsApp Lead Qualification, and Automated Multi-Channel Follow-up**. 
 
 Every digital property we construct is engineered to turn casual website visitors into confirmed consultations, bookings, and revenue on autopilot.
 
@@ -330,8 +330,8 @@ EMAIL_PORT=587
 EMAIL_USE_TLS=True
 EMAIL_HOST_USER=UniqueTechCamp@gmail.com
 EMAIL_HOST_PASSWORD=your_16_character_app_password
-DEFAULT_FROM_EMAIL=UniqueTechCamp <info@uniquetechcamp.org>
-SERVER_EMAIL=UniqueTechCamp <info@uniquetechcamp.org>
+DEFAULT_FROM_EMAIL=UniqueTechCamp Web Developers <info@uniquetechcamp.org>
+SERVER_EMAIL=UniqueTechCamp Web Developers <info@uniquetechcamp.org>
 ```
 Press `Ctrl+O` then `Enter` to save, and `Ctrl+X` to exit nano.
 

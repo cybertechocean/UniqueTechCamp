@@ -6,7 +6,7 @@ Welcome to UniqueTechCamp, {{ user_name|default:"there" }}!
 
 Thank you for joining UniqueTechCamp. We are thrilled to welcome you to our digital growth ecosystem.
 
-At UniqueTechCamp, we don't build generic commodity websites. We engineer complete client acquisition engines designed to convert your web traffic into paying customers with 24/7 automated intelligence.
+At UniqueTechCamp, we don't build static/generic websites. We engineer complete client acquisition engines designed to convert your web traffic into paying customers with 24/7 automated intelligence.
 
 WHAT POWERS YOUR DIGITAL ENGINE:
 - High-Converting Web Architecture: Sub-second load times and seamless user experiences.

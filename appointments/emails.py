@@ -84,7 +84,7 @@ def send_appointment_emails(appointment, request=None):
     2. Send Admin Notification Email to solutions architecture team.
     Catches all network / SMTP errors cleanly without disrupting user flow.
     """
-    from_email = getattr(settings, 'DEFAULT_FROM_EMAIL', 'UniqueTechCamp <info@uniquetechcamp.org>')
+    from_email = getattr(settings, 'DEFAULT_FROM_EMAIL', 'UniqueTechCamp Web Developers <info@uniquetechcamp.org>')
     admin_recipients = [
         getattr(settings, 'ADMIN_EMAIL_PRIMARY', 'info@uniquetechcamp.org'),
         getattr(settings, 'ADMIN_EMAIL_GMAIL', 'UniqueTechCamp@gmail.com'),
