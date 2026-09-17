@@ -9,6 +9,44 @@ from .models import BulkCampaign, CampaignRecipient
 
 logger = logging.getLogger(__name__)
 
+def render_campaign_email_content(format_type, recipient_name, subject, message, campaign):
+    """
+    Renders the HTML and plaintext body based on chosen email_format:
+    - 'welcome': Official High-Converting Welcome Email Layout (emails/welcome_email.html)
+    - 'branded': UniqueTechCamp Branded Layout (emails/marketing_campaign_email.html)
+    - 'plain': Clean Direct Message (Minimalist Text, no HTML wrapper)
+    """
+    fmt = getattr(campaign, 'email_format', format_type) or format_type or 'branded'
+    if fmt == 'welcome':
+        context = {
+            'user_name': recipient_name or 'Valued Client',
+            'cta_url': 'https://uniquetechcamp.org/services/',
+            'cta_text': 'Explore 165+ Growth Services →',
+            'site_url': 'https://uniquetechcamp.org',
+            'logo_url': 'https://uniquetechcamp.org/static/images/logo-rounded.png',
+            'custom_message': message,
+            'campaign': campaign,
+        }
+        html_content = render_to_string('emails/welcome_email.html', context)
+        text_content = strip_tags(html_content) if html_content else message
+    elif fmt == 'plain':
+        html_content = None
+        text_content = message
+    else:  # 'branded'
+        context = {
+            'recipient_name': recipient_name,
+            'subject': subject,
+            'message': message,
+            'campaign': campaign,
+            'website_url': 'https://uniquetechcamp.org',
+            'logo_url': 'https://uniquetechcamp.org/static/images/logo-rounded.png',
+        }
+        html_content = render_to_string('emails/marketing_campaign_email.html', context)
+        text_content = strip_tags(html_content)
+
+    return text_content, html_content
+
+
 def send_single_campaign_email(recipient, from_email=None):
     """
     Renders and dispatches a single personalized email for a campaign recipient.
@@ -17,15 +55,13 @@ def send_single_campaign_email(recipient, from_email=None):
     from .email_service import send_robust_email
 
     try:
-        context = {
-            'recipient_name': recipient.name,
-            'subject': recipient.subject,
-            'message': recipient.personalized_message,
-            'campaign': recipient.campaign,
-            'website_url': 'https://uniquetechcamp.org',
-        }
-        html_content = render_to_string('emails/marketing_campaign_email.html', context)
-        text_content = strip_tags(html_content)
+        text_content, html_content = render_campaign_email_content(
+            getattr(recipient.campaign, 'email_format', 'branded'),
+            recipient_name=recipient.name,
+            subject=recipient.subject,
+            message=recipient.personalized_message,
+            campaign=recipient.campaign
+        )
 
         sender_choice = getattr(recipient.campaign, 'sender_choice', 'email1') or 'email1'
         if not from_email:
@@ -126,15 +162,13 @@ def send_test_email(campaign, target_email):
         "Hello,\n\nThis is a live test preview of your personalized broadcast message sent from the UniqueTechCamp Marketing Engine.\n\nAll formatting, typography, and consultation booking CTAs are verified."
     )
 
-    context = {
-        'recipient_name': sample_name,
-        'subject': sample_subject,
-        'message': sample_message,
-        'campaign': campaign,
-        'website_url': 'https://uniquetechcamp.org',
-    }
-    html_content = render_to_string('emails/marketing_campaign_email.html', context)
-    text_content = strip_tags(html_content)
+    text_content, html_content = render_campaign_email_content(
+        getattr(campaign, 'email_format', 'branded'),
+        recipient_name=sample_name,
+        subject=sample_subject,
+        message=sample_message,
+        campaign=campaign
+    )
 
     from .email_service import send_robust_email
     sender_choice = getattr(campaign, 'sender_choice', 'email1') or 'email1'

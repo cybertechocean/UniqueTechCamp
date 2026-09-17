@@ -74,6 +74,7 @@ class CampaignDashboardView(StaffOnlyMixin, View):
             sender_email = request.POST.get('sender_email', 'info@uniquetechcamp.org').strip()
 
         default_subject = request.POST.get('default_subject', '').strip()
+        email_format = request.POST.get('email_format', 'branded').strip()
         delay_seconds = float(request.POST.get('delay_seconds', 2.0))
         spreadsheet_file = request.FILES.get('spreadsheet_file')
 
@@ -99,6 +100,7 @@ class CampaignDashboardView(StaffOnlyMixin, View):
             sender_name=sender_name,
             sender_email=sender_email,
             default_subject=default_subject,
+            email_format=email_format,
             spreadsheet_file=spreadsheet_file,
             delay_seconds=delay_seconds,
             total_recipients=len(recipients_data),

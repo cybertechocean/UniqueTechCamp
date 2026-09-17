@@ -52,6 +52,17 @@ class BulkCampaign(models.Model):
         blank=True,
         help_text="Fallback subject line if spreadsheet row has no specific subject"
     )
+    LAYOUT_CHOICES = [
+        ('branded', 'UniqueTechCamp Branded (Top Logo + 9 Social Channels + Support Box)'),
+        ('welcome', 'Official High-Converting Welcome Email Layout'),
+        ('plain', 'Clean Direct Message (Minimalist Text)'),
+    ]
+    email_format = models.CharField(
+        max_length=20,
+        choices=LAYOUT_CHOICES,
+        default='branded',
+        help_text="Email layout template to wrap broadcast messages"
+    )
     spreadsheet_file = models.FileField(
         upload_to='marketing/spreadsheets/',
         help_text="Uploaded Excel (.xlsx) or CSV spreadsheet"

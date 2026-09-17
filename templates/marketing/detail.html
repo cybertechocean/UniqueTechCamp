@@ -32,6 +32,9 @@
               {% else %}bg-slate-800 text-slate-300 border border-slate-700{% endif %}" id="campaign-status-badge">
               {{ campaign.get_status_display }}
             </span>
+            <span class="px-3 py-1 rounded-full text-xs font-bold bg-purple-500/20 text-purple-300 border border-purple-500/30">
+              Layout: {{ campaign.get_email_format_display|truncatechars:25 }}
+            </span>
           </div>
           <h1 class="text-2xl sm:text-3xl font-heading font-extrabold text-white">{{ campaign.title }}</h1>
           <p class="text-xs text-slate-400 mt-1">
