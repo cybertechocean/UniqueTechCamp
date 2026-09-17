@@ -9,39 +9,39 @@ Total: 58 Premium Revenue-Driven Services
 
 NEW_CATEGORIES = [
     {
-        "id": "01",
+        "id": "17",
         "name": "Digital Business Setup",
         "slug": "digital-business-setup",
         "icon": "🛠️",
         "icon_name": "business_center",
-        "order": 1,
+        "order": 17,
         "desc": "Turnkey digital infrastructure, Google Business profile setup, custom domain emails, WhatsApp Business automation, and secure payment integrations."
     },
     {
-        "id": "02",
+        "id": "18",
         "name": "Social Media & Digital Marketing",
         "slug": "social-media-digital-marketing",
         "icon": "📱",
         "icon_name": "campaign",
-        "order": 2,
+        "order": 18,
         "desc": "High-conversion social media campaigns, paid advertising, content creation, brand positioning, and multi-channel audience growth."
     },
     {
-        "id": "03",
+        "id": "19",
         "name": "Graphic Design & Branding",
         "slug": "graphic-design-branding",
         "icon": "🎨",
         "icon_name": "palette",
-        "order": 3,
+        "order": 19,
         "desc": "Distinctive corporate identity, logo design, marketing collateral, professional company profiles, and print-ready creative assets."
     },
     {
-        "id": "04",
+        "id": "20",
         "name": "Analytics & Business Intelligence",
         "slug": "analytics-business-intelligence",
         "icon": "📊",
         "icon_name": "analytics",
-        "order": 4,
+        "order": 20,
         "desc": "Actionable data visualization, Google Analytics 4, live sales dashboards, Power BI reporting, and automated predictive business intelligence."
     },
 ]

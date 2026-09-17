@@ -18,125 +18,27 @@
 
 | # | Category | Slug | Icon | Count |
 |---|----------|------|------|-------|
-| 1 | Digital Business Setup | `digital-business-setup` | 🛠️ | 14 |
-| 2 | Social Media & Digital Marketing | `social-media-digital-marketing` | 📱 | 14 |
-| 3 | Graphic Design & Branding | `graphic-design-branding` | 🎨 | 18 |
-| 4 | Analytics & Business Intelligence | `analytics-business-intelligence` | 📊 | 12 |
-| 5 | Retail & Commerce | `retail-commerce` | 🛒 | 9 |
-| 6 | Healthcare & Medical | `healthcare` | 🏥 | 8 |
-| 7 | Hospitality & Food | `hospitality-food` | 🍽️ | 8 |
-| 8 | Education & Academies | `education` | 🎓 | 6 |
-| 9 | Religious Organizations | `religious-organizations` | ⛪ | 4 |
-| 10 | Professional & Legal Services | `professional-services` | 💼 | 6 |
-| 11 | Automotive & Transport | `automotive` | 🚗 | 6 |
-| 12 | Beauty & Wellness | `beauty-wellness` | 💅 | 6 |
-| 13 | Property & Real Estate | `property` | 🏠 | 6 |
-| 14 | Travel & Tourism | `travel-tourism` | ✈️ | 5 |
-| 15 | Home & Field Services | `home-commercial-services` | 🏢 | 6 |
-| 16 | AI Systems & Automation | `ai-integration` | 🤖 | 7 |
-| 17 | AI Chatbots & Voice Agents | `ai-chatbot-development` | 💬 | 8 |
-| 18 | Custom Web Applications | `custom-web-applications` | ⚙️ | 9 |
-| 19 | AI Lead Generation & Qualification | `ai-lead-generation` | 🎯 | 7 |
-| 20 | Pipeline Growth & Re-Engagement | `customer-growth-re-engagement` | 📈 | 6 |
+| 1 | Retail & Commerce | `retail-commerce` | 🛒 | 9 |
+| 2 | Healthcare & Medical | `healthcare` | 🏥 | 8 |
+| 3 | Hospitality & Food | `hospitality-food` | 🍽️ | 8 |
+| 4 | Education & Academies | `education` | 🎓 | 6 |
+| 5 | Religious Organizations | `religious-organizations` | ⛪ | 4 |
+| 6 | Professional & Legal Services | `professional-services` | 💼 | 6 |
+| 7 | Automotive & Transport | `automotive` | 🚗 | 6 |
+| 8 | Beauty & Wellness | `beauty-wellness` | 💅 | 6 |
+| 9 | Property & Real Estate | `property` | 🏠 | 6 |
+| 10 | Travel & Tourism | `travel-tourism` | ✈️ | 5 |
+| 11 | Home & Field Services | `home-commercial-services` | 🏢 | 6 |
+| 12 | AI Systems & Automation | `ai-integration` | 🤖 | 7 |
+| 13 | AI Chatbots & Voice Agents | `ai-chatbot-development` | 💬 | 8 |
+| 14 | Custom Web Applications | `custom-web-applications` | ⚙️ | 9 |
+| 15 | AI Lead Generation & Qualification | `ai-lead-generation` | 🎯 | 7 |
+| 16 | Pipeline Growth & Re-Engagement | `customer-growth-re-engagement` | 📈 | 6 |
+| 17 | Digital Business Setup | `digital-business-setup` | 🛠️ | 14 |
+| 18 | Social Media & Digital Marketing | `social-media-digital-marketing` | 📱 | 14 |
+| 19 | Graphic Design & Branding | `graphic-design-branding` | 🎨 | 18 |
+| 20 | Analytics & Business Intelligence | `analytics-business-intelligence` | 📊 | 12 |
 | | **TOTAL** | | | **165 Services** |
-
----
-
-## 🛠️ Category 01 — Digital Business Setup
-
-**Slug:** `digital-business-setup` | **Icon:** 🛠️ | **Order:** 1  
-**Description:** Turnkey digital infrastructure, Google Business profile setup, custom domain emails, WhatsApp Business automation, and secure payment integrations.
-
-| # | Service Title | Icon Name |
-|---|---------------|-----------|
-| 1 | Google Business Profile Setup | `storefront` |
-| 2 | Business Email Setup | `mail` |
-| 3 | Domain Registration | `domain` |
-| 4 | Hosting Setup | `dns` |
-| 5 | WhatsApp Business Setup | `chat` |
-| 6 | WhatsApp Catalog Setup | `inventory_2` |
-| 7 | Social Media Business Pages | `share` |
-| 8 | Online Booking Setup | `calendar_month` |
-| 9 | Payment Integration | `credit_card` |
-| 10 | M-Pesa Integration | `payments` |
-| 11 | E-commerce Setup | `shopping_bag` |
-| 12 | Online Forms | `assignment` |
-| 13 | QR Code Systems | `qr_code_2` |
-| 14 | Digital Menu Systems | `restaurant_menu` |
-
----
-
-## 📱 Category 02 — Social Media & Digital Marketing
-
-**Slug:** `social-media-digital-marketing` | **Icon:** 📱 | **Order:** 2  
-**Description:** High-conversion social media campaigns, paid advertising, content creation, brand positioning, and multi-channel audience growth.
-
-| # | Service Title | Icon Name |
-|---|---------------|-----------|
-| 1 | Social Media Management | `public` |
-| 2 | Facebook Marketing | `campaign` |
-| 3 | Instagram Marketing | `photo_camera` |
-| 4 | TikTok Marketing | `smart_display` |
-| 5 | LinkedIn Marketing | `badge` |
-| 6 | Social Media Content Creation | `draw` |
-| 7 | Social Media Graphics | `palette` |
-| 8 | Content Calendars | `event_note` |
-| 9 | Paid Social Media Advertising | `ads_click` |
-| 10 | Facebook/Instagram Ads | `monetization_on` |
-| 11 | Lead Generation Campaigns | `person_add` |
-| 12 | Social Media Page Optimization | `tune` |
-| 13 | Competitor Analysis | `query_stats` |
-| 14 | Social Media Strategy | `rocket_launch` |
-
----
-
-## 🎨 Category 03 — Graphic Design & Branding
-
-**Slug:** `graphic-design-branding` | **Icon:** 🎨 | **Order:** 3  
-**Description:** Distinctive corporate identity, logo design, marketing collateral, professional company profiles, and print-ready creative assets.
-
-| # | Service Title | Icon Name |
-|---|---------------|-----------|
-| 1 | Logo Design | `brush` |
-| 2 | Brand Identity Design | `style` |
-| 3 | Business Cards | `contact_page` |
-| 4 | Letterheads | `description` |
-| 5 | Company Profiles | `menu_book` |
-| 6 | Brochures | `auto_stories` |
-| 7 | Flyers | `article` |
-| 8 | Posters | `wallpaper` |
-| 9 | Banners | `ad_units` |
-| 10 | Roll-up Banners | `view_carousel` |
-| 11 | Product Catalogues | `format_list_bulleted` |
-| 12 | Restaurant Menus | `menu` |
-| 13 | QR Code Menus | `qr_code_scanner` |
-| 14 | Certificates | `workspace_premium` |
-| 15 | Social Media Designs | `design_services` |
-| 16 | Advertisements | `featured_video` |
-| 17 | Packaging Design | `inventory` |
-| 18 | Brand Guidelines | `fact_check` |
-
----
-
-## 📊 Category 04 — Analytics & Business Intelligence
-
-**Slug:** `analytics-business-intelligence` | **Icon:** 📊 | **Order:** 4  
-**Description:** Actionable data visualization, Google Analytics 4, live sales dashboards, Power BI reporting, and automated predictive business intelligence.
-
-| # | Service Title | Icon Name |
-|---|---------------|-----------|
-| 1 | Google Analytics | `monitoring` |
-| 2 | Search Console Analytics | `troubleshoot` |
-| 3 | Website Performance Reports | `speed` |
-| 4 | Social Media Analytics | `insights` |
-| 5 | SEO Reporting | `find_in_page` |
-| 6 | Sales Dashboards | `finance_chip` |
-| 7 | Business Dashboards | `dashboard` |
-| 8 | Excel Data Analysis | `table_chart` |
-| 9 | Power BI Dashboards | `bar_chart` |
-| 10 | Python Data Analysis | `data_object` |
-| 11 | Customer Data Analysis | `demography` |
-| 12 | Marketing Performance Analysis | `pie_chart` |
 
 ---
 
@@ -1897,6 +1799,104 @@
   - Staff training and system handover
   - Go-live support and monitoring
   - Ongoing support and feature enhancements
+
+---
+
+## 🛠️ Category 17 — Digital Business Setup
+
+**Slug:** `digital-business-setup` | **Icon:** 🛠️ | **Order:** 17  
+**Description:** Turnkey digital infrastructure, Google Business profile setup, custom domain emails, WhatsApp Business automation, and secure payment integrations.
+
+| # | Service Title | Icon Name |
+|---|---------------|-----------|
+| 1 | Google Business Profile Setup | `storefront` |
+| 2 | Business Email Setup | `mail` |
+| 3 | Domain Registration | `domain` |
+| 4 | Hosting Setup | `dns` |
+| 5 | WhatsApp Business Setup | `chat` |
+| 6 | WhatsApp Catalog Setup | `inventory_2` |
+| 7 | Social Media Business Pages | `share` |
+| 8 | Online Booking Setup | `calendar_month` |
+| 9 | Payment Integration | `credit_card` |
+| 10 | M-Pesa Integration | `payments` |
+| 11 | E-commerce Setup | `shopping_bag` |
+| 12 | Online Forms | `assignment` |
+| 13 | QR Code Systems | `qr_code_2` |
+| 14 | Digital Menu Systems | `restaurant_menu` |
+
+---
+
+## 📱 Category 18 — Social Media & Digital Marketing
+
+**Slug:** `social-media-digital-marketing` | **Icon:** 📱 | **Order:** 18  
+**Description:** High-conversion social media campaigns, paid advertising, content creation, brand positioning, and multi-channel audience growth.
+
+| # | Service Title | Icon Name |
+|---|---------------|-----------|
+| 1 | Social Media Management | `public` |
+| 2 | Facebook Marketing | `campaign` |
+| 3 | Instagram Marketing | `photo_camera` |
+| 4 | TikTok Marketing | `smart_display` |
+| 5 | LinkedIn Marketing | `badge` |
+| 6 | Social Media Content Creation | `draw` |
+| 7 | Social Media Graphics | `palette` |
+| 8 | Content Calendars | `event_note` |
+| 9 | Paid Social Media Advertising | `ads_click` |
+| 10 | Facebook/Instagram Ads | `monetization_on` |
+| 11 | Lead Generation Campaigns | `person_add` |
+| 12 | Social Media Page Optimization | `tune` |
+| 13 | Competitor Analysis | `query_stats` |
+| 14 | Social Media Strategy | `rocket_launch` |
+
+---
+
+## 🎨 Category 19 — Graphic Design & Branding
+
+**Slug:** `graphic-design-branding` | **Icon:** 🎨 | **Order:** 19  
+**Description:** Distinctive corporate identity, logo design, marketing collateral, professional company profiles, and print-ready creative assets.
+
+| # | Service Title | Icon Name |
+|---|---------------|-----------|
+| 1 | Logo Design | `brush` |
+| 2 | Brand Identity Design | `style` |
+| 3 | Business Cards | `contact_page` |
+| 4 | Letterheads | `description` |
+| 5 | Company Profiles | `menu_book` |
+| 6 | Brochures | `auto_stories` |
+| 7 | Flyers | `article` |
+| 8 | Posters | `wallpaper` |
+| 9 | Banners | `ad_units` |
+| 10 | Roll-up Banners | `view_carousel` |
+| 11 | Product Catalogues | `format_list_bulleted` |
+| 12 | Restaurant Menus | `menu` |
+| 13 | QR Code Menus | `qr_code_scanner` |
+| 14 | Certificates | `workspace_premium` |
+| 15 | Social Media Designs | `design_services` |
+| 16 | Advertisements | `featured_video` |
+| 17 | Packaging Design | `inventory` |
+| 18 | Brand Guidelines | `fact_check` |
+
+---
+
+## 📊 Category 20 — Analytics & Business Intelligence
+
+**Slug:** `analytics-business-intelligence` | **Icon:** 📊 | **Order:** 20  
+**Description:** Actionable data visualization, Google Analytics 4, live sales dashboards, Power BI reporting, and automated predictive business intelligence.
+
+| # | Service Title | Icon Name |
+|---|---------------|-----------|
+| 1 | Google Analytics | `monitoring` |
+| 2 | Search Console Analytics | `troubleshoot` |
+| 3 | Website Performance Reports | `speed` |
+| 4 | Social Media Analytics | `insights` |
+| 5 | SEO Reporting | `find_in_page` |
+| 6 | Sales Dashboards | `finance_chip` |
+| 7 | Business Dashboards | `dashboard` |
+| 8 | Excel Data Analysis | `table_chart` |
+| 9 | Power BI Dashboards | `bar_chart` |
+| 10 | Python Data Analysis | `data_object` |
+| 11 | Customer Data Analysis | `demography` |
+| 12 | Marketing Performance Analysis | `pie_chart` |
 
 ---
 

@@ -38,25 +38,25 @@ class Command(BaseCommand):
             return val
 
 
-        # Category metadata: 4 New Core Categories + 16 Industry Verticals = 20 Categories
-        categories_data = NEW_CATEGORIES + [
-            {"id": "05", "name": "Retail & Commerce", "slug": "retail-commerce", "icon": "🛒", "icon_name": "shopping_cart", "order": 5, "desc": "E-commerce and retail storefronts with AI customer capture and WhatsApp checkout."},
-            {"id": "06", "name": "Healthcare & Medical", "slug": "healthcare", "icon": "🏥", "icon_name": "local_hospital", "order": 6, "desc": "Clinics and medical centers with patient intake bots and automated appointment booking."},
-            {"id": "07", "name": "Hospitality & Food", "slug": "hospitality-food", "icon": "🍽️", "icon_name": "restaurant", "order": 7, "desc": "Restaurants, hotels, and cafes with online ordering and automated table reservation systems."},
-            {"id": "08", "name": "Education & Academies", "slug": "education", "icon": "🎓", "icon_name": "school", "order": 8, "desc": "Schools and training institutes with student enrollment funnels and course catalogues."},
-            {"id": "09", "name": "Religious Organizations", "slug": "religious-organizations", "icon": "⛪", "icon_name": "church", "order": 9, "desc": "Churches and ministries with livestreaming, donations, and automated member outreach."},
-            {"id": "10", "name": "Professional & Legal Services", "slug": "professional-services", "icon": "💼", "icon_name": "business_center", "order": 10, "desc": "Law firms and consultancies with high-value client qualification funnels."},
-            {"id": "11", "name": "Automotive & Transport", "slug": "automotive", "icon": "🚗", "icon_name": "directions_car", "order": 11, "desc": "Dealerships, garages, and logistics with instant quote and vehicle inventory engines."},
-            {"id": "12", "name": "Beauty & Wellness", "slug": "beauty-wellness", "icon": "💅", "icon_name": "spa", "order": 12, "desc": "Salons, spas, and aesthetic clinics with 24/7 calendar booking and client retention drips."},
-            {"id": "13", "name": "Property & Real Estate", "slug": "property", "icon": "🏠", "icon_name": "real_estate_agent", "order": 13, "desc": "Real estate agencies and property developers with buyer qualification chatbots."},
-            {"id": "14", "name": "Travel & Tourism", "slug": "travel-tourism", "icon": "✈️", "icon_name": "flight", "order": 14, "desc": "Tour operators and safari companies with custom itinerary builders and payment flows."},
-            {"id": "15", "name": "Home & Field Services", "slug": "home-commercial-services", "icon": "🏢", "icon_name": "home_repair_service", "order": 15, "desc": "Contractors, plumbers, and maintenance services with instant quote estimators."},
-            {"id": "16", "name": "AI Systems & Automation", "slug": "ai-integration", "icon": "🤖", "icon_name": "smart_toy", "order": 16, "desc": "End-to-end AI workflow automations, CRM syncs, and intelligent operational systems."},
-            {"id": "17", "name": "AI Chatbots & Voice Agents", "slug": "ai-chatbot-development", "icon": "💬", "icon_name": "forum", "order": 17, "desc": "24/7 WhatsApp, Web, and Voice AI customer support and lead qualification bots."},
-            {"id": "18", "name": "Custom Web Applications", "slug": "custom-web-applications", "icon": "⚙️", "icon_name": "terminal", "order": 18, "desc": "Bespoke SaaS platforms, client portals, and cloud business software."},
-            {"id": "19", "name": "AI Lead Generation & Qualification", "slug": "ai-lead-generation", "icon": "🎯", "icon_name": "track_changes", "order": 19, "desc": "Autonomous customer acquisition pipelines, high-intent traffic filters, and cold outreach."},
-            {"id": "20", "name": "Pipeline Growth & Re-Engagement", "slug": "customer-growth-re-engagement", "icon": "📈", "icon_name": "trending_up", "order": 20, "desc": "Automated reactivation drips, abandoned cart recovery, and review generation bots."}
-        ]
+        # Category metadata: 16 Main Industry Verticals (Orders 1-16) + 4 Secondary Categories (Orders 17-20)
+        categories_data = [
+            {"id": "01", "name": "Retail & Commerce", "slug": "retail-commerce", "icon": "🛒", "icon_name": "shopping_cart", "order": 1, "desc": "E-commerce and retail storefronts with AI customer capture and WhatsApp checkout."},
+            {"id": "02", "name": "Healthcare & Medical", "slug": "healthcare", "icon": "🏥", "icon_name": "local_hospital", "order": 2, "desc": "Clinics and medical centers with patient intake bots and automated appointment booking."},
+            {"id": "03", "name": "Hospitality & Food", "slug": "hospitality-food", "icon": "🍽️", "icon_name": "restaurant", "order": 3, "desc": "Restaurants, hotels, and cafes with online ordering and automated table reservation systems."},
+            {"id": "04", "name": "Education & Academies", "slug": "education", "icon": "🎓", "icon_name": "school", "order": 4, "desc": "Schools and training institutes with student enrollment funnels and course catalogues."},
+            {"id": "05", "name": "Religious Organizations", "slug": "religious-organizations", "icon": "⛪", "icon_name": "church", "order": 5, "desc": "Churches and ministries with livestreaming, donations, and automated member outreach."},
+            {"id": "06", "name": "Professional & Legal Services", "slug": "professional-services", "icon": "💼", "icon_name": "business_center", "order": 6, "desc": "Law firms and consultancies with high-value client qualification funnels."},
+            {"id": "07", "name": "Automotive & Transport", "slug": "automotive", "icon": "🚗", "icon_name": "directions_car", "order": 7, "desc": "Dealerships, garages, and logistics with instant quote and vehicle inventory engines."},
+            {"id": "08", "name": "Beauty & Wellness", "slug": "beauty-wellness", "icon": "💅", "icon_name": "spa", "order": 8, "desc": "Salons, spas, and aesthetic clinics with 24/7 calendar booking and client retention drips."},
+            {"id": "09", "name": "Property & Real Estate", "slug": "property", "icon": "🏠", "icon_name": "real_estate_agent", "order": 9, "desc": "Real estate agencies and property developers with buyer qualification chatbots."},
+            {"id": "10", "name": "Travel & Tourism", "slug": "travel-tourism", "icon": "✈️", "icon_name": "flight", "order": 10, "desc": "Tour operators and safari companies with custom itinerary builders and payment flows."},
+            {"id": "11", "name": "Home & Field Services", "slug": "home-commercial-services", "icon": "🏢", "icon_name": "home_repair_service", "order": 11, "desc": "Contractors, plumbers, and maintenance services with instant quote estimators."},
+            {"id": "12", "name": "AI Systems & Automation", "slug": "ai-integration", "icon": "🤖", "icon_name": "smart_toy", "order": 12, "desc": "End-to-end AI workflow automations, CRM syncs, and intelligent operational systems."},
+            {"id": "13", "name": "AI Chatbots & Voice Agents", "slug": "ai-chatbot-development", "icon": "💬", "icon_name": "forum", "order": 13, "desc": "24/7 WhatsApp, Web, and Voice AI customer support and lead qualification bots."},
+            {"id": "14", "name": "Custom Web Applications", "slug": "custom-web-applications", "icon": "⚙️", "icon_name": "terminal", "order": 14, "desc": "Bespoke SaaS platforms, client portals, and cloud business software."},
+            {"id": "15", "name": "AI Lead Generation & Qualification", "slug": "ai-lead-generation", "icon": "🎯", "icon_name": "track_changes", "order": 15, "desc": "Autonomous customer acquisition pipelines, high-intent traffic filters, and cold outreach."},
+            {"id": "16", "name": "Pipeline Growth & Re-Engagement", "slug": "customer-growth-re-engagement", "icon": "📈", "icon_name": "trending_up", "order": 16, "desc": "Automated reactivation drips, abandoned cart recovery, and review generation bots."}
+        ] + NEW_CATEGORIES
 
         cat_objs = {}
         for cdata in categories_data:
@@ -78,23 +78,6 @@ class Command(BaseCommand):
         services_md_path = os.path.join(base_dir, "SERVICES_LIST.md")
 
         seeded_services = []
-
-        # ── 1. Prepend the 58 New High-Value Services ──
-        for sdata in NEW_SERVICES:
-            cat = cat_objs.get(sdata["category_slug"])
-            if not cat:
-                continue
-            seeded_services.append({
-                "category": cat,
-                "title": sdata["title"],
-                "slug": slugify(sdata["title"]),
-                "icon_name": sdata["icon_name"],
-                "short_description": sdata["short_description"],
-                "overview": sdata["overview"],
-                "benefits": sdata["benefits"],
-                "process": sdata["process"],
-                "image_url": sdata.get("image_url", ""),
-            })
 
         if os.path.exists(services_md_path):
             with open(services_md_path, "r", encoding="utf-8") as f:
@@ -468,6 +451,23 @@ class Command(BaseCommand):
                 "overview": ai_pitch_overview,
                 "benefits": ai_benefits,
                 "process": ai_process,
+            })
+
+        # ── 3. Append the 58 Secondary Services at the end (Orders 108+) ──
+        for sdata in NEW_SERVICES:
+            cat = cat_objs.get(sdata["category_slug"])
+            if not cat:
+                continue
+            seeded_services.append({
+                "category": cat,
+                "title": sdata["title"],
+                "slug": slugify(sdata["title"]),
+                "icon_name": sdata["icon_name"],
+                "short_description": sdata["short_description"],
+                "overview": sdata["overview"],
+                "benefits": sdata["benefits"],
+                "process": sdata["process"],
+                "image_url": sdata.get("image_url", ""),
             })
 
         self.stdout.write(f"Total service models prepared for database: {len(seeded_services)}")
