@@ -191,6 +191,7 @@ def send_robust_email(
                 logger.warning(f"Failed attaching persisted file on resend: {e}")
 
         # Send via connection with automatic dual-port fallback (465 SSL <-> 587 TLS)
+        # AND automatic cPanel failover if server firewall blocks Google SMTP (Errno 111)
         try:
             msg.send(fail_silently=False)
         except Exception as first_err:
@@ -204,14 +205,34 @@ def send_robust_email(
                     f"Primary SMTP port {current_port} failed ({first_err}). "
                     f"Retrying email dispatch on fallback port {fallback_port} (SSL={fallback_ssl})..."
                 )
-                fallback_backend = get_email_connection(
-                    sender_choice,
-                    port_override=fallback_port,
-                    ssl_override=fallback_ssl,
-                    tls_override=fallback_tls,
-                )
-                msg.connection = fallback_backend
-                msg.send(fail_silently=False)
+                try:
+                    fallback_backend = get_email_connection(
+                        sender_choice,
+                        port_override=fallback_port,
+                        ssl_override=fallback_ssl,
+                        tls_override=fallback_tls,
+                    )
+                    msg.connection = fallback_backend
+                    msg.send(fail_silently=False)
+                except Exception as retry_err:
+                    # If Email 2 is blocked by server firewall (e.g. [Errno 111] Connection refused),
+                    # automatically fail over to Email 1 (cPanel) which is whitelisted on this host!
+                    if sender_choice == 'email2':
+                        logger.warning(
+                            f"Email 2 (Google SMTP) blocked by server firewall ({retry_err}). "
+                            "Failing over to Email 1 (mail.uniquetechcamp.org) with Reply-To set to UniqueTechCamp@gmail.com..."
+                        )
+                        email1_backend = get_email_connection('email1')
+                        msg.connection = email1_backend
+                        msg.from_email = get_sender_from_email('email1')
+                        msg.reply_to = [getattr(settings, 'EMAIL2_HOST_USER', 'UniqueTechCamp@gmail.com')]
+                        msg.send(fail_silently=False)
+                        email_log.error_message = (
+                            f"Dispatched via Email 1 failover (Server firewall blocked outbound Google SMTP: {retry_err}). "
+                            "Reply-To set to UniqueTechCamp@gmail.com."
+                        )
+                    else:
+                        raise retry_err
             else:
                 raise first_err
 
