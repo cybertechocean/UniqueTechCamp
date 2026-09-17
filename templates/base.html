@@ -194,6 +194,57 @@
             border-radius: 2px;
             padding: 0 2px;
         }
+
+        /* Services Ultra-Wide Mega Dropdown (Desktop) */
+        @media (min-width: 1024px) {
+            #services-nav-group {
+                position: relative;
+            }
+            #services-nav-group .services-mega-dropdown {
+                position: absolute !important;
+                top: calc(100% + 4px) !important;
+                left: -160px !important;
+                width: 980px !important;
+                min-width: 940px !important;
+                max-width: calc(100vw - 40px) !important;
+                background: #0f172a !important; /* 100% Solid Opaque Slate-900 - ZERO transparency */
+                background-color: #0f172a !important;
+                opacity: 0;
+                visibility: hidden;
+                pointer-events: none;
+                border: 1px solid #334155 !important;
+                border-radius: 1.5rem !important;
+                box-shadow: 0 25px 60px -15px rgba(0, 0, 0, 0.95), 0 0 0 1px rgba(255, 255, 255, 0.05) !important;
+                padding: 1.5rem !important;
+                z-index: 9999 !important;
+                transition: opacity 0.2s ease, visibility 0.2s ease, transform 0.2s ease;
+                transform: translateY(8px);
+            }
+            #services-nav-group:hover .services-mega-dropdown,
+            #services-nav-group .services-mega-dropdown:hover {
+                opacity: 1 !important;
+                visibility: visible !important;
+                pointer-events: auto !important;
+                transform: translateY(0) !important;
+            }
+            .services-mega-grid {
+                display: grid !important;
+                grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+                gap: 1.25rem !important;
+                width: 100% !important;
+            }
+            .services-mega-card:hover {
+                background-color: #1a2642 !important;
+                border-color: rgba(52, 211, 153, 0.5) !important;
+            }
+        }
+        @media (min-width: 1024px) and (max-width: 1279px) {
+            #services-nav-group .services-mega-dropdown {
+                width: 880px !important;
+                min-width: 860px !important;
+                left: -220px !important;
+            }
+        }
     </style>
     {% block extra_head %}{% endblock %}
 </head>
@@ -242,119 +293,146 @@
                             <i data-lucide="chevron-down" class="w-3.5 h-3.5 text-slate-400 group-hover:rotate-180 transition-transform duration-200"></i>
                         </a>
 
-                        <!-- Services Ultra-Wide Mega Dropdown Card (Desktop) -->
-                        <div class="absolute top-full -left-8 lg:-left-24 xl:-left-36 mt-2 w-[880px] lg:w-[960px] xl:w-[1020px] bg-slate-900/98 backdrop-blur-2xl rounded-3xl border border-slate-700/80 shadow-[0_25px_70px_rgba(0,0,0,0.7)] p-6 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-50">
-                            <div class="flex items-center justify-between text-[11px] font-bold uppercase tracking-wider text-slate-400 px-2 pb-3 border-b border-slate-800 mb-4">
+                        <!-- Services Ultra-Wide Mega Dropdown Menu (Desktop) -->
+                        <div class="services-mega-dropdown" 
+                             style="background-color: #0f172a !important; background: #0f172a !important; width: 980px !important; min-width: 940px !important; border: 1px solid #334155 !important; border-radius: 1.5rem !important; box-shadow: 0 25px 60px -15px rgba(0,0,0,0.95) !important;">
+                            
+                            <!-- Header Bar -->
+                            <div class="flex items-center justify-between pb-3.5 mb-4" style="border-bottom: 1px solid #1e293b;">
                                 <span class="flex items-center gap-2">
-                                    <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
-                                    <span>Enterprise & Growth Digital Services</span>
+                                    <span class="w-2 h-2 rounded-full animate-pulse" style="background-color: #34d399;"></span>
+                                    <span class="text-xs font-bold uppercase tracking-wider text-slate-200">Featured Growth & Digital Systems</span>
                                 </span>
-                                <span class="text-emerald-400 font-bold bg-emerald-500/15 px-3 py-1 rounded-full border border-emerald-500/30 text-xs">
+                                <span class="text-xs font-bold px-3 py-1 rounded-full" style="background-color: rgba(16, 185, 129, 0.15); border: 1px solid rgba(16, 185, 129, 0.35); color: #34d399;">
                                     20 Specialized Categories · 165+ Services
                                 </span>
                             </div>
                             
-                            <div class="grid grid-cols-3 gap-5">
-                                <!-- Col 1: Core Web & AI Platforms -->
-                                <div class="space-y-2">
-                                    <div class="text-[10px] font-extrabold uppercase tracking-wider text-emerald-400 px-2 py-1 bg-emerald-500/10 rounded-lg border border-emerald-500/20 flex items-center gap-1.5">
+                            <!-- 3-Column Wide Grid -->
+                            <div class="services-mega-grid" style="display: grid !important; grid-template-columns: repeat(3, minmax(0, 1fr)) !important; gap: 1.25rem !important; width: 100% !important;">
+                                <!-- Col 1: AI & Custom Engineering -->
+                                <div class="space-y-2.5">
+                                    <div class="text-[10px] font-extrabold uppercase tracking-wider px-2.5 py-1.5 rounded-xl flex items-center gap-1.5"
+                                         style="background-color: rgba(16, 185, 129, 0.12); border: 1px solid rgba(16, 185, 129, 0.3); color: #34d399;">
                                         <i data-lucide="cpu" class="w-3.5 h-3.5"></i>
                                         <span>AI & Custom Engineering</span>
                                     </div>
-                                    <div class="space-y-1.5 pt-1">
+                                    <div class="space-y-2">
                                         <!-- 1. AI Lead Gen & Chatbots -->
-                                        <a href="{% url 'services:list' %}?category=ai-chatbot-development" class="flex items-start gap-3 p-2.5 rounded-2xl hover:bg-white/5 transition-colors group/item border border-transparent hover:border-slate-800">
-                                            <div class="w-9 h-9 rounded-xl bg-emerald-500/20 text-emerald-400 flex items-center justify-center shrink-0 mt-0.5 group-hover/item:scale-105 transition-transform">
+                                        <a href="{% url 'services:list' %}?category=ai-chatbot-development" 
+                                           class="services-mega-card flex items-start gap-3 p-3 rounded-2xl transition-all block group/card"
+                                           style="background-color: #131d33; border: 1px solid #1e293b; text-decoration: none;">
+                                            <div class="w-9 h-9 rounded-xl flex items-center justify-center shrink-0 mt-0.5"
+                                                 style="background-color: rgba(16, 185, 129, 0.18); color: #34d399;">
                                                 <i data-lucide="bot" class="w-4 h-4"></i>
                                             </div>
-                                            <div>
-                                                <h4 class="text-xs font-bold text-white group-hover/item:text-emerald-400 transition-colors">AI Lead Gen & Chatbots</h4>
-                                                <p class="text-[11px] text-slate-400 leading-tight mt-0.5">24/7 lead qualification & automated booking engines.</p>
+                                            <div class="min-w-0 flex-1">
+                                                <h4 class="text-xs font-bold text-white group-hover/card:text-emerald-400 transition-colors">AI Lead Gen & Chatbots</h4>
+                                                <p class="text-[11px] text-slate-400 leading-snug mt-0.5">24/7 lead qualification & automated booking engines.</p>
                                             </div>
                                         </a>
 
                                         <!-- 2. High-Converting Web Applications -->
-                                        <a href="{% url 'services:list' %}?category=custom-web-applications" class="flex items-start gap-3 p-2.5 rounded-2xl hover:bg-white/5 transition-colors group/item border border-transparent hover:border-slate-800">
-                                            <div class="w-9 h-9 rounded-xl bg-blue-500/20 text-blue-400 flex items-center justify-center shrink-0 mt-0.5 group-hover/item:scale-105 transition-transform">
+                                        <a href="{% url 'services:list' %}?category=custom-web-applications" 
+                                           class="services-mega-card flex items-start gap-3 p-3 rounded-2xl transition-all block group/card"
+                                           style="background-color: #131d33; border: 1px solid #1e293b; text-decoration: none;">
+                                            <div class="w-9 h-9 rounded-xl flex items-center justify-center shrink-0 mt-0.5"
+                                                 style="background-color: rgba(59, 130, 246, 0.18); color: #60a5fa;">
                                                 <i data-lucide="layout" class="w-4 h-4"></i>
                                             </div>
-                                            <div>
-                                                <h4 class="text-xs font-bold text-white group-hover/item:text-emerald-400 transition-colors">High-Converting Web Apps</h4>
-                                                <p class="text-[11px] text-slate-400 leading-tight mt-0.5">Sub-second load speeds engineered for high conversion.</p>
+                                            <div class="min-w-0 flex-1">
+                                                <h4 class="text-xs font-bold text-white group-hover/card:text-emerald-400 transition-colors">High-Converting Web Apps</h4>
+                                                <p class="text-[11px] text-slate-400 leading-snug mt-0.5">Sub-second load speeds engineered for high conversion.</p>
                                             </div>
                                         </a>
                                     </div>
                                 </div>
 
                                 <!-- Col 2: Commerce & Setup -->
-                                <div class="space-y-2">
-                                    <div class="text-[10px] font-extrabold uppercase tracking-wider text-purple-400 px-2 py-1 bg-purple-500/10 rounded-lg border border-purple-500/20 flex items-center gap-1.5">
+                                <div class="space-y-2.5">
+                                    <div class="text-[10px] font-extrabold uppercase tracking-wider px-2.5 py-1.5 rounded-xl flex items-center gap-1.5"
+                                         style="background-color: rgba(168, 85, 247, 0.12); border: 1px solid rgba(168, 85, 247, 0.3); color: #c084fc;">
                                         <i data-lucide="store" class="w-3.5 h-3.5"></i>
                                         <span>Commerce & Setup</span>
                                     </div>
-                                    <div class="space-y-1.5 pt-1">
+                                    <div class="space-y-2">
                                         <!-- 3. E-Commerce & Custom Portals -->
-                                        <a href="{% url 'services:list' %}?category=retail-commerce" class="flex items-start gap-3 p-2.5 rounded-2xl hover:bg-white/5 transition-colors group/item border border-transparent hover:border-slate-800">
-                                            <div class="w-9 h-9 rounded-xl bg-purple-500/20 text-purple-400 flex items-center justify-center shrink-0 mt-0.5 group-hover/item:scale-105 transition-transform">
+                                        <a href="{% url 'services:list' %}?category=retail-commerce" 
+                                           class="services-mega-card flex items-start gap-3 p-3 rounded-2xl transition-all block group/card"
+                                           style="background-color: #131d33; border: 1px solid #1e293b; text-decoration: none;">
+                                            <div class="w-9 h-9 rounded-xl flex items-center justify-center shrink-0 mt-0.5"
+                                                 style="background-color: rgba(168, 85, 247, 0.18); color: #c084fc;">
                                                 <i data-lucide="shopping-bag" class="w-4 h-4"></i>
                                             </div>
-                                            <div>
-                                                <h4 class="text-xs font-bold text-white group-hover/item:text-emerald-400 transition-colors">E-Commerce & Portals</h4>
-                                                <p class="text-[11px] text-slate-400 leading-tight mt-0.5">M-Pesa, Stripe checkouts & client self-service storefronts.</p>
+                                            <div class="min-w-0 flex-1">
+                                                <h4 class="text-xs font-bold text-white group-hover/card:text-emerald-400 transition-colors">E-Commerce & Portals</h4>
+                                                <p class="text-[11px] text-slate-400 leading-snug mt-0.5">M-Pesa, Stripe checkouts & client self-service storefronts.</p>
                                             </div>
                                         </a>
 
                                         <!-- 4. Google/Digital Business Setup -->
-                                        <a href="{% url 'services:list' %}?category=digital-business-setup" class="flex items-start gap-3 p-2.5 rounded-2xl hover:bg-white/5 transition-colors group/item border border-transparent hover:border-slate-800">
-                                            <div class="w-9 h-9 rounded-xl bg-amber-500/20 text-amber-400 flex items-center justify-center shrink-0 mt-0.5 group-hover/item:scale-105 transition-transform">
+                                        <a href="{% url 'services:list' %}?category=digital-business-setup" 
+                                           class="services-mega-card flex items-start gap-3 p-3 rounded-2xl transition-all block group/card"
+                                           style="background-color: #131d33; border: 1px solid #1e293b; text-decoration: none;">
+                                            <div class="w-9 h-9 rounded-xl flex items-center justify-center shrink-0 mt-0.5"
+                                                 style="background-color: rgba(245, 158, 11, 0.18); color: #fbbf24;">
                                                 <i data-lucide="wrench" class="w-4 h-4"></i>
                                             </div>
-                                            <div>
-                                                <h4 class="text-xs font-bold text-white group-hover/item:text-emerald-400 transition-colors">Digital Business Setup</h4>
-                                                <p class="text-[11px] text-slate-400 leading-tight mt-0.5">Google profile verification, custom email & payment setup.</p>
+                                            <div class="min-w-0 flex-1">
+                                                <h4 class="text-xs font-bold text-white group-hover/card:text-emerald-400 transition-colors">Digital Business Setup</h4>
+                                                <p class="text-[11px] text-slate-400 leading-snug mt-0.5">Google profile verification, custom email & payment setup.</p>
                                             </div>
                                         </a>
                                     </div>
                                 </div>
 
                                 <!-- Col 3: Marketing & Branding -->
-                                <div class="space-y-2">
-                                    <div class="text-[10px] font-extrabold uppercase tracking-wider text-sky-400 px-2 py-1 bg-sky-500/10 rounded-lg border border-sky-500/20 flex items-center gap-1.5">
+                                <div class="space-y-2.5">
+                                    <div class="text-[10px] font-extrabold uppercase tracking-wider px-2.5 py-1.5 rounded-xl flex items-center gap-1.5"
+                                         style="background-color: rgba(14, 165, 233, 0.12); border: 1px solid rgba(14, 165, 233, 0.3); color: #38bdf8;">
                                         <i data-lucide="trending-up" class="w-3.5 h-3.5"></i>
                                         <span>Marketing & Branding</span>
                                     </div>
-                                    <div class="space-y-1.5 pt-1">
+                                    <div class="space-y-2">
                                         <!-- 5. Social Media & Digital Marketing -->
-                                        <a href="{% url 'services:list' %}?category=social-media-digital-marketing" class="flex items-start gap-3 p-2.5 rounded-2xl hover:bg-white/5 transition-colors group/item border border-transparent hover:border-slate-800">
-                                            <div class="w-9 h-9 rounded-xl bg-rose-500/20 text-rose-400 flex items-center justify-center shrink-0 mt-0.5 group-hover/item:scale-105 transition-transform">
+                                        <a href="{% url 'services:list' %}?category=social-media-digital-marketing" 
+                                           class="services-mega-card flex items-start gap-3 p-3 rounded-2xl transition-all block group/card"
+                                           style="background-color: #131d33; border: 1px solid #1e293b; text-decoration: none;">
+                                            <div class="w-9 h-9 rounded-xl flex items-center justify-center shrink-0 mt-0.5"
+                                                 style="background-color: rgba(244, 63, 94, 0.18); color: #fb7185;">
                                                 <i data-lucide="share-2" class="w-4 h-4"></i>
                                             </div>
-                                            <div>
-                                                <h4 class="text-xs font-bold text-white group-hover/item:text-emerald-400 transition-colors">Social Media & Marketing</h4>
-                                                <p class="text-[11px] text-slate-400 leading-tight mt-0.5">Paid ads, audience growth campaigns & content calendars.</p>
+                                            <div class="min-w-0 flex-1">
+                                                <h4 class="text-xs font-bold text-white group-hover/card:text-emerald-400 transition-colors">Social Media & Marketing</h4>
+                                                <p class="text-[11px] text-slate-400 leading-snug mt-0.5">Paid ads, audience growth campaigns & content calendars.</p>
                                             </div>
                                         </a>
 
                                         <!-- 6. Graphic Design & Branding -->
-                                        <a href="{% url 'services:list' %}?category=graphic-design-branding" class="flex items-start gap-3 p-2.5 rounded-2xl hover:bg-white/5 transition-colors group/item border border-transparent hover:border-slate-800">
-                                            <div class="w-9 h-9 rounded-xl bg-teal-500/20 text-teal-400 flex items-center justify-center shrink-0 mt-0.5 group-hover/item:scale-105 transition-transform">
+                                        <a href="{% url 'services:list' %}?category=graphic-design-branding" 
+                                           class="services-mega-card flex items-start gap-3 p-3 rounded-2xl transition-all block group/card"
+                                           style="background-color: #131d33; border: 1px solid #1e293b; text-decoration: none;">
+                                            <div class="w-9 h-9 rounded-xl flex items-center justify-center shrink-0 mt-0.5"
+                                                 style="background-color: rgba(20, 184, 166, 0.18); color: #2dd4bf;">
                                                 <i data-lucide="palette" class="w-4 h-4"></i>
                                             </div>
-                                            <div>
-                                                <h4 class="text-xs font-bold text-white group-hover/item:text-emerald-400 transition-colors">Graphic Design & Branding</h4>
-                                                <p class="text-[11px] text-slate-400 leading-tight mt-0.5">Logos, brand identity kits, company profiles & print assets.</p>
+                                            <div class="min-w-0 flex-1">
+                                                <h4 class="text-xs font-bold text-white group-hover/card:text-emerald-400 transition-colors">Graphic Design & Branding</h4>
+                                                <p class="text-[11px] text-slate-400 leading-snug mt-0.5">Logos, brand identity kits, company profiles & print assets.</p>
                                             </div>
                                         </a>
                                     </div>
                                 </div>
                             </div>
 
-                            <div class="pt-4 mt-4 border-t border-slate-800 flex items-center justify-between px-2 text-xs">
-                                <a href="{% url 'services:list' %}" class="font-bold text-emerald-400 hover:text-emerald-300 transition-colors flex items-center gap-1.5 text-sm">
+                            <!-- Footer Bar -->
+                            <div class="pt-3.5 mt-4 flex items-center justify-between px-1 text-xs" style="border-top: 1px solid #1e293b;">
+                                <a href="{% url 'services:list' %}" class="font-bold flex items-center gap-1.5 text-sm hover:underline" style="color: #34d399; text-decoration: none;">
                                     <span>Explore All 165+ Growth Services across 20 Categories</span>
                                     <i data-lucide="arrow-right" class="w-4 h-4"></i>
                                 </a>
-                                <a href="{% url 'appointments:book' %}" class="px-4 py-2 rounded-xl bg-emerald-500/20 hover:bg-emerald-500/30 text-emerald-400 border border-emerald-500/40 font-bold transition-all flex items-center gap-1.5">
+                                <a href="{% url 'appointments:book' %}" class="px-4 py-2 rounded-xl font-bold transition-all flex items-center gap-1.5"
+                                   style="background-color: rgba(16, 185, 129, 0.2); color: #34d399; border: 1px solid rgba(16, 185, 129, 0.4); text-decoration: none;">
                                     <i data-lucide="calendar" class="w-4 h-4"></i>
                                     <span>Book Free Consultation</span>
                                 </a>
