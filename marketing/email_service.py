@@ -30,7 +30,7 @@ def get_email_connection(sender_choice='email1', port_override=None, ssl_overrid
         port = port_override if port_override is not None else getattr(settings, 'EMAIL2_PORT', 465)
         username = getattr(settings, 'EMAIL2_HOST_USER', 'UniqueTechCamp@gmail.com')
         raw_pwd = getattr(settings, 'EMAIL2_HOST_PASSWORD', 'fralqgtdbqxmpmun')
-        password = str(raw_pwd).replace(' ', '')
+        password = str(raw_pwd).replace(' ', '').strip().strip('"').strip("'")
         if ssl_override is not None:
             use_ssl = ssl_override
             use_tls = tls_override if tls_override is not None else not ssl_override
@@ -42,7 +42,8 @@ def get_email_connection(sender_choice='email1', port_override=None, ssl_overrid
         host = getattr(settings, 'EMAIL1_HOST', 'mail.uniquetechcamp.org')
         port = port_override if port_override is not None else getattr(settings, 'EMAIL1_PORT', 465)
         username = getattr(settings, 'EMAIL1_HOST_USER', 'info@uniquetechcamp.org')
-        password = getattr(settings, 'EMAIL1_HOST_PASSWORD', '')
+        raw_pwd1 = getattr(settings, 'EMAIL1_HOST_PASSWORD', '')
+        password = str(raw_pwd1).strip().strip('"').strip("'") if raw_pwd1 else ''
         if ssl_override is not None:
             use_ssl = ssl_override
             use_tls = tls_override if tls_override is not None else not ssl_override
@@ -56,7 +57,7 @@ def get_email_connection(sender_choice='email1', port_override=None, ssl_overrid
             port = port_override if port_override is not None else getattr(settings, 'EMAIL2_PORT', 465)
             username = getattr(settings, 'EMAIL2_HOST_USER', 'UniqueTechCamp@gmail.com')
             raw_pwd = getattr(settings, 'EMAIL2_HOST_PASSWORD', 'fralqgtdbqxmpmun')
-            password = str(raw_pwd).replace(' ', '')
+            password = str(raw_pwd).replace(' ', '').strip().strip('"').strip("'")
             use_ssl = getattr(settings, 'EMAIL2_USE_SSL', True)
             use_tls = getattr(settings, 'EMAIL2_USE_TLS', False)
 
@@ -194,7 +195,7 @@ def send_robust_email(
             msg.send(fail_silently=False)
         except Exception as first_err:
             err_str = str(first_err)
-            if any(k in err_str.lower() for k in ['refused', '111', 'timeout', 'timed out']):
+            if any(k in err_str.lower() for k in ['refused', '111', '110', '10061', 'timeout', 'timed out', 'connecterror', 'errno', 'network', 'ssl', 'reset', 'handshake']):
                 current_port = getattr(backend, 'port', 465)
                 fallback_port = 587 if current_port == 465 else 465
                 fallback_ssl = (fallback_port == 465)
