@@ -111,13 +111,10 @@
             <!-- Email 1 -->
             <label id="card-email1" onclick="selectSender('email1')"
               class="sender-card relative flex flex-col p-4 rounded-2xl border-2 cursor-pointer transition-all bg-slate-950/70 hover:bg-slate-950 border-slate-800">
-              <input type="radio" name="sender_choice" id="radio-email1" value="email1" {% if
-                email_log.sender_choice=='email1' or not email_log.sender_choice %}checked{% endif %} class="sr-only"
-                onchange="updateSenderSelection()">
+              <input type="radio" name="sender_choice" id="radio-email1" value="email1" {% if email_log.sender_choice == 'email1' or not email_log.sender_choice %}checked{% endif %} class="sr-only" onchange="updateSenderSelection()">
               <div class="flex items-center justify-between mb-1">
                 <span class="text-xs font-bold text-emerald-400 uppercase tracking-wider">Email 1 (Primary)</span>
-                <span
-                  class="radio-indicator w-5 h-5 rounded-full border-2 border-slate-600 flex items-center justify-center text-[10px] font-bold text-slate-950 transition-all"></span>
+                <span class="radio-indicator w-5 h-5 rounded-full border-2 border-slate-600 flex items-center justify-center text-[10px] font-bold text-slate-950 transition-all"></span>
               </div>
               <div class="font-mono text-sm font-bold text-white mt-0.5">info@uniquetechcamp.org</div>
               <div class="text-[11px] text-slate-400 mt-1">Official Domain Mailbox</div>
@@ -126,13 +123,10 @@
             <!-- Email 2 -->
             <label id="card-email2" onclick="selectSender('email2')"
               class="sender-card relative flex flex-col p-4 rounded-2xl border-2 cursor-pointer transition-all bg-slate-950/70 hover:bg-slate-950 border-slate-800">
-              <input type="radio" name="sender_choice" id="radio-email2" value="email2" {% if
-                email_log.sender_choice=='email2' %}checked{% endif %} class="sr-only"
-                onchange="updateSenderSelection()">
+              <input type="radio" name="sender_choice" id="radio-email2" value="email2" {% if email_log.sender_choice == 'email2' %}checked{% endif %} class="sr-only" onchange="updateSenderSelection()">
               <div class="flex items-center justify-between mb-1">
                 <span class="text-xs font-bold text-sky-400 uppercase tracking-wider">Email 2 (Alternative)</span>
-                <span
-                  class="radio-indicator w-5 h-5 rounded-full border-2 border-slate-600 flex items-center justify-center text-[10px] font-bold text-slate-950 transition-all"></span>
+                <span class="radio-indicator w-5 h-5 rounded-full border-2 border-slate-600 flex items-center justify-center text-[10px] font-bold text-slate-950 transition-all"></span>
               </div>
               <div class="font-mono text-sm font-bold text-white mt-0.5">UniqueTechCamp@gmail.com</div>
               <div class="text-[11px] text-slate-400 mt-1">Google App Password Authenticated</div>
