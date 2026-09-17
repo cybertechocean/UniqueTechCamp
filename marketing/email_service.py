@@ -18,39 +18,47 @@ def get_sender_from_email(sender_choice='email1'):
     return getattr(settings, 'EMAIL1_FROM_EMAIL', 'UniqueTechCamp Solutions <info@uniquetechcamp.org>')
 
 
-def get_email_connection(sender_choice='email1'):
+def get_email_connection(sender_choice='email1', port_override=None, ssl_override=None, tls_override=None):
     """
     Instantiates and returns the SMTP EmailBackend for the requested sender.
     sender_choice:
-      - 'email1': Primary (info@uniquetechcamp.org). If EMAIL1_HOST_PASSWORD is set,
-                  uses the custom mail server (e.g. mail.uniquetechcamp.org).
-                  Otherwise, routes via Gmail credentials with Email 1 sender identity.
-      - 'email2': Alternative (UniqueTechCamp@gmail.com with Google App Password).
+      - 'email1': Primary (info@uniquetechcamp.org via mail.uniquetechcamp.org:465 SSL).
+      - 'email2': Alternative (UniqueTechCamp@gmail.com with Google App Password via smtp.gmail.com:465 SSL or 587 TLS).
     """
     if sender_choice == 'email2':
         host = getattr(settings, 'EMAIL2_HOST', 'smtp.gmail.com')
-        port = getattr(settings, 'EMAIL2_PORT', 587)
+        port = port_override if port_override is not None else getattr(settings, 'EMAIL2_PORT', 465)
         username = getattr(settings, 'EMAIL2_HOST_USER', 'UniqueTechCamp@gmail.com')
-        password = getattr(settings, 'EMAIL2_HOST_PASSWORD', 'fral qgtd bqxm pmun')
-        use_tls = getattr(settings, 'EMAIL2_USE_TLS', True)
-        use_ssl = getattr(settings, 'EMAIL2_USE_SSL', False)
+        raw_pwd = getattr(settings, 'EMAIL2_HOST_PASSWORD', 'fralqgtdbqxmpmun')
+        password = str(raw_pwd).replace(' ', '')
+        if ssl_override is not None:
+            use_ssl = ssl_override
+            use_tls = tls_override if tls_override is not None else not ssl_override
+        else:
+            use_ssl = getattr(settings, 'EMAIL2_USE_SSL', True)
+            use_tls = getattr(settings, 'EMAIL2_USE_TLS', False)
     else:
         # Email 1: Primary (info@uniquetechcamp.org)
         host = getattr(settings, 'EMAIL1_HOST', 'mail.uniquetechcamp.org')
-        port = getattr(settings, 'EMAIL1_PORT', 465)
+        port = port_override if port_override is not None else getattr(settings, 'EMAIL1_PORT', 465)
         username = getattr(settings, 'EMAIL1_HOST_USER', 'info@uniquetechcamp.org')
         password = getattr(settings, 'EMAIL1_HOST_PASSWORD', '')
-        use_ssl = getattr(settings, 'EMAIL1_USE_SSL', True)
-        use_tls = getattr(settings, 'EMAIL1_USE_TLS', False)
+        if ssl_override is not None:
+            use_ssl = ssl_override
+            use_tls = tls_override if tls_override is not None else not ssl_override
+        else:
+            use_ssl = getattr(settings, 'EMAIL1_USE_SSL', True)
+            use_tls = getattr(settings, 'EMAIL1_USE_TLS', False)
 
         # Graceful fallback: If Email 1 password is empty, route through Google App Password SMTP
         if not password:
             host = getattr(settings, 'EMAIL2_HOST', 'smtp.gmail.com')
-            port = getattr(settings, 'EMAIL2_PORT', 587)
+            port = port_override if port_override is not None else getattr(settings, 'EMAIL2_PORT', 465)
             username = getattr(settings, 'EMAIL2_HOST_USER', 'UniqueTechCamp@gmail.com')
-            password = getattr(settings, 'EMAIL2_HOST_PASSWORD', 'fral qgtd bqxm pmun')
-            use_tls = getattr(settings, 'EMAIL2_USE_TLS', True)
-            use_ssl = getattr(settings, 'EMAIL2_USE_SSL', False)
+            raw_pwd = getattr(settings, 'EMAIL2_HOST_PASSWORD', 'fralqgtdbqxmpmun')
+            password = str(raw_pwd).replace(' ', '')
+            use_ssl = getattr(settings, 'EMAIL2_USE_SSL', True)
+            use_tls = getattr(settings, 'EMAIL2_USE_TLS', False)
 
     return EmailBackend(
         host=host,
@@ -181,8 +189,30 @@ def send_robust_email(
             except Exception as e:
                 logger.warning(f"Failed attaching persisted file on resend: {e}")
 
-        # Send via connection
-        msg.send(fail_silently=False)
+        # Send via connection with automatic dual-port fallback (465 SSL <-> 587 TLS)
+        try:
+            msg.send(fail_silently=False)
+        except Exception as first_err:
+            err_str = str(first_err)
+            if any(k in err_str.lower() for k in ['refused', '111', 'timeout', 'timed out']):
+                current_port = getattr(backend, 'port', 465)
+                fallback_port = 587 if current_port == 465 else 465
+                fallback_ssl = (fallback_port == 465)
+                fallback_tls = not fallback_ssl
+                logger.warning(
+                    f"Primary SMTP port {current_port} failed ({first_err}). "
+                    f"Retrying email dispatch on fallback port {fallback_port} (SSL={fallback_ssl})..."
+                )
+                fallback_backend = get_email_connection(
+                    sender_choice,
+                    port_override=fallback_port,
+                    ssl_override=fallback_ssl,
+                    tls_override=fallback_tls,
+                )
+                msg.connection = fallback_backend
+                msg.send(fail_silently=False)
+            else:
+                raise first_err
 
         # Update log on success
         email_log.status = 'sent'
