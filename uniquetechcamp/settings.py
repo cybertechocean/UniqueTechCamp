@@ -365,7 +365,7 @@ EMAIL2_PORT = env.int("EMAIL2_PORT", default=465)
 EMAIL2_USE_TLS = env.bool("EMAIL2_USE_TLS", default=False)
 EMAIL2_USE_SSL = env.bool("EMAIL2_USE_SSL", default=True)
 EMAIL2_HOST_USER = env("EMAIL2_HOST_USER", default="UniqueTechCamp@gmail.com")
-EMAIL2_HOST_PASSWORD = env("EMAIL2_HOST_PASSWORD", default=env("EMAIL_HOST_PASSWORD", default="fralqgtdbqxmpmun")).replace(" ", "")
+EMAIL2_HOST_PASSWORD = env("EMAIL2_HOST_PASSWORD", default=env("EMAIL_HOST_PASSWORD", default="")).replace(" ", "")
 EMAIL2_FROM_EMAIL = env("EMAIL2_FROM_EMAIL", default="UniqueTechCamp Web Developers <UniqueTechCamp@gmail.com>")
 
 # Default Django fallback SMTP configuration

@@ -29,7 +29,7 @@ def get_email_connection(sender_choice='email1', port_override=None, ssl_overrid
         host = getattr(settings, 'EMAIL2_HOST', 'smtp.gmail.com')
         port = port_override if port_override is not None else getattr(settings, 'EMAIL2_PORT', 465)
         username = getattr(settings, 'EMAIL2_HOST_USER', 'UniqueTechCamp@gmail.com')
-        raw_pwd = getattr(settings, 'EMAIL2_HOST_PASSWORD', 'fralqgtdbqxmpmun')
+        raw_pwd = getattr(settings, 'EMAIL2_HOST_PASSWORD', '')
         password = str(raw_pwd).replace(' ', '').strip().strip('"').strip("'")
         if ssl_override is not None:
             use_ssl = ssl_override
@@ -56,7 +56,7 @@ def get_email_connection(sender_choice='email1', port_override=None, ssl_overrid
             host = getattr(settings, 'EMAIL2_HOST', 'smtp.gmail.com')
             port = port_override if port_override is not None else getattr(settings, 'EMAIL2_PORT', 465)
             username = getattr(settings, 'EMAIL2_HOST_USER', 'UniqueTechCamp@gmail.com')
-            raw_pwd = getattr(settings, 'EMAIL2_HOST_PASSWORD', 'fralqgtdbqxmpmun')
+            raw_pwd = getattr(settings, 'EMAIL2_HOST_PASSWORD', '')
             password = str(raw_pwd).replace(' ', '').strip().strip('"').strip("'")
             use_ssl = getattr(settings, 'EMAIL2_USE_SSL', True)
             use_tls = getattr(settings, 'EMAIL2_USE_TLS', False)
