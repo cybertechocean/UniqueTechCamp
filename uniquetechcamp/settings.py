@@ -98,6 +98,7 @@ INSTALLED_APPS = [
     "marketing",
     "accounts",
     "ai_prompts",
+    "ai_assistant",
 ]
 
 # ------------------------------------------------------------------------------
@@ -394,3 +395,9 @@ DEFAULT_FROM_EMAIL = env("DEFAULT_FROM_EMAIL", default=EMAIL1_FROM_EMAIL)
 SERVER_EMAIL = env("SERVER_EMAIL", default=EMAIL1_FROM_EMAIL)
 ADMIN_EMAIL_PRIMARY = "info@uniquetechcamp.org"
 ADMIN_EMAIL_GMAIL = "UniqueTechCamp@gmail.com"
+
+# ------------------------------------------------------------------------------
+# Google Gemini Generative AI Configuration
+# ------------------------------------------------------------------------------
+GEMINI_API_KEY = env("GEMINI_API_KEY", default=env("GOOGLE_API_KEY", default=""))
+
