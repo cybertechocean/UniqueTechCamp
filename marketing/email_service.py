@@ -20,11 +20,13 @@ def get_sender_from_email(sender_choice='email1'):
 
 def get_email_connection(sender_choice='email1', port_override=None, ssl_override=None, tls_override=None):
     """
-    Instantiates and returns the SMTP EmailBackend for the requested sender.
-    sender_choice:
-      - 'email1': Primary (info@uniquetechcamp.org via mail.uniquetechcamp.org:465 SSL).
-      - 'email2': Alternative (UniqueTechCamp@gmail.com with Google App Password via smtp.gmail.com:465 SSL or 587 TLS).
+    Instantiates and returns the SMTP EmailBackend for the requested sender,
+    or test in-memory connection if running tests.
     """
+    if getattr(settings, 'EMAIL_BACKEND', '').endswith('locmem.EmailBackend'):
+        from django.core.mail import get_connection
+        return get_connection()
+
     if sender_choice == 'email2':
         host = getattr(settings, 'EMAIL2_HOST', 'smtp.gmail.com')
         port = port_override if port_override is not None else getattr(settings, 'EMAIL2_PORT', 465)

@@ -1,9 +1,27 @@
 {% load static tailwind_tags %}
 <!DOCTYPE html>
-<html lang="en" class="scroll-smooth">
+<html lang="en" class="scroll-smooth dark">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    
+    <!-- Anti-flicker Dark / Light Theme Controller -->
+    <script>
+        (function() {
+            try {
+                var savedTheme = localStorage.getItem('utc_theme');
+                var prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+                var theme = savedTheme ? savedTheme : (prefersDark ? 'dark' : 'light');
+                if (theme === 'light') {
+                    document.documentElement.classList.remove('dark');
+                    document.documentElement.setAttribute('data-theme', 'light');
+                } else {
+                    document.documentElement.classList.add('dark');
+                    document.documentElement.setAttribute('data-theme', 'dark');
+                }
+            } catch (e) {}
+        })();
+    </script>
     <title>{% block title %}UniqueTechCamp - Website, Clients, Income | Web & AI Growth Systems{% endblock %}</title>
     <meta name="description" content="{% block description %}UniqueTechCamp builds high-performance web applications integrated with AI Lead Generation, 24/7 WhatsApp qualification bots, and automated follow-up systems.{% endblock %}">
     
@@ -245,10 +263,64 @@
                 left: -220px !important;
             }
         }
+
+        /* Universal Form Input Styling for Light and Dark Modes */
+        .utc-form-input {
+            width: 100%;
+            padding: 0.75rem 1rem;
+            border-radius: 0.75rem;
+            font-size: 0.875rem;
+            transition: all 0.2s ease-in-out;
+            background-color: #ffffff;
+            border: 1px solid #cbd5e1;
+            color: #0f172a;
+        }
+        .utc-form-input:focus {
+            outline: none;
+            border-color: #22c55e;
+            box-shadow: 0 0 0 3px rgba(34, 197, 94, 0.2);
+            background-color: #ffffff;
+        }
+        html.dark .utc-form-input {
+            background-color: rgba(15, 23, 42, 0.85);
+            border: 1px solid #334155;
+            color: #f8fafc;
+        }
+        html.dark .utc-form-input:focus {
+            background-color: rgba(30, 41, 59, 0.95);
+            border-color: #22c55e;
+            box-shadow: 0 0 0 3px rgba(34, 197, 94, 0.3);
+        }
+
+        /* Light Mode Surface and Navbar Clean Adaptations */
+        html:not(.dark) body {
+            background-color: #f8fafc;
+            color: #0f172a;
+        }
+        html:not(.dark) #navbar {
+            background-color: rgba(255, 255, 255, 0.92) !important;
+            border-bottom: 1px solid #e2e8f0 !important;
+            box-shadow: 0 4px 20px -2px rgba(0, 0, 0, 0.05) !important;
+        }
+        html:not(.dark) #navbar nav a:not(.btn-primary) {
+            color: #334155;
+        }
+        html:not(.dark) #navbar nav a:not(.btn-primary):hover {
+            color: #0f172a;
+            background-color: #f1f5f9;
+        }
+        html:not(.dark) #navbar .brand-text-main {
+            color: #0f172a !important;
+        }
+        html:not(.dark) .utc-search-box {
+            background-color: #f1f5f9 !important;
+            border-color: #cbd5e1 !important;
+            color: #0f172a !important;
+        }
     </style>
     {% block extra_head %}{% endblock %}
 </head>
-<body class="antialiased min-h-screen flex flex-col selection:bg-primary selection:text-white pb-24 md:pb-0">
+<body class="antialiased min-h-screen flex flex-col selection:bg-primary selection:text-white pb-24 md:pb-0 bg-slate-50 text-slate-900 dark:bg-slate-950 dark:text-slate-100 transition-colors duration-200">
 
     <div id="scroll-progress"></div>
 
@@ -440,6 +512,14 @@
                         </div>
                     </div>
 
+                    <!-- AI Master Coding Prompts Link -->
+                    <a href="{% url 'ai_prompts:list' %}" 
+                       class="px-3.5 py-2 rounded-xl font-medium transition-all inline-flex items-center gap-1.5 {% if '/ai-project-prompts/' in request.path %}bg-white/10 text-emerald-400 font-semibold shadow-inner{% else %}text-slate-200 hover:text-white hover:bg-white/5{% endif %}">
+                        <i data-lucide="sparkles" class="w-3.5 h-3.5 text-emerald-400"></i>
+                        <span>AI Prompts</span>
+                        <span class="px-1.5 py-0.5 rounded-full bg-emerald-500/20 text-emerald-400 text-[10px] font-extrabold border border-emerald-500/30 animate-pulse">NEW</span>
+                    </a>
+
                     <a href="{% url 'portfolio:list' %}" 
                        class="px-3.5 py-2 rounded-xl font-medium transition-all {% if '/portfolio/' in request.path %}bg-white/10 text-emerald-400 font-semibold shadow-inner{% else %}text-slate-200 hover:text-white hover:bg-white/5{% endif %}">
                         Portfolio/Projects
@@ -458,14 +538,41 @@
 
                 <!-- Desktop Action Group -->
                 <div class="hidden sm:flex items-center gap-2.5">
+                    <!-- Light / Dark Mode Toggle Button -->
+                    <button id="theme-toggle" 
+                            type="button" 
+                            class="p-2.5 rounded-xl bg-slate-100 hover:bg-slate-200 dark:bg-slate-900/90 dark:hover:bg-slate-800 border border-slate-300 dark:border-slate-800 text-slate-700 dark:text-slate-300 hover:text-emerald-500 dark:hover:text-emerald-400 transition-all cursor-pointer group shadow-inner"
+                            aria-label="Toggle light or dark theme"
+                            title="Toggle Light / Dark mode">
+                        <i data-lucide="sun" class="w-4 h-4 hidden dark:block text-amber-400 group-hover:rotate-45 transition-transform"></i>
+                        <i data-lucide="moon" class="w-4 h-4 block dark:hidden text-slate-700 group-hover:-rotate-12 transition-transform"></i>
+                    </button>
+
                     <!-- Universal Quick Search Trigger -->
                     <a href="{% url 'core:search' %}" 
-                       class="flex items-center gap-2 px-3 py-2 rounded-xl bg-slate-900/90 hover:bg-slate-800 border border-slate-800 hover:border-slate-700 text-slate-300 hover:text-white transition-all text-xs font-medium group shadow-inner" 
+                       class="flex items-center gap-2 px-3 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 dark:bg-slate-900/90 dark:hover:bg-slate-800 border border-slate-300 dark:border-slate-800 text-slate-700 dark:text-slate-300 hover:text-emerald-500 dark:hover:text-white transition-all text-xs font-medium group shadow-inner" 
                        title="Search services, AI systems & insights (Press ⌘K or /)">
-                        <i data-lucide="search" class="w-4 h-4 text-emerald-400 group-hover:scale-110 transition-transform"></i>
+                        <i data-lucide="search" class="w-4 h-4 text-emerald-500 group-hover:scale-110 transition-transform"></i>
                         <span class="hidden md:inline">Search</span>
-                        <kbd class="hidden md:inline-block px-1.5 py-0.5 text-[10px] font-mono font-semibold text-slate-400 bg-slate-800 border border-slate-700 rounded-md">⌘K</kbd>
+                        <kbd class="hidden md:inline-block px-1.5 py-0.5 text-[10px] font-mono font-semibold text-slate-400 bg-slate-200 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-md">⌘K</kbd>
                     </a>
+
+                    <!-- Client Account / Sign In -->
+                    {% if user.is_authenticated %}
+                    <a href="{% url 'accounts:dashboard' %}" 
+                       class="flex items-center gap-2 px-3 py-2 rounded-xl bg-emerald-500/10 hover:bg-emerald-500/20 border border-emerald-500/30 text-emerald-600 dark:text-emerald-400 transition-all text-xs font-bold shadow-inner" 
+                       title="Client Studio Dashboard">
+                        <i data-lucide="user-check" class="w-3.5 h-3.5"></i>
+                        <span class="max-w-[85px] truncate">{{ user.first_name|default:user.username }}</span>
+                    </a>
+                    {% else %}
+                    <a href="{% url 'accounts:login' %}" 
+                       class="flex items-center gap-1.5 px-3 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 dark:bg-slate-900/90 dark:hover:bg-slate-800 border border-slate-300 dark:border-slate-700 text-slate-700 dark:text-slate-200 hover:text-emerald-500 dark:hover:text-white transition-all text-xs font-semibold" 
+                       title="Client Sign In">
+                        <i data-lucide="user" class="w-3.5 h-3.5 text-emerald-500"></i>
+                        <span>Client Login</span>
+                    </a>
+                    {% endif %}
 
                     <!-- Book Consultation CTA Button -->
                     <a href="{% url 'appointments:book' %}" 
@@ -477,6 +584,11 @@
 
                 <!-- Mobile Header Controls -->
                 <div class="flex lg:hidden items-center gap-1.5">
+                    <!-- Mobile Light / Dark Toggle -->
+                    <button id="theme-toggle-mobile" type="button" class="p-2 text-slate-300 hover:text-emerald-400 hover:bg-white/5 rounded-xl transition-colors" title="Toggle Light/Dark Theme" aria-label="Toggle Theme">
+                        <i data-lucide="sun" class="w-5 h-5 hidden dark:block text-amber-400"></i>
+                        <i data-lucide="moon" class="w-5 h-5 block dark:hidden text-slate-700"></i>
+                    </button>
                     <a href="{% url 'core:search' %}" class="p-2 text-slate-300 hover:text-emerald-400 hover:bg-white/5 rounded-xl transition-colors" title="Search">
                         <i data-lucide="search" class="w-5 h-5"></i>
                     </a>
@@ -495,6 +607,13 @@
                     <span class="flex items-center gap-3"><i data-lucide="home" class="w-4 h-4 text-emerald-400"></i> Home</span>
                     <i data-lucide="chevron-right" class="w-4 h-4 text-slate-500"></i>
                 </a>
+
+                <!-- Mobile AI Prompts Link -->
+                <a href="{% url 'ai_prompts:list' %}" class="flex items-center justify-between px-4 py-3 text-sm font-semibold rounded-xl {% if '/ai-project-prompts/' in request.path %}bg-emerald-500/20 text-emerald-400 border border-emerald-500/30{% else %}text-slate-200 hover:bg-white/5{% endif %}">
+                    <span class="flex items-center gap-3"><i data-lucide="sparkles" class="w-4 h-4 text-emerald-400"></i> AI Master Prompts</span>
+                    <span class="px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-400 text-[10px] font-bold border border-emerald-500/30">HOT</span>
+                </a>
+
                 <div>
                     <a href="{% url 'services:list' %}" class="flex items-center justify-between px-4 py-3 text-sm font-semibold rounded-xl {% if '/services/' in request.path %}bg-emerald-500/20 text-emerald-400 border border-emerald-500/30{% else %}text-slate-200 hover:bg-white/5{% endif %}">
                         <span class="flex items-center gap-3"><i data-lucide="layout-grid" class="w-4 h-4 text-emerald-400"></i> Services & Systems</span>
@@ -534,6 +653,19 @@
                     <i data-lucide="chevron-right" class="w-4 h-4 text-slate-500"></i>
                 </a>
 
+                <!-- Mobile Client Account -->
+                {% if user.is_authenticated %}
+                <a href="{% url 'accounts:dashboard' %}" class="flex items-center justify-between px-4 py-3 text-sm font-semibold rounded-xl bg-emerald-500/10 text-emerald-400 border border-emerald-500/30">
+                    <span class="flex items-center gap-3"><i data-lucide="user-check" class="w-4 h-4 text-emerald-400"></i> Client Dashboard ({{ user.username }})</span>
+                    <i data-lucide="chevron-right" class="w-4 h-4 text-emerald-400"></i>
+                </a>
+                {% else %}
+                <a href="{% url 'accounts:login' %}" class="flex items-center justify-between px-4 py-3 text-sm font-semibold rounded-xl bg-slate-900 text-slate-200 border border-slate-800">
+                    <span class="flex items-center gap-3"><i data-lucide="user" class="w-4 h-4 text-emerald-400"></i> Client Portal Login</span>
+                    <i data-lucide="arrow-right" class="w-4 h-4 text-slate-500"></i>
+                </a>
+                {% endif %}
+
                 <a href="{% url 'appointments:book' %}" class="flex items-center justify-between px-4 py-3 text-sm font-semibold rounded-xl {% if '/appointments/' in request.path %}bg-emerald-500/20 text-emerald-400 border border-emerald-500/30{% else %}text-slate-200 hover:bg-white/5{% endif %}">
                     <span class="flex items-center gap-3"><i data-lucide="calendar-check" class="w-4 h-4 text-emerald-400"></i> Book Free Consultation</span>
                     <span class="px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-400 text-[10px] font-bold border border-emerald-500/30">100% Free</span>
@@ -570,33 +702,46 @@
 
     <!-- Native App-Style Mobile Bottom Navigation Dock (MOBILE VIEWPORT ONLY) -->
     <aside class="block lg:hidden fixed bottom-0 left-0 right-0 z-40 bg-slate-950/90 backdrop-blur-xl border-t border-slate-800/80 shadow-[0_-8px_30px_rgba(0,0,0,0.5)] safe-pb" aria-label="Mobile Bottom Navigation">
-        <div class="grid grid-cols-4 text-center py-2 px-2 max-w-md mx-auto">
+        <div class="grid grid-cols-5 text-center py-2 px-1 max-w-md mx-auto">
             <!-- 1. Services -->
             <a href="{% url 'services:list' %}" class="flex flex-col items-center justify-center py-1 transition-all relative {% if '/services/' in request.path %}text-emerald-400 font-bold{% else %}text-slate-400 hover:text-white{% endif %}">
-                <i data-lucide="layout-grid" class="w-5 h-5 mb-1"></i>
-                <span class="text-[10px] tracking-tight">Services</span>
-                <span class="absolute top-0 right-3 w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+                <i data-lucide="layout-grid" class="w-5 h-5 mb-0.5"></i>
+                <span class="text-[9px] tracking-tight">Services</span>
+                <span class="absolute top-0 right-2 w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
             </a>
 
-            <!-- 2. Search -->
+            <!-- 2. AI Prompts -->
+            <a href="{% url 'ai_prompts:list' %}" class="flex flex-col items-center justify-center py-1 transition-all relative {% if '/ai-project-prompts/' in request.path %}text-emerald-400 font-bold{% else %}text-slate-400 hover:text-white{% endif %}">
+                <i data-lucide="sparkles" class="w-5 h-5 mb-0.5 text-emerald-400"></i>
+                <span class="text-[9px] tracking-tight text-emerald-400 font-bold">Prompts</span>
+            </a>
+
+            <!-- 3. Search -->
             <a href="{% url 'core:search' %}" class="flex flex-col items-center justify-center py-1 transition-all {% if '/search/' in request.path %}text-emerald-400 font-bold{% else %}text-slate-400 hover:text-white{% endif %}">
-                <i data-lucide="search" class="w-5 h-5 mb-1"></i>
-                <span class="text-[10px] tracking-tight">Search</span>
+                <i data-lucide="search" class="w-5 h-5 mb-0.5"></i>
+                <span class="text-[9px] tracking-tight">Search</span>
             </a>
 
-            <!-- 3. WhatsApp Direct Chat -->
-            <a href="https://wa.me/254715479955?text=Hello%20UniqueTechCamp!%20I%20am%20interested%20in%20having%20a%20Web%20%26%20AI%20Client%20Acquisition%20System." 
+            <!-- 4. WhatsApp Direct Chat -->
+            <a href="https://wa.me/254715479955?text=Hello%20UniqueTechCamp!%20I%20am%20interested%20in%20an%20AI%20System." 
                target="_blank" rel="noopener noreferrer" 
                class="flex flex-col items-center justify-center py-1 text-[#25D366] hover:text-emerald-400 transition-all font-semibold">
-                <i class="fa-brands fa-whatsapp text-xl mb-0.5"></i>
-                <span class="text-[10px] tracking-tight font-bold">WhatsApp</span>
+                <i class="fa-brands fa-whatsapp text-lg mb-0.5"></i>
+                <span class="text-[9px] tracking-tight font-bold">WhatsApp</span>
             </a>
 
-            <!-- 4. Book / Consult -->
-            <a href="{% url 'appointments:book' %}" class="flex flex-col items-center justify-center py-1 transition-all font-semibold {% if '/appointments/' in request.path %}text-emerald-400 font-bold{% else %}text-slate-400 hover:text-white{% endif %}">
-                <i data-lucide="calendar" class="w-5 h-5 mb-1 text-emerald-400"></i>
-                <span class="text-[10px] tracking-tight font-bold text-emerald-400">Consult</span>
+            <!-- 5. Client Account / Consult -->
+            {% if user.is_authenticated %}
+            <a href="{% url 'accounts:dashboard' %}" class="flex flex-col items-center justify-center py-1 transition-all font-semibold {% if '/account/' in request.path %}text-emerald-400 font-bold{% else %}text-slate-400 hover:text-white{% endif %}">
+                <i data-lucide="user-check" class="w-5 h-5 mb-0.5 text-emerald-400"></i>
+                <span class="text-[9px] tracking-tight font-bold text-emerald-400">Studio</span>
             </a>
+            {% else %}
+            <a href="{% url 'accounts:login' %}" class="flex flex-col items-center justify-center py-1 transition-all font-semibold {% if '/account/' in request.path %}text-emerald-400 font-bold{% else %}text-slate-400 hover:text-white{% endif %}">
+                <i data-lucide="user" class="w-5 h-5 mb-0.5"></i>
+                <span class="text-[9px] tracking-tight">Login</span>
+            </a>
+            {% endif %}
         </div>
     </aside>
 
@@ -1062,6 +1207,28 @@
                 if (!container.contains(e.target)) {
                     dropdown.classList.add('hidden');
                 }
+            });
+        });
+
+        // Light & Dark Mode Toggle Switcher
+        const themeButtons = document.querySelectorAll('#theme-toggle, #theme-toggle-mobile');
+        function applyTheme(targetTheme) {
+            if (targetTheme === 'light') {
+                document.documentElement.classList.remove('dark');
+                document.documentElement.setAttribute('data-theme', 'light');
+                localStorage.setItem('utc_theme', 'light');
+            } else {
+                document.documentElement.classList.add('dark');
+                document.documentElement.setAttribute('data-theme', 'dark');
+                localStorage.setItem('utc_theme', 'dark');
+            }
+            if (window.lucide) lucide.createIcons();
+        }
+
+        themeButtons.forEach(btn => {
+            btn.addEventListener('click', () => {
+                const isCurrentlyDark = document.documentElement.classList.contains('dark');
+                applyTheme(isCurrentlyDark ? 'light' : 'dark');
             });
         });
 
