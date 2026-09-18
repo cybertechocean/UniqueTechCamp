@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Verify Your Email Address | UniqueTechCamp</title>
+    <style>
+        body { margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; background-color: #0b0f19; color: #e2e8f0; }
+        .wrapper { width: 100%; background-color: #0b0f19; padding: 40px 10px; }
+        .container { max-width: 600px; margin: 0 auto; background-color: #0f172a; border-radius: 20px; overflow: hidden; border: 1px solid #1e293b; }
+        .header { text-align: center; padding: 36px 20px 24px; background: linear-gradient(180deg, rgba(34, 197, 94, 0.12) 0%, rgba(15, 23, 42, 0) 100%); }
+        .logo { width: 72px; height: 72px; border-radius: 18px; display: inline-block; }
+        .brand-title { font-size: 22px; font-weight: 800; color: #ffffff; margin-top: 14px; letter-spacing: -0.5px; }
+        .brand-title span { color: #22c55e; }
+        .brand-sub { font-size: 10px; font-weight: 700; color: #4ade80; letter-spacing: 2px; text-transform: uppercase; margin-top: 4px; }
+        .content { padding: 32px 36px; }
+        .h1 { font-size: 24px; font-weight: 700; color: #ffffff; margin: 0 0 16px; line-height: 1.3; }
+        .p { font-size: 15px; color: #94a3b8; line-height: 1.6; margin: 0 0 20px; }
+        .btn-box { text-align: center; margin: 32px 0; }
+        .btn { display: inline-block; background: linear-gradient(135deg, #22c55e 0%, #16a34a 100%); color: #ffffff !important; font-weight: 700; font-size: 16px; text-decoration: none; padding: 16px 36px; border-radius: 14px; box-shadow: 0 10px 25px -5px rgba(34, 197, 94, 0.4); letter-spacing: 0.2px; }
+        .code-box { background-color: #1e293b; border: 1px dashed #334155; border-radius: 12px; padding: 16px; text-align: center; margin: 24px 0; word-break: break-all; font-size: 13px; color: #38bdf8; }
+        .notice { background-color: rgba(34, 197, 94, 0.08); border-left: 4px solid #22c55e; padding: 14px 18px; border-radius: 8px; margin: 24px 0; font-size: 13px; color: #cbd5e1; }
+        .footer { background-color: #080d1a; padding: 32px 20px; text-align: center; border-top: 1px solid #1e293b; }
+        .footer-p { font-size: 12px; color: #64748b; line-height: 1.5; margin: 6px 0; }
+        .social-table { margin: 18px auto 0; }
+        .social-table td { padding: 0 6px; }
+        .social-link { display: inline-block; width: 32px; height: 32px; line-height: 32px; border-radius: 8px; background-color: #1e293b; color: #cbd5e1; text-decoration: none; font-size: 12px; font-weight: bold; }
+    </style>
+</head>
+<body>
+    <div class="wrapper">
+        <div class="container">
+            <!-- Header with Official Logo -->
+            <div class="header">
+                <img src="{{ logo_url }}" alt="UniqueTechCamp Logo" class="logo" />
+                <div class="brand-title">UniqueTech<span>Camp</span></div>
+                <div class="brand-sub">Website • Clients • Income</div>
+            </div>
+
+            <!-- Email Body Content -->
+            <div class="content">
+                <h1 class="h1">Verify Your Email Address</h1>
+                <p class="p">Hello <strong>{{ user_name }}</strong>,</p>
+                <p class="p">
+                    Thank you for joining UniqueTechCamp! To activate your client account, protect your security, and access our Master AI Coding Prompts and client solutions desk, please confirm your email address below:
+                </p>
+
+                <div class="btn-box">
+                    <a href="{{ verification_url }}" class="btn" target="_blank">Verify Email & Activate Account →</a>
+                </div>
+
+                <div class="notice">
+                    <strong>Note:</strong> This verification link will remain active for 48 hours. If you did not register for an account on UniqueTechCamp, you can safely disregard this email.
+                </div>
+
+                <p class="p" style="font-size: 13px; color: #64748b;">
+                    If the button above does not work, copy and paste this link into your browser:
+                </p>
+                <div class="code-box">{{ verification_url }}</div>
+            </div>
+
+            <!-- Official Footer -->
+            <div class="footer">
+                <p class="footer-p"><strong>UniqueTechCamp Limited</strong> • Nairobi, Kenya</p>
+                <p class="footer-p">CBD, Nairobi County, Kenya • Phone: +254 715 479 955</p>
+                <p class="footer-p">Email: info@uniquetechcamp.org • Web: <a href="{{ site_url }}" style="color: #22c55e; text-decoration: none;">uniquetechcamp.org</a></p>
+                
+                <table class="social-table" align="center" border="0" cellpadding="0" cellspacing="0">
+                    <tr>
+                        <td><a href="https://wa.me/254715479955" class="social-link" title="WhatsApp">WA</a></td>
+                        <td><a href="https://www.tiktok.com/@UniqueTechCamp" class="social-link" title="TikTok">TT</a></td>
+                        <td><a href="https://www.instagram.com/UniqueTechCamp" class="social-link" title="Instagram">IG</a></td>
+                        <td><a href="https://x.com/UniqueTechCamp" class="social-link" title="X (Twitter)">X</a></td>
+                        <td><a href="https://www.linkedin.com/company/uniquetechcamp" class="social-link" title="LinkedIn">IN</a></td>
+                        <td><a href="https://www.facebook.com/UniqueTechCamp" class="social-link" title="Facebook">FB</a></td>
+                        <td><a href="https://www.youtube.com/@UniqueTechCamp" class="social-link" title="YouTube">YT</a></td>
+                    </tr>
+                </table>
+                
+                <p class="footer-p" style="margin-top: 18px; font-size: 11px; color: #475569;">
+                    © 2026 UniqueTechCamp Limited. All rights reserved.
+                </p>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

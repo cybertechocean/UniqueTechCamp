@@ -86,6 +86,14 @@ urlpatterns = [
     path('emails/preview/welcome/', EmailPreviewWelcomeView.as_view(), name='preview_welcome_email'),
     path('emails/preview/password-reset/', EmailPreviewPasswordResetView.as_view(), name='preview_password_reset_email'),
 
+    # Client Accounts & AI Master Coding Prompts
+    path('account/', include('accounts.urls')),
+    path('ai-project-prompts/', include('ai_prompts.urls')),
+    path('auth/login/', RedirectView.as_view(url='/account/login/', permanent=False)),
+    path('auth/register/', RedirectView.as_view(url='/account/register/', permanent=False)),
+    path('login/', RedirectView.as_view(url='/account/login/', permanent=False)),
+    path('register/', RedirectView.as_view(url='/account/register/', permanent=False)),
+
     # Application routes
     path('', include('core.urls')),
     path('services/', include('services.urls')),

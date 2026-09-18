@@ -1,0 +1,239 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Create Client Account | UniqueTechCamp - Web Development & AI Systems{% endblock %}
+{% block description %}Join UniqueTechCamp to access detailed AI Master Coding Prompts, client systems, consultation bookings, and personalized 1-on-1 technical assistance.{% endblock %}
+
+{% block content %}
+<section class="min-h-[85vh] py-12 md:py-16 flex items-center justify-center px-4 sm:px-6 lg:px-8 relative overflow-hidden">
+    <!-- Ambient glowing backdrop effect -->
+    <div class="absolute inset-0 pointer-events-none">
+        <div class="absolute top-1/3 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[550px] h-[550px] bg-emerald-500/15 rounded-full blur-3xl"></div>
+    </div>
+
+    <div class="w-full max-w-xl relative z-10">
+        <!-- Main Card -->
+        <div class="bg-white dark:bg-slate-900/90 backdrop-blur-2xl rounded-3xl p-6 sm:p-10 border border-slate-200 dark:border-slate-800 shadow-2xl transition-all">
+            <!-- Top Logo & Brand Lockup -->
+            <div class="text-center mb-8">
+                <a href="{% url 'core:home' %}" class="inline-flex items-center justify-center mb-4 group focus:outline-none">
+                    <div class="relative flex items-center justify-center">
+                        <div class="absolute -inset-1.5 rounded-2xl bg-gradient-to-r from-emerald-500 to-green-500 opacity-40 group-hover:opacity-80 blur transition-all"></div>
+                        <img src="{% static 'images/logo-rounded.png' %}" 
+                             alt="UniqueTechCamp Logo" 
+                             class="relative h-16 w-16 rounded-2xl object-contain bg-slate-950 p-2 border border-slate-700 shadow-xl group-hover:scale-105 transition-transform" />
+                    </div>
+                </a>
+                <h1 class="text-2xl sm:text-3xl font-heading font-extrabold text-slate-900 dark:text-white tracking-tight">
+                    Create Your <span class="text-emerald-500">Client Account</span>
+                </h1>
+                <p class="text-xs sm:text-sm text-slate-600 dark:text-slate-400 mt-2 font-body">
+                    Access production-ready AI Master Coding Prompts & custom tech assistance.
+                </p>
+            </div>
+
+            <!-- Form Errors General Alert -->
+            {% if form.non_field_errors %}
+            <div class="mb-6 p-4 rounded-2xl bg-red-500/10 border border-red-500/30 text-red-600 dark:text-red-400 text-xs font-medium space-y-1">
+                {% for error in form.non_field_errors %}
+                    <p class="flex items-center gap-2">
+                        <i data-lucide="alert-circle" class="w-4 h-4 shrink-0"></i>
+                        <span>{{ error }}</span>
+                    </p>
+                {% endfor %}
+            </div>
+            {% endif %}
+
+            <!-- Registration Form -->
+            <form method="POST" action="{% url 'accounts:register' %}" class="space-y-4" id="registration-form" novalidate>
+                {% csrf_token %}
+
+                <!-- Name Row (First Name & Last Name) -->
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div>
+                        <label for="{{ form.first_name.id_for_label }}" class="block text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-1.5">
+                            First Name <span class="text-emerald-500">*</span>
+                        </label>
+                        {{ form.first_name }}
+                        {% if form.first_name.errors %}
+                            <p class="text-[11px] text-red-500 mt-1">{{ form.first_name.errors.0 }}</p>
+                        {% endif %}
+                    </div>
+                    <div>
+                        <label for="{{ form.last_name.id_for_label }}" class="block text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-1.5">
+                            Last Name <span class="text-emerald-500">*</span>
+                        </label>
+                        {{ form.last_name }}
+                        {% if form.last_name.errors %}
+                            <p class="text-[11px] text-red-500 mt-1">{{ form.last_name.errors.0 }}</p>
+                        {% endif %}
+                    </div>
+                </div>
+
+                <!-- Username -->
+                <div>
+                    <label for="{{ form.username.id_for_label }}" class="block text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-1.5">
+                        Username <span class="text-emerald-500">*</span>
+                    </label>
+                    <div class="relative">
+                        <span class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400">
+                            <i data-lucide="user" class="w-4 h-4"></i>
+                        </span>
+                        {{ form.username }}
+                    </div>
+                    {% if form.username.errors %}
+                        <p class="text-[11px] text-red-500 mt-1">{{ form.username.errors.0 }}</p>
+                    {% endif %}
+                </div>
+
+                <!-- Email Address -->
+                <div>
+                    <label for="{{ form.email.id_for_label }}" class="block text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-1.5">
+                        Email Address <span class="text-emerald-500">*</span>
+                    </label>
+                    <div class="relative">
+                        <span class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400">
+                            <i data-lucide="mail" class="w-4 h-4"></i>
+                        </span>
+                        {{ form.email }}
+                    </div>
+                    <p class="text-[11px] text-slate-500 mt-1">Verification link will be dispatched to this email.</p>
+                    {% if form.email.errors %}
+                        <p class="text-[11px] text-red-500 mt-1">{{ form.email.errors.0 }}</p>
+                    {% endif %}
+                </div>
+
+                <!-- Mandatory Phone Number with Country Code -->
+                <div>
+                    <label for="{{ form.phone_number.id_for_label }}" class="block text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-1.5">
+                        Phone Number (With Country Code) <span class="text-emerald-500">*</span>
+                    </label>
+                    <div class="relative">
+                        <span class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400">
+                            <i data-lucide="phone" class="w-4 h-4"></i>
+                        </span>
+                        {{ form.phone_number }}
+                    </div>
+                    <p class="text-[11px] text-slate-500 mt-1">
+                        Must start with <strong class="text-emerald-600 dark:text-emerald-400">+</strong> and country code e.g. <span class="font-mono text-emerald-600 dark:text-emerald-400">+254715479955</span> or <span class="font-mono text-emerald-600 dark:text-emerald-400">+1234567890</span>.
+                    </p>
+                    {% if form.phone_number.errors %}
+                        <p class="text-[11px] text-red-500 mt-1">{{ form.phone_number.errors.0 }}</p>
+                    {% endif %}
+                </div>
+
+                <!-- Company Name (Optional) -->
+                <div>
+                    <label for="{{ form.company_name.id_for_label }}" class="block text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-1.5">
+                        Company or Project Name <span class="text-slate-400 font-normal">(Optional)</span>
+                    </label>
+                    <div class="relative">
+                        <span class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400">
+                            <i data-lucide="building-2" class="w-4 h-4"></i>
+                        </span>
+                        {{ form.company_name }}
+                    </div>
+                    {% if form.company_name.errors %}
+                        <p class="text-[11px] text-red-500 mt-1">{{ form.company_name.errors.0 }}</p>
+                    {% endif %}
+                </div>
+
+                <!-- Password Row -->
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div>
+                        <label for="{{ form.password.id_for_label }}" class="block text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-1.5">
+                            Password <span class="text-emerald-500">*</span>
+                        </label>
+                        {{ form.password }}
+                        {% if form.password.errors %}
+                            <p class="text-[11px] text-red-500 mt-1">{{ form.password.errors.0 }}</p>
+                        {% endif %}
+                    </div>
+                    <div>
+                        <label for="{{ form.confirm_password.id_for_label }}" class="block text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-1.5">
+                            Confirm Password <span class="text-emerald-500">*</span>
+                        </label>
+                        {{ form.confirm_password }}
+                        {% if form.confirm_password.errors %}
+                            <p class="text-[11px] text-red-500 mt-1">{{ form.confirm_password.errors.0 }}</p>
+                        {% endif %}
+                    </div>
+                </div>
+
+                <!-- Human Verification (Dynamic Math Challenge) -->
+                <div class="pt-2">
+                    <div class="p-4 rounded-2xl bg-emerald-500/10 dark:bg-emerald-500/10 border border-emerald-500/30 flex flex-col sm:flex-row items-center justify-between gap-3">
+                        <div class="flex items-center gap-3">
+                            <div class="w-10 h-10 rounded-xl bg-emerald-500/20 text-emerald-600 dark:text-emerald-400 flex items-center justify-center shrink-0">
+                                <i data-lucide="shield-check" class="w-5 h-5"></i>
+                            </div>
+                            <div>
+                                <span class="text-xs font-bold uppercase tracking-wider text-slate-900 dark:text-white block">Human Security Check</span>
+                                <span class="text-[11px] text-slate-600 dark:text-slate-400">Solve this simple question to proceed:</span>
+                            </div>
+                        </div>
+
+                        <div class="flex items-center gap-2 w-full sm:w-auto justify-end">
+                            <span id="math-challenge-display" class="px-3.5 py-2 rounded-xl bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-700 text-slate-900 dark:text-white font-mono font-extrabold text-sm shadow-inner">
+                                {{ math_question }} = ?
+                            </span>
+                            <div class="w-24">
+                                {{ form.math_answer }}
+                            </div>
+                            <button type="button" id="refresh-math-btn" class="p-2 rounded-xl bg-white dark:bg-slate-800 hover:bg-slate-100 dark:hover:bg-slate-700 border border-slate-300 dark:border-slate-700 text-slate-600 dark:text-slate-300 transition-colors" title="Get new math question">
+                                <i data-lucide="refresh-cw" class="w-4 h-4"></i>
+                            </button>
+                        </div>
+                    </div>
+                    {% if form.math_answer.errors %}
+                        <p class="text-[11px] text-red-500 mt-1">{{ form.math_answer.errors.0 }}</p>
+                    {% endif %}
+                </div>
+
+                <!-- Submit Button -->
+                <div class="pt-4">
+                    <button type="submit" class="w-full btn-primary py-3.5 px-6 rounded-xl font-bold text-sm tracking-wide shadow-emerald-500/30">
+                        <span>Register & Verify Account</span>
+                        <i data-lucide="arrow-right" class="w-4 h-4"></i>
+                    </button>
+                </div>
+            </form>
+
+            <!-- Bottom Footnote -->
+            <div class="mt-8 pt-6 border-t border-slate-200 dark:border-slate-800 text-center">
+                <p class="text-xs text-slate-600 dark:text-slate-400">
+                    Already have a client account? 
+                    <a href="{% url 'accounts:login' %}" class="font-bold text-emerald-600 dark:text-emerald-400 hover:underline">
+                        Sign In Here &rarr;
+                    </a>
+                </p>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}
+
+{% block extra_scripts %}
+<script>
+    // Dynamic Math Question Refresh
+    const refreshBtn = document.getElementById('refresh-math-btn');
+    const mathDisplay = document.getElementById('math-challenge-display');
+
+    if (refreshBtn && mathDisplay) {
+        refreshBtn.addEventListener('click', function() {
+            refreshBtn.classList.add('animate-spin');
+            fetch("{% url 'accounts:refresh_math' %}")
+                .then(res => res.json())
+                .then(data => {
+                    if (data.question) {
+                        mathDisplay.textContent = data.question + ' = ?';
+                    }
+                    setTimeout(() => refreshBtn.classList.remove('animate-spin'), 300);
+                })
+                .catch(() => {
+                    refreshBtn.classList.remove('animate-spin');
+                });
+        });
+    }
+</script>
+{% endblock %}

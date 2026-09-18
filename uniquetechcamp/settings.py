@@ -96,6 +96,8 @@ INSTALLED_APPS = [
     "blog",
     "appointments",
     "marketing",
+    "accounts",
+    "ai_prompts",
 ]
 
 # ------------------------------------------------------------------------------
@@ -184,6 +186,19 @@ CACHES = {
         "TIMEOUT": 300,
     }
 }
+
+# ------------------------------------------------------------------------------
+# Authentication Backends (Username OR Email Login Support)
+# ------------------------------------------------------------------------------
+
+AUTHENTICATION_BACKENDS = [
+    "accounts.backends.EmailOrUsernameModelBackend",
+    "django.contrib.auth.backends.ModelBackend",
+]
+
+LOGIN_URL = "accounts:login"
+LOGIN_REDIRECT_URL = "accounts:dashboard"
+LOGOUT_REDIRECT_URL = "core:home"
 
 # ------------------------------------------------------------------------------
 # Password Validation

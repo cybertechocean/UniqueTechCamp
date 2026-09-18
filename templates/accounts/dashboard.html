@@ -1,0 +1,298 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Client Dashboard | UniqueTechCamp Management Studio{% endblock %}
+{% block description %}Access your saved AI Master Coding Prompts, 1-on-1 technical assistance requests, and account settings.{% endblock %}
+
+{% block content %}
+<section class="min-h-[85vh] py-10 md:py-14 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto">
+    <!-- Top Client Banner Lockup -->
+    <div class="relative overflow-hidden rounded-3xl bg-gradient-to-r from-slate-900 via-slate-950 to-slate-900 border border-slate-800 p-6 sm:p-10 shadow-2xl text-white mb-8">
+        <div class="absolute -right-16 -top-16 w-64 h-64 bg-emerald-500/10 rounded-full blur-3xl pointer-events-none"></div>
+
+        <div class="relative z-10 flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
+            <div class="flex items-center gap-5">
+                <img src="{{ profile.get_avatar_url }}" 
+                     alt="{{ user.username }}" 
+                     class="w-20 h-20 rounded-2xl object-cover border-2 border-emerald-500 shadow-xl bg-slate-800 shrink-0" />
+                <div>
+                    <div class="flex flex-wrap items-center gap-2.5">
+                        <h1 class="text-2xl sm:text-3xl font-heading font-extrabold text-white">
+                            {{ user.first_name|default:user.username }} {{ user.last_name }}
+                        </h1>
+                        {% if profile.is_email_verified %}
+                            <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-emerald-500/20 text-emerald-400 border border-emerald-500/30">
+                                <i data-lucide="shield-check" class="w-3.5 h-3.5"></i>
+                                <span>Verified Client</span>
+                            </span>
+                        {% else %}
+                            <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-amber-500/20 text-amber-400 border border-amber-500/30">
+                                <i data-lucide="alert-circle" class="w-3.5 h-3.5"></i>
+                                <span>Email Verification Pending</span>
+                            </span>
+                        {% endif %}
+                    </div>
+                    
+                    <div class="flex flex-wrap items-center gap-4 text-xs text-slate-400 mt-2 font-mono">
+                        <span class="flex items-center gap-1.5"><i data-lucide="mail" class="w-3.5 h-3.5 text-emerald-400"></i> {{ user.email }}</span>
+                        <span class="flex items-center gap-1.5"><i data-lucide="phone" class="w-3.5 h-3.5 text-emerald-400"></i> {{ profile.phone_number }}</span>
+                        {% if profile.company_name %}
+                            <span class="flex items-center gap-1.5"><i data-lucide="briefcase" class="w-3.5 h-3.5 text-emerald-400"></i> {{ profile.company_name }}</span>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+
+            <div class="flex flex-wrap items-center gap-3 w-full md:w-auto">
+                <a href="{% url 'ai_prompts:list' %}" class="btn-primary py-2.5 px-5 text-xs rounded-xl flex-1 md:flex-initial">
+                    <i data-lucide="sparkles" class="w-4 h-4"></i>
+                    <span>Browse AI Prompts</span>
+                </a>
+                <a href="{% url 'appointments:book' %}" class="btn-secondary py-2.5 px-5 text-xs rounded-xl flex-1 md:flex-initial">
+                    <i data-lucide="calendar" class="w-4 h-4"></i>
+                    <span>Book Consultation</span>
+                </a>
+                <a href="{% url 'accounts:logout' %}" class="p-2.5 rounded-xl bg-slate-800 hover:bg-red-500/20 text-slate-300 hover:text-red-400 border border-slate-700 transition-colors" title="Log Out">
+                    <i data-lucide="log-out" class="w-4 h-4"></i>
+                </a>
+            </div>
+        </div>
+
+        {% if not profile.is_email_verified %}
+        <div class="mt-6 pt-5 border-t border-slate-800 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 text-xs">
+            <p class="text-amber-300 flex items-center gap-2">
+                <i data-lucide="info" class="w-4 h-4 shrink-0"></i>
+                <span>Your account is awaiting email confirmation. Need a new verification link?</span>
+            </p>
+            <form method="POST" action="{% url 'accounts:resend_verification' %}">
+                {% csrf_token %}
+                <button type="submit" class="px-3.5 py-1.5 rounded-lg bg-amber-500/20 hover:bg-amber-500/30 text-amber-300 border border-amber-500/40 font-bold transition-all">
+                    Resend Verification Email
+                </button>
+            </form>
+        </div>
+        {% endif %}
+    </div>
+
+    <!-- Quick Stats Grid -->
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5 mb-8">
+        <!-- Card 1: Saved Prompts -->
+        <div class="p-5 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-sm transition-all flex items-center gap-4">
+            <div class="w-12 h-12 rounded-xl bg-emerald-500/15 text-emerald-500 flex items-center justify-center shrink-0">
+                <i data-lucide="bookmark" class="w-6 h-6"></i>
+            </div>
+            <div>
+                <span class="text-xs text-slate-500 font-medium">Saved Prompts</span>
+                <h4 class="text-2xl font-heading font-extrabold text-slate-900 dark:text-white">{{ saved_prompts.count }}</h4>
+            </div>
+        </div>
+
+        <!-- Card 2: Assistance Tickets -->
+        <div class="p-5 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-sm transition-all flex items-center gap-4">
+            <div class="w-12 h-12 rounded-xl bg-blue-500/15 text-blue-500 flex items-center justify-center shrink-0">
+                <i data-lucide="life-buoy" class="w-6 h-6"></i>
+            </div>
+            <div>
+                <span class="text-xs text-slate-500 font-medium">Assistance Tickets</span>
+                <h4 class="text-2xl font-heading font-extrabold text-slate-900 dark:text-white">{{ assistance_requests.count }}</h4>
+            </div>
+        </div>
+
+        <!-- Card 3: Nairobi Currency -->
+        <div class="p-5 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-sm transition-all flex items-center gap-4">
+            <div class="w-12 h-12 rounded-xl bg-purple-500/15 text-purple-500 flex items-center justify-center shrink-0">
+                <i data-lucide="coins" class="w-6 h-6"></i>
+            </div>
+            <div>
+                <span class="text-xs text-slate-500 font-medium">Active Currencies</span>
+                <h4 class="text-base font-heading font-extrabold text-slate-900 dark:text-white">KES / USD</h4>
+            </div>
+        </div>
+
+        <!-- Card 4: Official Till -->
+        <div class="p-5 rounded-2xl bg-gradient-to-tr from-emerald-600 to-green-600 text-white shadow-lg shadow-emerald-500/20 flex items-center gap-4">
+            <div class="w-12 h-12 rounded-xl bg-white/20 text-white flex items-center justify-center shrink-0">
+                <i data-lucide="credit-card" class="w-6 h-6"></i>
+            </div>
+            <div>
+                <span class="text-xs text-emerald-100 font-medium">Buy Goods Till</span>
+                <h4 class="text-xl font-mono font-extrabold tracking-wider">{{ mpesa_till }}</h4>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Content Area: Tabs -->
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        <!-- Left 2 Cols: Saved Prompts & Assistance Requests -->
+        <div class="lg:col-span-2 space-y-8">
+            <!-- Saved AI Coding Prompts -->
+            <div class="bg-white dark:bg-slate-900 rounded-3xl p-6 sm:p-8 border border-slate-200 dark:border-slate-800 shadow-sm">
+                <div class="flex items-center justify-between pb-4 mb-6 border-b border-slate-200 dark:border-slate-800">
+                    <h3 class="text-lg font-heading font-extrabold text-slate-900 dark:text-white flex items-center gap-2">
+                        <i data-lucide="sparkles" class="w-5 h-5 text-emerald-500"></i>
+                        <span>My Saved AI Master Prompts</span>
+                    </h3>
+                    <a href="{% url 'ai_prompts:list' %}" class="text-xs font-bold text-emerald-600 dark:text-emerald-400 hover:underline">
+                        Explore All &rarr;
+                    </a>
+                </div>
+
+                {% if saved_prompts %}
+                    <div class="space-y-3">
+                        {% for prompt in saved_prompts %}
+                        <div class="p-4 rounded-2xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 flex items-start justify-between gap-4 transition-all hover:border-emerald-500/50">
+                            <div class="min-w-0 flex-1">
+                                <div class="flex items-center gap-2 mb-1">
+                                    {% if prompt.is_free %}
+                                        <span class="px-2 py-0.5 rounded-md bg-emerald-500/20 text-emerald-500 font-extrabold text-[10px] uppercase">Free</span>
+                                    {% else %}
+                                        <span class="px-2 py-0.5 rounded-md bg-purple-500/20 text-purple-400 font-extrabold text-[10px] uppercase">KES {{ prompt.price_kes|floatformat:0 }}</span>
+                                    {% endif %}
+                                    <span class="text-[11px] text-slate-400">{{ prompt.category.name }}</span>
+                                </div>
+                                <h4 class="text-sm font-bold text-slate-900 dark:text-white truncate">
+                                    <a href="{{ prompt.get_absolute_url }}" class="hover:text-emerald-500 transition-colors">
+                                        {{ prompt.title }}
+                                    </a>
+                                </h4>
+                                <p class="text-xs text-slate-500 line-clamp-1 mt-0.5">{{ prompt.tagline }}</p>
+                            </div>
+                            <a href="{{ prompt.get_absolute_url }}" class="btn-primary py-2 px-3 text-xs rounded-xl shrink-0">
+                                <span>Open Prompt</span>
+                            </a>
+                        </div>
+                        {% endfor %}
+                    </div>
+                {% else %}
+                    <div class="text-center py-10">
+                        <div class="w-14 h-14 mx-auto rounded-2xl bg-slate-100 dark:bg-slate-800 text-slate-400 flex items-center justify-center mb-3">
+                            <i data-lucide="bookmark" class="w-7 h-7"></i>
+                        </div>
+                        <h4 class="text-sm font-bold text-slate-700 dark:text-slate-300">No Saved Prompts Yet</h4>
+                        <p class="text-xs text-slate-500 max-w-sm mx-auto mt-1 mb-4 font-body">
+                            Explore our curated catalog of AI Master Coding Prompts for Claude Code, Cursor, and ChatGPT.
+                        </p>
+                        <a href="{% url 'ai_prompts:list' %}" class="btn-primary py-2.5 px-4 text-xs rounded-xl inline-flex items-center gap-1.5">
+                            <i data-lucide="search" class="w-3.5 h-3.5"></i>
+                            <span>Find Your First Master Prompt</span>
+                        </a>
+                    </div>
+                {% endif %}
+            </div>
+
+            <!-- 1-on-1 Assistance Requests History -->
+            <div class="bg-white dark:bg-slate-900 rounded-3xl p-6 sm:p-8 border border-slate-200 dark:border-slate-800 shadow-sm">
+                <div class="flex items-center justify-between pb-4 mb-6 border-b border-slate-200 dark:border-slate-800">
+                    <h3 class="text-lg font-heading font-extrabold text-slate-900 dark:text-white flex items-center gap-2">
+                        <i data-lucide="life-buoy" class="w-5 h-5 text-blue-500"></i>
+                        <span>My Assistance & Setup Requests</span>
+                    </h3>
+                    <a href="https://wa.me/254715479955" target="_blank" rel="noopener noreferrer" class="text-xs font-bold text-[#25D366] hover:underline flex items-center gap-1">
+                        <i class="fa-brands fa-whatsapp"></i>
+                        <span>WhatsApp Desk</span>
+                    </a>
+                </div>
+
+                {% if assistance_requests %}
+                    <div class="space-y-3">
+                        {% for req in assistance_requests %}
+                        <div class="p-4 rounded-2xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700">
+                            <div class="flex items-center justify-between gap-3 mb-1">
+                                <span class="text-xs font-bold text-slate-900 dark:text-white">{{ req.prompt.title }}</span>
+                                <span class="px-2.5 py-0.5 rounded-full text-[10px] font-extrabold uppercase
+                                    {% if req.status == 'completed' %}bg-emerald-500/20 text-emerald-400
+                                    {% elif req.status == 'in_progress' %}bg-blue-500/20 text-blue-400
+                                    {% else %}bg-amber-500/20 text-amber-400{% endif %}">
+                                    {{ req.get_status_display }}
+                                </span>
+                            </div>
+                            <p class="text-xs text-slate-500 line-clamp-2 mt-1">{{ req.requirements }}</p>
+                            <div class="flex items-center justify-between text-[11px] text-slate-400 mt-3 pt-2 border-t border-slate-200 dark:border-slate-700/60">
+                                <span>Reference: <strong class="font-mono text-slate-600 dark:text-slate-300">{{ req.mpesa_reference|default:"Pending Verification" }}</strong></span>
+                                <span>{{ req.created_at|date:"M d, Y" }}</span>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                {% else %}
+                    <p class="text-xs text-slate-500 text-center py-6">
+                        You haven't submitted any custom technical assistance tickets yet. If you need help tailoring or deploying an AI prompt, submit a request directly on any prompt page!
+                    </p>
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- Right Col: Profile Update & Safaricom Till Notice -->
+        <div class="space-y-8">
+            <!-- Safaricom M-Pesa Buy Goods Card -->
+            <div class="rounded-3xl p-6 sm:p-7 bg-gradient-to-br from-emerald-950 via-slate-900 to-slate-950 border border-emerald-500/30 text-white shadow-xl relative overflow-hidden">
+                <div class="flex items-center gap-3 mb-4">
+                    <div class="w-10 h-10 rounded-xl bg-emerald-500/20 text-emerald-400 flex items-center justify-center shrink-0">
+                        <i data-lucide="shield-alert" class="w-5 h-5"></i>
+                    </div>
+                    <div>
+                        <h4 class="text-sm font-extrabold text-white">Direct M-Pesa Till</h4>
+                        <span class="text-[11px] text-emerald-400 font-semibold uppercase">Official Payment Channel</span>
+                    </div>
+                </div>
+
+                <div class="p-4 rounded-2xl bg-black/40 border border-emerald-500/20 text-center mb-4">
+                    <span class="text-[10px] uppercase font-bold text-slate-400 block tracking-widest">Buy Goods & Services Till</span>
+                    <span class="text-3xl font-mono font-extrabold text-emerald-400 tracking-wider block mt-1">5797853</span>
+                    <span class="text-[11px] text-slate-300 mt-1 block font-medium">Name: UniqueTechCamp / Lawi</span>
+                </div>
+
+                <ul class="text-xs text-slate-300 space-y-1.5 font-body mb-5">
+                    <li class="flex items-center gap-2">
+                        <i data-lucide="check" class="w-3.5 h-3.5 text-emerald-400 shrink-0"></i>
+                        <span>Accepted for Master Prompts & 1-on-1 assistance</span>
+                    </li>
+                    <li class="flex items-center gap-2">
+                        <i data-lucide="check" class="w-3.5 h-3.5 text-emerald-400 shrink-0"></i>
+                        <span>Instant confirmation via WhatsApp: +254 715 479 955</span>
+                    </li>
+                </ul>
+
+                <a href="https://wa.me/254715479955?text=Hello%20UniqueTechCamp!%20I%20have%20made%20a%20payment%20to%20Till%205797853." target="_blank" rel="noopener noreferrer" class="btn-primary w-full py-2.5 rounded-xl text-xs font-bold inline-flex items-center justify-center gap-2 !bg-[#25D366] hover:!bg-[#1eb757]">
+                    <i class="fa-brands fa-whatsapp text-sm"></i>
+                    <span>Confirm Payment on WhatsApp</span>
+                </a>
+            </div>
+
+            <!-- Profile Settings Form -->
+            <div class="bg-white dark:bg-slate-900 rounded-3xl p-6 sm:p-7 border border-slate-200 dark:border-slate-800 shadow-sm">
+                <h4 class="text-sm font-heading font-extrabold text-slate-900 dark:text-white mb-4 flex items-center gap-2">
+                    <i data-lucide="user-cog" class="w-4 h-4 text-emerald-500"></i>
+                    <span>Profile Details</span>
+                </h4>
+
+                <form method="POST" action="{% url 'accounts:dashboard' %}" class="space-y-4">
+                    {% csrf_token %}
+                    <div>
+                        <label class="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">First Name</label>
+                        {{ profile_form.first_name }}
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">Last Name</label>
+                        {{ profile_form.last_name }}
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">Phone Number (Country Code)</label>
+                        {{ profile_form.phone_number }}
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">Company / Project</label>
+                        {{ profile_form.company_name }}
+                    </div>
+
+                    <div class="pt-2">
+                        <button type="submit" class="btn-primary w-full py-2.5 rounded-xl text-xs font-bold">
+                            Save Changes
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}
