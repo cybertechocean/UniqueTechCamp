@@ -36,6 +36,13 @@ class Appointment(models.Model):
         ('cancelled', 'Cancelled'),
     ]
 
+    SOURCE_CHOICES = [
+        ('web_form', 'Standard Web Booking Form'),
+        ('ai_assistant', 'AI Conversational Assistant'),
+        ('whatsapp_direct', 'Direct WhatsApp Desk'),
+        ('admin_manual', 'Admin Manual Entry'),
+    ]
+
     booking_reference = models.CharField(
         max_length=20,
         unique=True,
@@ -76,6 +83,12 @@ class Appointment(models.Model):
         choices=STATUS_CHOICES,
         default='pending',
         help_text="Current booking workflow status"
+    )
+    source = models.CharField(
+        max_length=40,
+        choices=SOURCE_CHOICES,
+        default='web_form',
+        help_text="Channel / origin where the consultation booking was initiated"
     )
     meeting_link = models.URLField(
         max_length=500,

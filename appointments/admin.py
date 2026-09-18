@@ -11,20 +11,21 @@ class AppointmentAdmin(ModelAdmin):
         'service_display',
         'preferred_date',
         'preferred_time_slot',
+        'source_badge',
         'channel_badge',
         'status_badge',
         'client_contact_links',
     )
     list_display_links = ('booking_reference_display', 'full_name')
-    list_filter = ('status', 'meeting_type', 'preferred_date', 'created_at')
+    list_filter = ('source', 'status', 'meeting_type', 'preferred_date', 'created_at')
     search_fields = ('booking_reference', 'full_name', 'email', 'phone', 'company_name', 'project_description')
     date_hierarchy = 'preferred_date'
     ordering = ('-preferred_date', '-created_at')
     readonly_fields = ('booking_reference', 'created_at', 'updated_at')
 
     fieldsets = (
-        ("Booking Reference", {
-            "fields": ("booking_reference", "status", "created_at", "updated_at")
+        ("Booking Reference & Origin", {
+            "fields": ("booking_reference", "status", "source", "created_at", "updated_at")
         }),
         ("Client Information", {
             "fields": ("full_name", "email", "phone", "company_name")
@@ -56,6 +57,18 @@ class AppointmentAdmin(ModelAdmin):
             )
         return format_html('<span style="color: #94a3b8; font-style: italic;">General Consultation</span>')
     service_display.short_description = "Service"
+
+    def source_badge(self, obj):
+        if obj.source == 'ai_assistant':
+            return format_html(
+                '<span style="display: inline-flex; align-items: center; gap: 4px; padding: 2px 8px; border-radius: 9999px; background-color: rgba(16, 185, 129, 0.2); color: #34d399; font-size: 11px; font-weight: 800; border: 1px solid rgba(16, 185, 129, 0.4);">'
+                '🤖 AI Assistant</span>'
+            )
+        return format_html(
+            '<span style="display: inline-block; padding: 2px 8px; border-radius: 9999px; background-color: rgba(148, 163, 184, 0.15); color: #94a3b8; font-size: 11px; font-weight: 600; border: 1px solid rgba(148, 163, 184, 0.25);">'
+            '🌐 Web Form</span>'
+        )
+    source_badge.short_description = "Origin"
 
     def channel_badge(self, obj):
         colors = {
