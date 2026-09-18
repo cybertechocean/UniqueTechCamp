@@ -6,6 +6,7 @@ from .views import (
     DownloadPromptView,
     ToggleSavePromptView,
     PromptAssistanceSubmitView,
+    PromptPaymentSubmitView,
 )
 
 app_name = 'ai_prompts'
@@ -17,4 +18,5 @@ urlpatterns = [
     path('download/<slug:slug>/', DownloadPromptView.as_view(), name='download'),
     path('api/bookmark/<slug:slug>/', ToggleSavePromptView.as_view(), name='bookmark_api'),
     path('assist/<slug:slug>/', PromptAssistanceSubmitView.as_view(), name='assist_submit'),
+    path('pay/<slug:slug>/', PromptPaymentSubmitView.as_view(), name='payment_submit'),
 ]

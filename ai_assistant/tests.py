@@ -218,3 +218,27 @@ class AiAssistantTests(TestCase):
         self.assertEqual(res.status_code, 200)
         self.assertContains(res, "AI Solutions Architect")
         self.assertContains(res, "AI Architecture Desk")
+
+    def test_ai_payment_protocol_no_automated_verification_claim(self):
+        """
+        Tests that when a user provides an M-Pesa transaction code, the AI Assistant
+        never claims automated verification, but correctly informs the client that
+        Management / Solutions Architects will verify the payment and contact them
+        using their registered details.
+        """
+        from .gemini_engine import generate_intelligent_database_grounded_response
+
+        client_context = {
+            'name': 'Lawi',
+            'email': 'lawi@example.com',
+            'phone': '+254715479955'
+        }
+        msg = "M-Pesa Transaction Code UII9O6P15V I have paid 22,500"
+        reply = generate_intelligent_database_grounded_response(msg, client_context)
+
+        # AI must NOT claim automated verification
+        self.assertNotIn("I have successfully verified your transaction", reply)
+        # AI must inform that Management/Developers/Architects will verify and reach out
+        self.assertTrue(any(w in reply for w in ["Management", "Solutions Architecture", "financial records"]))
+        # AI must reference contacting them using their registration information
+        self.assertIn("Official Consultation Registration", reply)

@@ -273,3 +273,109 @@ class PromptAssistanceRequest(models.Model):
 
     def __str__(self):
         return f"{self.client_name} - {self.prompt.title[:30]} [{self.status}]"
+
+
+class PromptPurchase(models.Model):
+    """
+    Tracks client purchase and access rights for paid AI Master Coding Prompts.
+    Clients submit their M-Pesa transaction code, pasted SMS confirmation,
+    or uploaded payment screenshot, or request alternative payment options.
+    Verified by Management/Admin in Django Admin, which immediately unlocks
+    the full prompt and dispatches an automatic confirmation email.
+    """
+    STATUS_CHOICES = [
+        ('pending', 'Pending Verification'),
+        ('approved', 'Approved / Verified (Access Granted)'),
+        ('rejected', 'Rejected / Invalid Reference'),
+    ]
+
+    PAYMENT_METHODS = [
+        ('mpesa_till', 'Safaricom M-Pesa Till 5797853'),
+        ('mpesa_screenshot', 'M-Pesa Screenshot / Receipt Upload'),
+        ('bank_transfer', 'Bank Transfer / Wire'),
+        ('paypal_card', 'PayPal / Card Payment'),
+        ('other', 'Other Payment Request'),
+    ]
+
+    prompt = models.ForeignKey(
+        AIPrompt,
+        on_delete=models.CASCADE,
+        related_name='purchases'
+    )
+    user = models.ForeignKey(
+        User,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name='prompt_purchases'
+    )
+    client_name = models.CharField(max_length=150)
+    client_email = models.EmailField()
+    client_phone = models.CharField(
+        max_length=35,
+        help_text="WhatsApp / Phone number starting with country code e.g. +254..."
+    )
+    payment_method = models.CharField(
+        max_length=40,
+        choices=PAYMENT_METHODS,
+        default='mpesa_till'
+    )
+    transaction_code = models.CharField(
+        max_length=80,
+        blank=True,
+        null=True,
+        help_text="M-Pesa Transaction Code (e.g., UII9O6P15V) or Reference"
+    )
+    payment_message = models.TextField(
+        blank=True,
+        help_text="Full pasted M-Pesa SMS confirmation message or transaction notes"
+    )
+    payment_screenshot = models.ImageField(
+        upload_to='prompt_payments/%Y/%m/',
+        blank=True,
+        null=True,
+        help_text="Screenshot of M-Pesa message or payment receipt"
+    )
+    amount_paid = models.DecimalField(
+        max_digits=10,
+        decimal_places=2,
+        default=0.00
+    )
+    currency = models.CharField(max_length=6, default='KES')
+
+    status = models.CharField(
+        max_length=20,
+        choices=STATUS_CHOICES,
+        default='pending'
+    )
+    is_verified = models.BooleanField(
+        default=False,
+        help_text="Tick to approve and immediately unlock prompt access for this client"
+    )
+    verified_at = models.DateTimeField(null=True, blank=True)
+    approval_email_sent = models.BooleanField(default=False)
+    admin_notes = models.TextField(blank=True, help_text="Internal notes by management/admin")
+
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        verbose_name = "Prompt Payment & Access Order"
+        verbose_name_plural = "Prompt Payments & Access Orders"
+        ordering = ['-created_at']
+
+    def __str__(self):
+        status_label = "VERIFIED" if self.is_verified else self.status.upper()
+        return f"[{status_label}] {self.client_name} - {self.prompt.title[:30]} ({self.transaction_code or self.payment_method})"
+
+    def save(self, *args, **kwargs):
+        if self.is_verified and self.status != 'approved':
+            self.status = 'approved'
+        elif self.status == 'approved' and not self.is_verified:
+            self.is_verified = True
+
+        if self.is_verified and not self.verified_at:
+            from django.utils import timezone
+            self.verified_at = timezone.now()
+
+        super().save(*args, **kwargs)

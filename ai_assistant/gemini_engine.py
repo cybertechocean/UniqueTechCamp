@@ -207,8 +207,24 @@ def generate_intelligent_database_grounded_response(query: str, client_context: 
             "Would you like to schedule a 15-minute live demo of our WhatsApp bot engine?"
         )
 
-    # 5. Search specific services from database (e.g. clinic, hospital, construction, cafe, church, ecommerce, seo, etc.)
-    search_terms = [word for word in q.split() if len(word) > 3 and word not in ['what', 'with', 'about', 'your', 'have', 'from', 'this', 'that', 'could', 'would', 'should', 'tell']]
+    # 5. Payment Confirmation, Transaction Codes & Receipts
+    if any(k in q for k in ['transaction', 'mpesa', 'm-pesa', 'till', '5797853', 'paid', 'deposit', 'receipt', 'code', 'uii9', 'payment sent', 'have sent', 'have paid', 'sent the']):
+        client_info_ref = f"using the contact details you provided during your **Official Consultation Registration** ({client_context.get('email') or 'your email'}, {client_context.get('phone') or 'your phone number'})" if (client_context.get('email') or client_context.get('phone')) else "using the contact details you provided during your **Official Consultation Registration**"
+        return (
+            f"{greeting}Thank you very much for submitting your payment confirmation and transaction details!\n\n"
+            "### 🔒 Payment Verification & Sensitive Onboarding Protocol:\n"
+            "For strict security and formal financial compliance, our conversational AI desk does not automatically verify bank or M-Pesa transactions. "
+            "Instead, a member of our **Management, Lead Developers, or Solutions Architecture team** will personally verify your payment in our financial records.\n\n"
+            "### Next Steps for Your Project:\n"
+            f"1. Our management team will contact you directly {client_info_ref} via **Email, WhatsApp, or Direct Phone Call**.\n"
+            "2. We will issue your **official project receipt, invoice, and formal service agreement**.\n"
+            "3. We will initiate technical repository provisioning, sensitive credentials exchange, and schedule our discovery sprint call.\n\n"
+            "*(Are your registered contact details up to date, or would you like to provide an alternative phone number or email address for our management team to reach you?)*\n\n"
+            "For immediate real-time coordination, you can also reach our engineering desk directly on WhatsApp at **+254 715 479 955**."
+        )
+
+    # 6. Search specific services from database (e.g. clinic, hospital, construction, cafe, church, ecommerce, seo, etc.)
+    search_terms = [word for word in q.split() if len(word) > 3 and word not in ['what', 'with', 'about', 'your', 'have', 'from', 'this', 'that', 'could', 'would', 'should', 'tell', 'paid', 'deposit', 'receipt', 'code']]
     if search_terms:
         from services.models import Service
         query_filter = Q()
@@ -236,7 +252,7 @@ def generate_intelligent_database_grounded_response(query: str, client_context: 
         except Exception as e:
             logger.warning(f"Error in dynamic service match: {e}")
 
-    # 6. Pricing, Cost, Rates
+    # 7. Pricing, Cost, Rates
     if any(k in q for k in ['price', 'pricing', 'cost', 'fee', 'quotation', 'rate', 'how much', 'charge']):
         return (
             f"{greeting}UniqueTechCamp provides **transparent, milestone-based pricing** with no hidden fees:\n\n"

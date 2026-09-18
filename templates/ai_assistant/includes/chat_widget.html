@@ -601,7 +601,14 @@
                 },
                 body: JSON.stringify(payload)
             })
-            .then(res => res.json())
+            .then(async (res) => {
+                const data = await res.json().catch(() => null);
+                if (!res.ok || !data) {
+                    const errorMsg = (data && data.error) ? data.error : `Server error (${res.status}). Please try again.`;
+                    throw new Error(errorMsg);
+                }
+                return data;
+            })
             .then(data => {
                 if (data.success) {
                     hasCapturedLead = true;
@@ -612,14 +619,23 @@
                         </div>
                     `;
                     if (window.lucide) lucide.createIcons();
+
+                    if (data.reply) {
+                        renderMessage({
+                            sender: 'assistant',
+                            message: data.reply,
+                            action_type: data.action_type || 'normal',
+                            created_at: data.created_at || new Date().toISOString()
+                        });
+                    }
                 } else {
                     if (submitBtn) submitBtn.disabled = false;
-                    alert(data.error || 'Registration failed.');
+                    alert(data.error || 'Registration failed. Please check your inputs.');
                 }
             })
-            .catch(() => {
+            .catch((err) => {
                 if (submitBtn) submitBtn.disabled = false;
-                alert('Connection error.');
+                alert(err.message || 'Connection error.');
             });
         }
     });

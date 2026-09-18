@@ -608,25 +608,41 @@ document.addEventListener('DOMContentLoaded', () => {
                 headers: { 'Content-Type': 'application/json', 'X-CSRFToken': getCsrf() },
                 body: JSON.stringify(payload)
             })
-            .then(r => r.json())
+            .then(async (r) => {
+                const data = await r.json().catch(() => null);
+                if (!r.ok || !data) {
+                    const errorMsg = (data && data.error) ? data.error : `Server error (${r.status}). Please try again.`;
+                    throw new Error(errorMsg);
+                }
+                return data;
+            })
             .then(data => {
                 if (data.success) {
                     hasLead = true;
                     e.target.closest('div').innerHTML = `
                         <div class="p-4 rounded-xl bg-emerald-500/10 border border-emerald-500/40 text-emerald-400 text-xs font-bold flex items-center gap-2">
                             <i data-lucide="check-circle" class="w-4 h-4"></i>
-                            <span>Details registered! Thank you, ${payload.full_name}. What system can we engineer for you?</span>
+                            <span>Details verified! Thank you, ${payload.full_name}. Let's proceed with your project.</span>
                         </div>
                     `;
                     if (window.lucide) lucide.createIcons();
+
+                    if (data.reply) {
+                        renderMsg({
+                            sender: 'assistant',
+                            message: data.reply,
+                            action_type: data.action_type || 'normal',
+                            created_at: data.created_at || new Date().toISOString()
+                        });
+                    }
                 } else {
                     if (submitBtn) submitBtn.disabled = false;
                     alert(data.error || 'Could not register details. Please check your inputs.');
                 }
             })
-            .catch(() => {
+            .catch((err) => {
                 if (submitBtn) submitBtn.disabled = false;
-                alert('Connection error. Please try again.');
+                alert(err.message || 'Connection error. Please try again.');
             });
         }
     });

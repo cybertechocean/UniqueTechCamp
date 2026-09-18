@@ -140,10 +140,18 @@ class ClientAccountAndPromptsTestCase(TestCase):
         res_detail = self.client.get(reverse('ai_prompts:detail', kwargs={'slug': self.prompt.slug}))
         self.assertEqual(res_detail.status_code, 200)
         self.assertContains(res_detail, "5797853")
-        self.assertContains(res_detail, "Copy Master Prompt")
+        # Since prompt is paid and not purchased yet, it shows payment verification
+        self.assertContains(res_detail, "Unlock Prompt")
 
     def test_copy_prompt_api(self):
-        """Test that copy API increments copy count."""
+        """Test that copy API requires access on paid prompts and increments count on free/authorized prompts."""
+        # Unpaid attempt should return 403
+        res_locked = self.client.post(reverse('ai_prompts:copy_api', kwargs={'slug': self.prompt.slug}))
+        self.assertEqual(res_locked.status_code, 403)
+
+        # On free prompt, should succeed and increment count
+        self.prompt.is_free = True
+        self.prompt.save()
         initial_copies = self.prompt.copy_count
         res = self.client.post(reverse('ai_prompts:copy_api', kwargs={'slug': self.prompt.slug}))
         self.assertEqual(res.status_code, 200)
@@ -151,7 +159,14 @@ class ClientAccountAndPromptsTestCase(TestCase):
         self.assertEqual(self.prompt.copy_count, initial_copies + 1)
 
     def test_download_prompt(self):
-        """Test downloading prompt markdown file."""
+        """Test that download requires access on paid prompts and allows download on free/authorized prompts."""
+        # Unpaid attempt redirects to detail
+        res_locked = self.client.get(reverse('ai_prompts:download', kwargs={'slug': self.prompt.slug}))
+        self.assertEqual(res_locked.status_code, 302)
+
+        # On free prompt, downloading markdown succeeds
+        self.prompt.is_free = True
+        self.prompt.save()
         res = self.client.get(reverse('ai_prompts:download', kwargs={'slug': self.prompt.slug}))
         self.assertEqual(res.status_code, 200)
         self.assertEqual(res['Content-Type'], 'text/markdown; charset=utf-8')

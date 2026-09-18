@@ -88,6 +88,7 @@
             <!-- Action Bar Under Media -->
             <div class="p-4 sm:p-5 rounded-2xl bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 flex flex-wrap items-center justify-between gap-4">
                 <div class="flex flex-wrap items-center gap-2">
+                    {% if has_access %}
                     <!-- Copy Prompt Button -->
                     <button type="button" id="copy-prompt-btn" 
                             class="btn-primary py-3 px-5 rounded-xl text-xs font-bold inline-flex items-center gap-2 shadow-emerald-500/25">
@@ -101,6 +102,21 @@
                         <i data-lucide="download" class="w-4 h-4"></i>
                         <span>Download (.md)</span>
                     </a>
+                    {% elif pending_purchase %}
+                    <!-- Pending Verification Notice -->
+                    <button type="button" onclick="switchTab('payment-verification')" 
+                            class="py-3 px-5 rounded-xl text-xs font-bold inline-flex items-center gap-2 bg-amber-500/20 text-amber-300 border border-amber-500/40">
+                        <i data-lucide="clock" class="w-4 h-4 text-amber-400"></i>
+                        <span>Verification Pending (Ref: {{ pending_purchase.transaction_code|default:"Submitted" }})</span>
+                    </button>
+                    {% else %}
+                    <!-- Locked / Unlock Prompt Button -->
+                    <button type="button" onclick="switchTab('payment-verification')" 
+                            class="btn-primary py-3 px-5 rounded-xl text-xs font-bold inline-flex items-center gap-2 shadow-emerald-500/25">
+                        <i data-lucide="lock" class="w-4 h-4 text-slate-950"></i>
+                        <span>Unlock Master Prompt (KES {{ prompt.price_kes|floatformat:0 }})</span>
+                    </button>
+                    {% endif %}
 
                     <!-- Save / Bookmark Button -->
                     {% if user.is_authenticated %}
@@ -128,9 +144,15 @@
             <!-- Purchase / Access Card -->
             <div class="p-6 sm:p-7 rounded-3xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-xl space-y-5">
                 <div class="flex items-center justify-between">
-                    <span class="text-xs font-bold uppercase tracking-wider text-slate-500">Master Prompt License</span>
-                    {% if prompt.is_free %}
-                        <span class="px-3 py-1 rounded-full text-xs font-extrabold uppercase bg-emerald-500 text-white">Free</span>
+                    <span class="text-xs font-bold uppercase tracking-wider text-slate-500">Access Status</span>
+                    {% if has_access %}
+                        <span class="px-3 py-1 rounded-full text-xs font-extrabold uppercase bg-emerald-500 text-white flex items-center gap-1">
+                            <i data-lucide="check" class="w-3 h-3"></i> Unlocked
+                        </span>
+                    {% elif pending_purchase %}
+                        <span class="px-3 py-1 rounded-full text-xs font-extrabold uppercase bg-amber-500 text-slate-950 flex items-center gap-1">
+                            <i data-lucide="clock" class="w-3 h-3"></i> Pending Verification
+                        </span>
                     {% else %}
                         <span class="text-xl font-heading font-extrabold text-slate-900 dark:text-white">
                             KES {{ prompt.price_kes|floatformat:0 }} <span class="text-xs text-slate-500">(${{ prompt.price_usd|floatformat:0 }} USD)</span>
@@ -225,8 +247,16 @@
         <div class="flex border-b border-slate-200 dark:border-slate-800 overflow-x-auto bg-slate-50 dark:bg-slate-950/60 p-2 gap-2" id="prompt-tabs">
             <button type="button" onclick="switchTab('master-prompt')" 
                     class="tab-btn active px-5 py-3 rounded-2xl text-xs font-bold transition-all inline-flex items-center gap-2 bg-white dark:bg-slate-900 text-emerald-600 dark:text-emerald-400 shadow-sm" data-tab="master-prompt">
+                {% if has_access %}
                 <i data-lucide="code-2" class="w-4 h-4"></i>
                 <span>Master AI Coding Prompt</span>
+                {% elif pending_purchase %}
+                <i data-lucide="clock" class="w-4 h-4 text-amber-400"></i>
+                <span>Verification Pending</span>
+                {% else %}
+                <i data-lucide="lock" class="w-4 h-4 text-emerald-500"></i>
+                <span>Unlock Master Prompt (Till 5797853)</span>
+                {% endif %}
             </button>
             <button type="button" onclick="switchTab('setup-instructions')" 
                     class="tab-btn px-5 py-3 rounded-2xl text-xs font-bold transition-all inline-flex items-center gap-2 text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white" data-tab="setup-instructions">
@@ -247,6 +277,7 @@
 
         <!-- Tab 1: Master AI Coding Prompt -->
         <div id="tab-master-prompt" class="tab-content p-6 sm:p-10">
+            {% if has_access %}
             <div class="flex items-center justify-between pb-4 mb-4 border-b border-slate-200 dark:border-slate-800">
                 <div>
                     <h3 class="text-base font-bold text-slate-900 dark:text-white">AI Master Prompt Payload</h3>
@@ -261,6 +292,144 @@
             <div class="relative rounded-2xl bg-slate-950 p-5 sm:p-6 border border-slate-800 text-slate-100 overflow-x-auto shadow-inner">
                 <pre class="prompt-code-block" id="master-prompt-raw">{{ prompt.master_prompt }}</pre>
             </div>
+            {% elif pending_purchase %}
+            <!-- Verification Pending State -->
+            <div class="p-6 sm:p-8 rounded-3xl bg-amber-500/10 border border-amber-500/30 text-center space-y-4">
+                <div class="w-12 h-12 rounded-2xl bg-amber-500/20 text-amber-400 mx-auto flex items-center justify-center">
+                    <i data-lucide="clock" class="w-6 h-6"></i>
+                </div>
+                <div>
+                    <h3 class="text-lg font-bold text-white mb-1">Payment Verification in Progress</h3>
+                    <p class="text-xs text-slate-300 max-w-md mx-auto leading-relaxed">
+                        We have received your payment submission (Reference: <strong class="text-amber-400 font-mono">{{ pending_purchase.transaction_code|default:pending_purchase.get_payment_method_display }}</strong>).
+                        Our Management and Solutions Architecture team is currently verifying the transaction in Django Admin.
+                    </p>
+                </div>
+                <div class="p-4 rounded-2xl bg-slate-950 border border-slate-800 max-w-md mx-auto text-left text-xs space-y-2 text-slate-300">
+                    <div class="flex justify-between">
+                        <span class="text-slate-400">Client Name:</span>
+                        <span class="font-bold text-white">{{ pending_purchase.client_name }}</span>
+                    </div>
+                    <div class="flex justify-between">
+                        <span class="text-slate-400">Confirmation Email:</span>
+                        <span class="text-emerald-400">{{ pending_purchase.client_email }}</span>
+                    </div>
+                    <div class="flex justify-between">
+                        <span class="text-slate-400">WhatsApp / Phone:</span>
+                        <span class="text-white">{{ pending_purchase.client_phone }}</span>
+                    </div>
+                    <div class="flex justify-between">
+                        <span class="text-slate-400">Status:</span>
+                        <span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-amber-500/20 text-amber-400">Pending Review</span>
+                    </div>
+                </div>
+                <p class="text-xs text-slate-400">
+                    Once verified, this page will unlock immediately and you will receive an official confirmation email. Need urgent activation?
+                </p>
+                <div class="flex flex-wrap items-center justify-center gap-3 pt-2">
+                    <a href="https://wa.me/254715479955?text=Hello%20UniqueTechCamp!%20I%20have%20submitted%20payment%20for%20{{ prompt.title|urlencode }}%20with%20ref%20{{ pending_purchase.transaction_code|default:'' }}." target="_blank"
+                       class="btn-primary py-2.5 px-4 text-xs rounded-xl inline-flex items-center gap-1.5 bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold">
+                        <i class="fa-brands fa-whatsapp"></i>
+                        <span>Urgent Activation on WhatsApp</span>
+                    </a>
+                </div>
+            </div>
+            {% else %}
+            <!-- Locked Master Prompt + Payment Submission -->
+            <div class="space-y-6" id="payment-verification-section">
+                <div class="p-6 sm:p-8 rounded-3xl bg-slate-950 border border-slate-800 text-center relative overflow-hidden">
+                    <div class="absolute inset-0 bg-gradient-to-b from-emerald-500/5 to-transparent pointer-events-none"></div>
+                    <div class="w-14 h-14 rounded-2xl bg-emerald-500/20 text-emerald-400 mx-auto flex items-center justify-center mb-4">
+                        <i data-lucide="lock" class="w-7 h-7"></i>
+                    </div>
+                    <h3 class="text-xl font-heading font-extrabold text-white mb-2">
+                        Premium AI Master Coding Prompt (Locked)
+                    </h3>
+                    <p class="text-xs sm:text-sm text-slate-400 max-w-lg mx-auto leading-relaxed mb-6">
+                        This is a complete, production-grade system blueprint. Pay once via Safaricom Till <strong>5797853</strong> or alternative payment, submit your reference or receipt below, and our management will verify and grant full lifetime access.
+                    </p>
+
+                    <!-- M-Pesa Instructions Box -->
+                    <div class="max-w-md mx-auto p-4 rounded-2xl bg-slate-900 border border-emerald-500/30 text-left text-xs text-slate-300 space-y-2 mb-6">
+                        <div class="flex items-center justify-between pb-2 border-b border-slate-800">
+                            <span class="font-bold text-white flex items-center gap-1.5">
+                                <i data-lucide="smartphone" class="w-4 h-4 text-emerald-400"></i>
+                                <span>Safaricom M-Pesa Buy Goods</span>
+                            </span>
+                            <span class="px-2 py-0.5 rounded bg-emerald-500/20 text-emerald-400 font-bold text-[10px]">Instant</span>
+                        </div>
+                        <div class="flex justify-between">
+                            <span class="text-slate-400">Till Number:</span>
+                            <span class="font-mono font-extrabold text-emerald-400 text-base">5797853</span>
+                        </div>
+                        <div class="flex justify-between">
+                            <span class="text-slate-400">Account Name:</span>
+                            <span class="font-bold text-white">UniqueTechCamp</span>
+                        </div>
+                        <div class="flex justify-between">
+                            <span class="text-slate-400">Amount Due:</span>
+                            <span class="font-bold text-emerald-400">KES {{ prompt.price_kes|floatformat:0 }} (${{ prompt.price_usd|floatformat:0 }} USD)</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Payment Proof Submission Form -->
+                <div class="p-6 sm:p-8 rounded-3xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-sm">
+                    <div class="mb-5">
+                        <h4 class="text-base font-bold text-slate-900 dark:text-white mb-1">Submit Payment Verification</h4>
+                        <p class="text-xs text-slate-500">Enter your payment code or upload receipt to unlock this prompt:</p>
+                    </div>
+
+                    <form method="POST" action="{% url 'ai_prompts:payment_submit' slug=prompt.slug %}" enctype="multipart/form-data" class="space-y-4">
+                        {% csrf_token %}
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                            <div>
+                                <label class="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">Your Full Name *</label>
+                                {{ payment_form.client_name }}
+                            </div>
+                            <div>
+                                <label class="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">Email Address *</label>
+                                {{ payment_form.client_email }}
+                            </div>
+                        </div>
+
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                            <div>
+                                <label class="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">WhatsApp / Phone *</label>
+                                {{ payment_form.client_phone }}
+                            </div>
+                            <div>
+                                <label class="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">Payment Method *</label>
+                                {{ payment_form.payment_method }}
+                            </div>
+                        </div>
+
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                            <div>
+                                <label class="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">M-Pesa Transaction Code (e.g. UII9O6P15V)</label>
+                                {{ payment_form.transaction_code }}
+                            </div>
+                            <div>
+                                <label class="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">Upload Receipt / Screenshot (Optional)</label>
+                                {{ payment_form.payment_screenshot }}
+                            </div>
+                        </div>
+
+                        <div>
+                            <label class="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">Paste Full M-Pesa SMS or Notes (Optional)</label>
+                            {{ payment_form.payment_message }}
+                        </div>
+
+                        <div class="pt-2">
+                            <button type="submit" class="btn-primary w-full py-3.5 rounded-xl text-xs font-bold shadow-emerald-500/25 flex items-center justify-center gap-2">
+                                <i data-lucide="shield-check" class="w-4 h-4"></i>
+                                <span>Submit Payment for Verification &amp; Unlock</span>
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+            {% endif %}
         </div>
 
         <!-- Tab 2: Step-by-Step Execution Guide -->
