@@ -50,7 +50,7 @@ class AIPrompt(models.Model):
         related_name='prompts'
     )
     title = models.CharField(max_length=255)
-    slug = models.SlugField(max_length=280, unique=True, blank=True)
+    slug = models.SlugField(max_length=255, unique=True, blank=True)
     tagline = models.CharField(
         max_length=300,
         help_text="Catchy 1-sentence value proposition"
