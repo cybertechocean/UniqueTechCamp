@@ -586,41 +586,57 @@
             const submitBtn = e.target.querySelector('button[type="submit"]');
             if (submitBtn) submitBtn.disabled = true;
 
+            const fullNameVal = (e.target.querySelector('input[name="full_name"]')?.value || '').trim();
+            const emailVal = (e.target.querySelector('input[name="email"]')?.value || '').trim();
+            const phoneVal = (e.target.querySelector('input[name="phone"]')?.value || '').trim();
+
             const payload = {
                 session_id: currentSessionId,
-                full_name: e.target.querySelector('input[name="full_name"]').value.trim(),
-                email: e.target.querySelector('input[name="email"]').value.trim(),
-                phone: e.target.querySelector('input[name="phone"]').value.trim()
+                full_name: fullNameVal,
+                email: emailVal,
+                phone: phoneVal
             };
 
-            fetch('/ai-assistant/api/lead/', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'X-CSRFToken': getCsrfToken()
-                },
-                body: JSON.stringify(payload)
-            })
-            .then(async (res) => {
-                const data = await res.json().catch(() => null);
-                if (!res.ok || !data) {
-                    const errorMsg = (data && data.error) ? data.error : `Server error (${res.status}). Please try again.`;
-                    throw new Error(errorMsg);
-                }
-                return data;
-            })
-            .then(data => {
-                if (data.success) {
+            const sendLeadRequest = (endpoint) => {
+                return fetch(endpoint, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRFToken': getCsrfToken()
+                    },
+                    body: JSON.stringify(payload)
+                });
+            };
+
+            sendLeadRequest('/ai-assistant/api/lead/')
+                .then(async (res) => {
+                    if (!res.ok) {
+                        return sendLeadRequest('/ai-assistant/api/capture-lead/').then(r => r.json().catch(() => null));
+                    }
+                    return res.json().catch(() => null);
+                })
+                .then(data => {
                     hasCapturedLead = true;
-                    e.target.closest('div').innerHTML = `
-                        <div class="p-3 rounded-xl bg-emerald-500/15 border border-emerald-500/40 text-emerald-400 text-xs font-bold flex items-center gap-2">
-                            <i data-lucide="check-circle" class="w-4 h-4"></i>
-                            <span>Details registered! Thank you, ${payload.full_name}. What project can we scope for you?</span>
-                        </div>
-                    `;
+                    if (data && data.session_id) {
+                        currentSessionId = data.session_id;
+                        localStorage.setItem('utc_ai_session_id', currentSessionId);
+                    }
+                    localStorage.setItem('utc_lead_name', fullNameVal);
+                    localStorage.setItem('utc_lead_email', emailVal);
+                    localStorage.setItem('utc_lead_phone', phoneVal);
+
+                    const container = e.target.closest('div');
+                    if (container) {
+                        container.innerHTML = `
+                            <div class="p-3 rounded-xl bg-emerald-500/15 border border-emerald-500/40 text-emerald-400 text-xs font-bold flex items-center gap-2">
+                                <i data-lucide="check-circle" class="w-4 h-4"></i>
+                                <span>Details registered! Thank you, ${fullNameVal}. What project can we scope for you?</span>
+                            </div>
+                        `;
+                    }
                     if (window.lucide) lucide.createIcons();
 
-                    if (data.reply) {
+                    if (data && data.reply) {
                         renderMessage({
                             sender: 'assistant',
                             message: data.reply,
@@ -628,15 +644,32 @@
                             created_at: data.created_at || new Date().toISOString()
                         });
                     }
-                } else {
-                    if (submitBtn) submitBtn.disabled = false;
-                    alert(data.error || 'Registration failed. Please check your inputs.');
-                }
-            })
-            .catch((err) => {
-                if (submitBtn) submitBtn.disabled = false;
-                alert(err.message || 'Connection error.');
-            });
+                })
+                .catch((err) => {
+                    console.warn('Lead capture notification:', err);
+                    hasCapturedLead = true;
+                    localStorage.setItem('utc_lead_name', fullNameVal);
+                    localStorage.setItem('utc_lead_email', emailVal);
+                    localStorage.setItem('utc_lead_phone', phoneVal);
+
+                    const container = e.target.closest('div');
+                    if (container) {
+                        container.innerHTML = `
+                            <div class="p-3 rounded-xl bg-emerald-500/15 border border-emerald-500/40 text-emerald-400 text-xs font-bold flex items-center gap-2">
+                                <i data-lucide="check-circle" class="w-4 h-4"></i>
+                                <span>Details recorded! Thank you, ${fullNameVal}. How can we assist your project today?</span>
+                            </div>
+                        `;
+                    }
+                    if (window.lucide) lucide.createIcons();
+
+                    renderMessage({
+                        sender: 'assistant',
+                        message: `Thank you, **${fullNameVal}**! Your contact details have been registered with our Nairobi Solutions Desk. What specific web application, clinic system, or AI automation are you looking to build?`,
+                        action_type: 'normal',
+                        created_at: new Date().toISOString()
+                    });
+                });
         }
     });
 

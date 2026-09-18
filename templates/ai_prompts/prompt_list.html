@@ -62,11 +62,11 @@
                 <div class="flex items-center gap-2 w-full sm:w-auto">
                     <!-- Currency Toggle -->
                     <div class="flex items-center rounded-xl bg-slate-900 border border-slate-700 p-1 text-xs font-bold">
-                        <button type="button" onclick="setCurrency('KES')" 
+                        <button type="button" onclick="setCurrency('KES')" id="currency-btn-kes"
                                 class="px-3 py-1.5 rounded-lg transition-all {% if active_currency == 'KES' %}bg-emerald-500 text-white shadow{% else %}text-slate-400 hover:text-white{% endif %}">
                             KES
                         </button>
-                        <button type="button" onclick="setCurrency('USD')" 
+                        <button type="button" onclick="setCurrency('USD')" id="currency-btn-usd"
                                 class="px-3 py-1.5 rounded-lg transition-all {% if active_currency == 'USD' %}bg-emerald-500 text-white shadow{% else %}text-slate-400 hover:text-white{% endif %}">
                             USD
                         </button>
@@ -275,8 +275,37 @@
         document.querySelectorAll('.currency-usd').forEach(el => {
             el.classList.toggle('hidden', currency !== 'USD');
         });
+
+        // Immediately update button highlight styling
+        const btnKes = document.getElementById('currency-btn-kes');
+        const btnUsd = document.getElementById('currency-btn-usd');
+        if (btnKes && btnUsd) {
+            if (currency === 'KES') {
+                btnKes.className = 'px-3 py-1.5 rounded-lg transition-all bg-emerald-500 text-white shadow font-bold';
+                btnUsd.className = 'px-3 py-1.5 rounded-lg transition-all text-slate-400 hover:text-white font-bold';
+            } else {
+                btnUsd.className = 'px-3 py-1.5 rounded-lg transition-all bg-emerald-500 text-white shadow font-bold';
+                btnKes.className = 'px-3 py-1.5 rounded-lg transition-all text-slate-400 hover:text-white font-bold';
+            }
+        }
+
+        // Persist client preference
+        try {
+            localStorage.setItem('utc_active_currency', currency);
+        } catch (e) {}
+
         // Save to session or query
         fetch(`?currency=${currency}`, { headers: { 'X-Requested-With': 'XMLHttpRequest' } });
     }
+
+    // Auto-restore saved currency preference
+    document.addEventListener('DOMContentLoaded', () => {
+        try {
+            const saved = localStorage.getItem('utc_active_currency');
+            if (saved && (saved === 'KES' || saved === 'USD')) {
+                setCurrency(saved);
+            }
+        } catch (e) {}
+    });
 </script>
 {% endblock %}

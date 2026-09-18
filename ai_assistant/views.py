@@ -1,6 +1,7 @@
 import json
 import re
 import datetime
+import uuid
 from django.shortcuts import render, get_object_or_404
 from django.views.generic import View
 from django.http import JsonResponse, HttpResponse
@@ -320,7 +321,7 @@ class CaptureLeadApiView(View):
         industry = (data.get('industry') or '').strip()
         bottleneck = (data.get('business_bottleneck') or '').strip()
 
-        if not session_id or not full_name or not email or not phone:
+        if not full_name or not email or not phone:
             return JsonResponse({'success': False, 'error': 'Full Name, Email, and Phone are required.'}, status=400)
 
         if not re.match(EMAIL_REGEX, email):
@@ -330,9 +331,10 @@ class CaptureLeadApiView(View):
         if len(clean_digits) < 7:
             return JsonResponse({'success': False, 'error': 'Please provide a valid WhatsApp/Phone number with country code.'}, status=400)
 
-        session = ChatSession.objects.filter(session_id=session_id).first()
-        if not session:
-            session = ChatSession.objects.create(session_id=session_id or str(uuid.uuid4()))
+        if not session_id:
+            session_id = str(uuid.uuid4())
+
+        session, _ = ChatSession.objects.get_or_create(session_id=session_id)
 
         # Create or update LeadCapture profile
         lead, _ = LeadCapture.objects.get_or_create(
@@ -389,6 +391,7 @@ class CaptureLeadApiView(View):
 
             return JsonResponse({
                 'success': True,
+                'session_id': session.session_id,
                 'has_lead': True,
                 'lead_name': lead.full_name,
                 'reply': fulfilled_reply,
@@ -418,6 +421,7 @@ class CaptureLeadApiView(View):
 
         return JsonResponse({
             'success': True,
+            'session_id': session.session_id,
             'has_lead': True,
             'lead_name': lead.full_name,
             'reply': welcome_reply,

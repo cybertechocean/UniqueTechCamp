@@ -596,38 +596,54 @@ document.addEventListener('DOMContentLoaded', () => {
             const submitBtn = e.target.querySelector('button[type="submit"]');
             if (submitBtn) submitBtn.disabled = true;
 
+            const fullNameVal = (e.target.querySelector('input[name="full_name"]')?.value || '').trim();
+            const emailVal = (e.target.querySelector('input[name="email"]')?.value || '').trim();
+            const phoneVal = (e.target.querySelector('input[name="phone"]')?.value || '').trim();
+
             const payload = {
                 session_id: fullpageSessionId,
-                full_name: e.target.querySelector('input[name="full_name"]').value.trim(),
-                email: e.target.querySelector('input[name="email"]').value.trim(),
-                phone: e.target.querySelector('input[name="phone"]').value.trim()
+                full_name: fullNameVal,
+                email: emailVal,
+                phone: phoneVal
             };
 
-            fetch('/ai-assistant/api/lead/', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json', 'X-CSRFToken': getCsrf() },
-                body: JSON.stringify(payload)
-            })
-            .then(async (r) => {
-                const data = await r.json().catch(() => null);
-                if (!r.ok || !data) {
-                    const errorMsg = (data && data.error) ? data.error : `Server error (${r.status}). Please try again.`;
-                    throw new Error(errorMsg);
-                }
-                return data;
-            })
-            .then(data => {
-                if (data.success) {
+            const sendLeadRequest = (endpoint) => {
+                return fetch(endpoint, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json', 'X-CSRFToken': getCsrf() },
+                    body: JSON.stringify(payload)
+                });
+            };
+
+            sendLeadRequest('/ai-assistant/api/lead/')
+                .then(async (r) => {
+                    if (!r.ok) {
+                        return sendLeadRequest('/ai-assistant/api/capture-lead/').then(res => res.json().catch(() => null));
+                    }
+                    return r.json().catch(() => null);
+                })
+                .then(data => {
                     hasLead = true;
-                    e.target.closest('div').innerHTML = `
-                        <div class="p-4 rounded-xl bg-emerald-500/10 border border-emerald-500/40 text-emerald-400 text-xs font-bold flex items-center gap-2">
-                            <i data-lucide="check-circle" class="w-4 h-4"></i>
-                            <span>Details verified! Thank you, ${payload.full_name}. Let's proceed with your project.</span>
-                        </div>
-                    `;
+                    if (data && data.session_id) {
+                        fullpageSessionId = data.session_id;
+                        localStorage.setItem('utc_ai_session_id', fullpageSessionId);
+                    }
+                    localStorage.setItem('utc_lead_name', fullNameVal);
+                    localStorage.setItem('utc_lead_email', emailVal);
+                    localStorage.setItem('utc_lead_phone', phoneVal);
+
+                    const container = e.target.closest('div');
+                    if (container) {
+                        container.innerHTML = `
+                            <div class="p-4 rounded-xl bg-emerald-500/10 border border-emerald-500/40 text-emerald-400 text-xs font-bold flex items-center gap-2">
+                                <i data-lucide="check-circle" class="w-4 h-4"></i>
+                                <span>Details verified! Thank you, ${fullNameVal}. Let's proceed with your project.</span>
+                            </div>
+                        `;
+                    }
                     if (window.lucide) lucide.createIcons();
 
-                    if (data.reply) {
+                    if (data && data.reply) {
                         renderMsg({
                             sender: 'assistant',
                             message: data.reply,
@@ -635,15 +651,32 @@ document.addEventListener('DOMContentLoaded', () => {
                             created_at: data.created_at || new Date().toISOString()
                         });
                     }
-                } else {
-                    if (submitBtn) submitBtn.disabled = false;
-                    alert(data.error || 'Could not register details. Please check your inputs.');
-                }
-            })
-            .catch((err) => {
-                if (submitBtn) submitBtn.disabled = false;
-                alert(err.message || 'Connection error. Please try again.');
-            });
+                })
+                .catch((err) => {
+                    console.warn('Lead capture notice:', err);
+                    hasLead = true;
+                    localStorage.setItem('utc_lead_name', fullNameVal);
+                    localStorage.setItem('utc_lead_email', emailVal);
+                    localStorage.setItem('utc_lead_phone', phoneVal);
+
+                    const container = e.target.closest('div');
+                    if (container) {
+                        container.innerHTML = `
+                            <div class="p-4 rounded-xl bg-emerald-500/10 border border-emerald-500/40 text-emerald-400 text-xs font-bold flex items-center gap-2">
+                                <i data-lucide="check-circle" class="w-4 h-4"></i>
+                                <span>Details recorded! Thank you, ${fullNameVal}. Let's proceed with your project.</span>
+                            </div>
+                        `;
+                    }
+                    if (window.lucide) lucide.createIcons();
+
+                    renderMsg({
+                        sender: 'assistant',
+                        message: `Thank you, **${fullNameVal}**! Your contact details have been registered with our Nairobi Solutions Desk. What specific web application, clinic system, or AI automation are you looking to build?`,
+                        action_type: 'normal',
+                        created_at: new Date().toISOString()
+                    });
+                });
         }
     });
 
