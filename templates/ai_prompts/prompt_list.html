@@ -1,0 +1,282 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}AI Master Coding Prompts & Systems | UniqueTechCamp{% endblock %}
+{% block description %}Download production-ready AI Master Coding Prompts for Claude Code, Cursor, Windsurf, and ChatGPT. Build complete web apps, ERPs, and Google Apps Script solutions in minutes.{% endblock %}
+
+{% block content %}
+<!-- Hero Section -->
+<section class="relative py-16 md:py-20 overflow-hidden bg-gradient-to-b from-slate-950 via-slate-900 to-slate-950 text-white">
+    <!-- Glowing background accent -->
+    <div class="absolute inset-0 pointer-events-none">
+        <div class="absolute top-1/4 left-1/3 w-96 h-96 bg-emerald-500/15 rounded-full blur-3xl animate-float"></div>
+        <div class="absolute bottom-1/4 right-1/4 w-96 h-96 bg-teal-500/10 rounded-full blur-3xl animate-float-delayed"></div>
+    </div>
+
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10 text-center">
+        <!-- Top Badge -->
+        <div class="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-emerald-500/15 border border-emerald-500/30 text-emerald-400 font-support font-semibold text-xs uppercase tracking-wider mb-6">
+            <i data-lucide="sparkles" class="w-4 h-4"></i>
+            <span>Production-Ready AI Master Coding Prompts</span>
+        </div>
+
+        <h1 class="text-3xl sm:text-5xl lg:text-6xl font-heading font-extrabold text-white tracking-tight leading-tight max-w-4xl mx-auto">
+            Build Full Systems in Minutes with <span class="text-emerald-400">Master AI Prompts</span>.
+        </h1>
+
+        <p class="text-sm sm:text-lg text-slate-300 font-body max-w-2xl mx-auto mt-4 leading-relaxed">
+            Curated, battle-tested master coding prompts for <strong>Claude Code</strong>, <strong>Cursor</strong>, <strong>Windsurf</strong>, and <strong>ChatGPT</strong>. Plus 1-on-1 personalized developer assistance whenever you need it.
+        </p>
+
+        <!-- Official Safaricom Till Highlight Strip -->
+        <div class="mt-6 inline-flex flex-wrap items-center justify-center gap-3 px-5 py-2.5 rounded-2xl bg-slate-900/90 border border-emerald-500/30 text-xs shadow-xl">
+            <span class="flex items-center gap-1.5 text-emerald-400 font-bold">
+                <i data-lucide="shield-check" class="w-4 h-4"></i>
+                <span>Buy Goods Till: <strong class="font-mono text-white text-sm tracking-wider">5797853</strong></span>
+            </span>
+            <span class="text-slate-500 hidden sm:inline">•</span>
+            <span class="text-slate-300">Nairobi, Kenya • Currencies: <strong class="text-emerald-400">KES / USD</strong></span>
+            <span class="text-slate-500 hidden sm:inline">•</span>
+            <a href="https://wa.me/254715479955" target="_blank" rel="noopener noreferrer" class="text-[#25D366] font-bold hover:underline inline-flex items-center gap-1">
+                <i class="fa-brands fa-whatsapp"></i> WhatsApp Help Desk
+            </a>
+        </div>
+
+        <!-- Search Bar & Currency Switcher Row -->
+        <div class="mt-8 max-w-2xl mx-auto">
+            <form method="GET" action="{% url 'ai_prompts:list' %}" class="flex flex-col sm:flex-row items-center gap-3">
+                {% if selected_category %}
+                    <input type="hidden" name="category" value="{{ selected_category.slug }}">
+                {% endif %}
+                {% if active_pricing != 'all' %}
+                    <input type="hidden" name="pricing" value="{{ active_pricing }}">
+                {% endif %}
+
+                <div class="relative flex-1 w-full">
+                    <input type="text" name="q" value="{{ search_query }}" 
+                           placeholder="Search prompts (e.g. car marketplace, whatsapp bot, google sheets)..." 
+                           class="w-full py-3.5 pl-11 pr-4 rounded-xl bg-slate-900/90 border border-slate-700 text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-emerald-500 text-sm shadow-inner">
+                    <i data-lucide="search" class="w-5 h-5 absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400"></i>
+                </div>
+
+                <div class="flex items-center gap-2 w-full sm:w-auto">
+                    <!-- Currency Toggle -->
+                    <div class="flex items-center rounded-xl bg-slate-900 border border-slate-700 p-1 text-xs font-bold">
+                        <button type="button" onclick="setCurrency('KES')" 
+                                class="px-3 py-1.5 rounded-lg transition-all {% if active_currency == 'KES' %}bg-emerald-500 text-white shadow{% else %}text-slate-400 hover:text-white{% endif %}">
+                            KES
+                        </button>
+                        <button type="button" onclick="setCurrency('USD')" 
+                                class="px-3 py-1.5 rounded-lg transition-all {% if active_currency == 'USD' %}bg-emerald-500 text-white shadow{% else %}text-slate-400 hover:text-white{% endif %}">
+                            USD
+                        </button>
+                    </div>
+
+                    <button type="submit" class="btn-primary py-3 px-5 rounded-xl text-xs font-bold shrink-0">
+                        <span>Search</span>
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</section>
+
+<!-- Filter Tabs & Main Catalog -->
+<section class="py-12 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto">
+    <!-- Category & Pricing Tabs -->
+    <div class="flex flex-wrap items-center justify-between gap-4 pb-6 mb-8 border-b border-slate-200 dark:border-slate-800">
+        <!-- Categories pills -->
+        <div class="flex flex-wrap items-center gap-2">
+            <a href="{% url 'ai_prompts:list' %}{% if active_pricing != 'all' %}?pricing={{ active_pricing }}{% endif %}" 
+               class="px-4 py-2 rounded-xl text-xs font-bold transition-all {% if not selected_category %}bg-emerald-500 text-white shadow-md shadow-emerald-500/20{% else %}bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700{% endif %}">
+                All Categories ({{ total_prompts_count }})
+            </a>
+            {% for cat in categories %}
+            <a href="{% url 'ai_prompts:list' %}?category={{ cat.slug }}{% if active_pricing != 'all' %}&pricing={{ active_pricing }}{% endif %}" 
+               class="px-4 py-2 rounded-xl text-xs font-bold transition-all {% if selected_category and selected_category.slug == cat.slug %}bg-emerald-500 text-white shadow-md shadow-emerald-500/20{% else %}bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700{% endif %}">
+                {{ cat.name }}
+            </a>
+            {% endfor %}
+        </div>
+
+        <!-- Pricing filter pills -->
+        <div class="flex items-center rounded-xl bg-slate-100 dark:bg-slate-800 p-1 text-xs font-bold">
+            <a href="{% url 'ai_prompts:list' %}?pricing=all{% if selected_category %}&category={{ selected_category.slug }}{% endif %}" 
+               class="px-3 py-1.5 rounded-lg transition-all {% if active_pricing == 'all' %}bg-white dark:bg-slate-900 text-emerald-600 dark:text-emerald-400 shadow-sm{% else %}text-slate-600 dark:text-slate-400{% endif %}">
+                All Prompts
+            </a>
+            <a href="{% url 'ai_prompts:list' %}?pricing=free{% if selected_category %}&category={{ selected_category.slug }}{% endif %}" 
+               class="px-3 py-1.5 rounded-lg transition-all {% if active_pricing == 'free' %}bg-white dark:bg-slate-900 text-emerald-600 dark:text-emerald-400 shadow-sm{% else %}text-slate-600 dark:text-slate-400{% endif %}">
+                100% Free
+            </a>
+            <a href="{% url 'ai_prompts:list' %}?pricing=paid{% if selected_category %}&category={{ selected_category.slug }}{% endif %}" 
+               class="px-3 py-1.5 rounded-lg transition-all {% if active_pricing == 'paid' %}bg-white dark:bg-slate-900 text-emerald-600 dark:text-emerald-400 shadow-sm{% else %}text-slate-600 dark:text-slate-400{% endif %}">
+                Premium Systems
+            </a>
+        </div>
+    </div>
+
+    <!-- Prompts Grid -->
+    {% if prompts %}
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+        {% for prompt in prompts %}
+        <div class="bg-white dark:bg-slate-900 rounded-3xl border border-slate-200 dark:border-slate-800 shadow-sm hover:shadow-xl hover:border-emerald-500/50 transition-all duration-300 flex flex-col overflow-hidden group">
+            <!-- Thumbnail / Media Banner -->
+            <div class="relative h-48 bg-slate-950 overflow-hidden shrink-0">
+                <img src="{{ prompt.get_thumbnail_url }}" 
+                     alt="{{ prompt.title }}" 
+                     class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
+                <div class="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-950/40 to-transparent"></div>
+
+                <!-- Price Badge -->
+                <div class="absolute top-3 right-3">
+                    {% if prompt.is_free %}
+                        <span class="px-3 py-1 rounded-full text-xs font-extrabold uppercase tracking-wider bg-emerald-500 text-white shadow-lg">
+                            100% Free
+                        </span>
+                    {% else %}
+                        <span class="px-3 py-1 rounded-full text-xs font-extrabold uppercase tracking-wider bg-gradient-to-r from-purple-600 to-indigo-600 text-white shadow-lg">
+                            <span class="currency-kes {% if active_currency != 'KES' %}hidden{% endif %}">KES {{ prompt.price_kes|floatformat:0 }}</span>
+                            <span class="currency-usd {% if active_currency != 'USD' %}hidden{% endif %}">${{ prompt.price_usd|floatformat:0 }} USD</span>
+                        </span>
+                    {% endif %}
+                </div>
+
+                <!-- Category Badge -->
+                <div class="absolute top-3 left-3">
+                    <span class="px-2.5 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider bg-slate-900/80 backdrop-blur-md text-emerald-400 border border-slate-700">
+                        {{ prompt.category.name }}
+                    </span>
+                </div>
+
+                <!-- Copy & View Counters -->
+                <div class="absolute bottom-3 left-3 right-3 flex items-center justify-between text-[11px] text-slate-300">
+                    <span class="flex items-center gap-1 bg-black/50 backdrop-blur-md px-2 py-0.5 rounded-md">
+                        <i data-lucide="copy" class="w-3.5 h-3.5 text-emerald-400"></i>
+                        <span>{{ prompt.copy_count }} Copies</span>
+                    </span>
+                    <span class="flex items-center gap-1 bg-black/50 backdrop-blur-md px-2 py-0.5 rounded-md">
+                        <i data-lucide="eye" class="w-3.5 h-3.5 text-blue-400"></i>
+                        <span>{{ prompt.view_count }} Views</span>
+                    </span>
+                </div>
+            </div>
+
+            <!-- Content Body -->
+            <div class="p-6 flex-1 flex flex-col justify-between">
+                <div>
+                    <!-- Difficulty & Target AI Tools -->
+                    <div class="flex flex-wrap items-center gap-1.5 mb-2.5">
+                        <span class="text-[10px] font-bold px-2 py-0.5 rounded-md bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400">
+                            {{ prompt.difficulty_level }}
+                        </span>
+                        {% for tool in prompt.ai_tools_list|slice:":2" %}
+                        <span class="text-[10px] font-bold px-2 py-0.5 rounded-md bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20">
+                            {{ tool }}
+                        </span>
+                        {% endfor %}
+                    </div>
+
+                    <!-- Title -->
+                    <h3 class="text-base font-heading font-extrabold text-slate-900 dark:text-white leading-snug line-clamp-2 mb-2 group-hover:text-emerald-500 transition-colors">
+                        <a href="{{ prompt.get_absolute_url }}">
+                            {{ prompt.title }}
+                        </a>
+                    </h3>
+
+                    <!-- Tagline -->
+                    <p class="text-xs text-slate-600 dark:text-slate-400 line-clamp-2 font-body mb-4">
+                        {{ prompt.tagline }}
+                    </p>
+
+                    <!-- Features checklist snippet -->
+                    {% if prompt.features_as_list %}
+                    <ul class="space-y-1.5 mb-4 text-[11px] text-slate-500 dark:text-slate-400">
+                        {% for feat in prompt.features_as_list|slice:":3" %}
+                        <li class="flex items-center gap-1.5">
+                            <i data-lucide="check" class="w-3.5 h-3.5 text-emerald-500 shrink-0"></i>
+                            <span class="truncate">{{ feat }}</span>
+                        </li>
+                        {% endfor %}
+                    </ul>
+                    {% endif %}
+                </div>
+
+                <!-- Footer Action Bar -->
+                <div class="pt-4 border-t border-slate-100 dark:border-slate-800 flex items-center justify-between gap-2">
+                    <div class="text-left">
+                        <span class="text-[10px] text-slate-400 uppercase font-semibold block">1-on-1 Assistance</span>
+                        <span class="text-xs font-bold text-slate-700 dark:text-slate-300">
+                            <span class="currency-kes {% if active_currency != 'KES' %}hidden{% endif %}">KES {{ prompt.assistance_price_kes|floatformat:0 }}</span>
+                            <span class="currency-usd {% if active_currency != 'USD' %}hidden{% endif %}">${{ prompt.assistance_price_usd|floatformat:0 }}</span>
+                        </span>
+                    </div>
+
+                    <a href="{{ prompt.get_absolute_url }}" class="btn-primary py-2.5 px-4 text-xs rounded-xl inline-flex items-center gap-1.5 shadow-emerald-500/20">
+                        <span>Get Prompt</span>
+                        <i data-lucide="arrow-right" class="w-3.5 h-3.5"></i>
+                    </a>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    {% else %}
+    <div class="text-center py-16 bg-white dark:bg-slate-900 rounded-3xl border border-slate-200 dark:border-slate-800 p-8">
+        <div class="w-16 h-16 mx-auto rounded-2xl bg-emerald-500/10 text-emerald-500 flex items-center justify-center mb-4">
+            <i data-lucide="search-x" class="w-8 h-8"></i>
+        </div>
+        <h3 class="text-lg font-bold text-slate-900 dark:text-white">No Prompts Found</h3>
+        <p class="text-xs text-slate-500 max-w-md mx-auto mt-1 mb-6">
+            We couldn't find any prompts matching your query. Clear filters or explore all categories.
+        </p>
+        <a href="{% url 'ai_prompts:list' %}" class="btn-primary py-2.5 px-5 text-xs rounded-xl">
+            Reset All Filters
+        </a>
+    </div>
+    {% endif %}
+
+    <!-- Custom Assistance Callout Banner -->
+    <div class="mt-16 rounded-3xl p-8 sm:p-10 bg-gradient-to-r from-slate-900 via-slate-950 to-emerald-950 border border-emerald-500/30 text-white flex flex-col md:flex-row items-center justify-between gap-6 shadow-2xl">
+        <div class="max-w-xl text-left">
+            <div class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider bg-emerald-500/20 text-emerald-400 mb-3 border border-emerald-500/30">
+                <i data-lucide="wrench" class="w-3.5 h-3.5"></i>
+                <span>Personal Developer Support</span>
+            </div>
+            <h3 class="text-2xl font-heading font-extrabold text-white leading-tight">
+                Need a Custom AI Coding Prompt or 1-on-1 Implementation Help?
+            </h3>
+            <p class="text-xs sm:text-sm text-slate-300 mt-2 leading-relaxed">
+                UniqueTechCamp helps you configure, debug, and deploy any AI system. Pay directly via <strong>Buy Goods Till: 5797853</strong> or chat with our technical architect on WhatsApp.
+            </p>
+        </div>
+
+        <div class="flex flex-wrap items-center gap-3 w-full md:w-auto">
+            <a href="https://wa.me/254715479955?text=Hello%20UniqueTechCamp!%20I%20need%20assistance%20with%20an%20AI%20Master%20Coding%20Prompt." 
+               target="_blank" rel="noopener noreferrer" 
+               class="btn-primary py-3.5 px-6 rounded-xl font-bold text-xs flex-1 md:flex-initial inline-flex items-center justify-center gap-2 !bg-[#25D366] hover:!bg-[#1eb757]">
+                <i class="fa-brands fa-whatsapp text-base"></i>
+                <span>Chat on WhatsApp</span>
+            </a>
+            <a href="{% url 'appointments:book' %}" class="btn-secondary py-3.5 px-6 rounded-xl font-bold text-xs flex-1 md:flex-initial text-center">
+                <span>Book Free Consultation</span>
+            </a>
+        </div>
+    </div>
+</section>
+{% endblock %}
+
+{% block extra_scripts %}
+<script>
+    function setCurrency(currency) {
+        document.querySelectorAll('.currency-kes').forEach(el => {
+            el.classList.toggle('hidden', currency !== 'KES');
+        });
+        document.querySelectorAll('.currency-usd').forEach(el => {
+            el.classList.toggle('hidden', currency !== 'USD');
+        });
+        // Save to session or query
+        fetch(`?currency=${currency}`, { headers: { 'X-Requested-With': 'XMLHttpRequest' } });
+    }
+</script>
+{% endblock %}

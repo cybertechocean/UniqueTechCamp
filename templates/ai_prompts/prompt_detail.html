@@ -1,0 +1,542 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}{{ prompt.title }} | AI Master Coding Prompt | UniqueTechCamp{% endblock %}
+{% block description %}{{ prompt.tagline|default:prompt.overview|truncatewords:25 }}{% endblock %}
+
+{% block extra_head %}
+<!-- Prism / Highlighting style if needed -->
+<style>
+    .prompt-code-block {
+        font-family: 'JetBrains Mono', 'Fira Code', 'Cascadia Code', Consolas, monospace;
+        font-size: 13px;
+        line-height: 1.6;
+        white-space: pre-wrap;
+        word-break: break-word;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<article class="py-10 md:py-16 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto">
+    <!-- Breadcrumbs -->
+    <nav class="flex items-center gap-2 text-xs text-slate-500 dark:text-slate-400 mb-6 font-medium" aria-label="Breadcrumb">
+        <a href="{% url 'core:home' %}" class="hover:text-emerald-500">Home</a>
+        <i data-lucide="chevron-right" class="w-3.5 h-3.5"></i>
+        <a href="{% url 'ai_prompts:list' %}" class="hover:text-emerald-500">AI Project Prompts</a>
+        <i data-lucide="chevron-right" class="w-3.5 h-3.5"></i>
+        <span class="text-slate-900 dark:text-white truncate max-w-xs">{{ prompt.title }}</span>
+    </nav>
+
+    <!-- Header Section -->
+    <div class="space-y-4 mb-8">
+        <div class="flex flex-wrap items-center gap-2.5">
+            <span class="px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider bg-emerald-500/15 text-emerald-600 dark:text-emerald-400 border border-emerald-500/30">
+                {{ prompt.category.name }}
+            </span>
+            <span class="px-2.5 py-1 rounded-full text-xs font-semibold bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300">
+                {{ prompt.difficulty_level }}
+            </span>
+            {% if prompt.is_free %}
+                <span class="px-3 py-1 rounded-full text-xs font-extrabold uppercase bg-emerald-500 text-white shadow-sm">
+                    100% Free
+                </span>
+            {% else %}
+                <span class="px-3 py-1 rounded-full text-xs font-extrabold uppercase bg-purple-600 text-white shadow-sm">
+                    KES {{ prompt.price_kes|floatformat:0 }} / ${{ prompt.price_usd|floatformat:0 }} USD
+                </span>
+            {% endif %}
+        </div>
+
+        <h1 class="text-2xl sm:text-4xl lg:text-5xl font-heading font-extrabold text-slate-900 dark:text-white leading-tight">
+            {{ prompt.title }}
+        </h1>
+
+        <p class="text-base sm:text-lg text-slate-600 dark:text-slate-300 font-body max-w-3xl leading-relaxed">
+            {{ prompt.tagline }}
+        </p>
+
+        <!-- Meta info -->
+        <div class="flex flex-wrap items-center gap-4 text-xs text-slate-500 dark:text-slate-400 pt-2 font-mono">
+            <span class="flex items-center gap-1.5"><i data-lucide="user-check" class="w-4 h-4 text-emerald-500"></i> UniqueTechCamp Architect</span>
+            <span class="flex items-center gap-1.5"><i data-lucide="calendar" class="w-4 h-4 text-emerald-500"></i> Updated: {{ prompt.updated_at|date:"M d, Y" }}</span>
+            <span class="flex items-center gap-1.5"><i data-lucide="copy" class="w-4 h-4 text-emerald-500"></i> <strong id="copy-count-display">{{ prompt.copy_count }}</strong> copies</span>
+            <span class="flex items-center gap-1.5"><i data-lucide="eye" class="w-4 h-4 text-blue-400"></i> {{ prompt.view_count }} views</span>
+        </div>
+    </div>
+
+    <!-- Main Grid: Video/Preview + Action Box -->
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 mb-12">
+        <!-- Left 8 cols: Video Player or Preview Thumbnail -->
+        <div class="lg:col-span-8 space-y-6">
+            <div class="relative rounded-3xl overflow-hidden bg-slate-950 border border-slate-200 dark:border-slate-800 shadow-2xl aspect-video">
+                {% if prompt.youtube_embed_id %}
+                <iframe class="w-full h-full" 
+                        src="https://www.youtube.com/embed/{{ prompt.youtube_embed_id }}?rel=0" 
+                        title="{{ prompt.title }}" 
+                        frameborder="0" 
+                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" 
+                        allowfullscreen>
+                </iframe>
+                {% else %}
+                <img src="{{ prompt.get_thumbnail_url }}" 
+                     alt="{{ prompt.title }}" 
+                     class="w-full h-full object-cover" />
+                {% endif %}
+            </div>
+
+            <!-- Action Bar Under Media -->
+            <div class="p-4 sm:p-5 rounded-2xl bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 flex flex-wrap items-center justify-between gap-4">
+                <div class="flex flex-wrap items-center gap-2">
+                    <!-- Copy Prompt Button -->
+                    <button type="button" id="copy-prompt-btn" 
+                            class="btn-primary py-3 px-5 rounded-xl text-xs font-bold inline-flex items-center gap-2 shadow-emerald-500/25">
+                        <i data-lucide="copy" class="w-4 h-4" id="copy-icon"></i>
+                        <span id="copy-btn-text">Copy Master Prompt</span>
+                    </button>
+
+                    <!-- Download Prompt Button -->
+                    <a href="{% url 'ai_prompts:download' slug=prompt.slug %}" 
+                       class="btn-secondary py-3 px-4 rounded-xl text-xs font-semibold !text-slate-800 dark:!text-white !bg-white dark:!bg-white/10 hover:!bg-slate-100 dark:hover:!bg-white/20 !border-slate-300 dark:!border-white/20 inline-flex items-center gap-2">
+                        <i data-lucide="download" class="w-4 h-4"></i>
+                        <span>Download (.md)</span>
+                    </a>
+
+                    <!-- Save / Bookmark Button -->
+                    {% if user.is_authenticated %}
+                    <button type="button" id="bookmark-btn" 
+                            class="p-3 rounded-xl bg-white dark:bg-slate-800 hover:bg-slate-100 dark:hover:bg-slate-700 border border-slate-300 dark:border-slate-700 text-slate-700 dark:text-slate-300 transition-colors" 
+                            title="Save to My Client Dashboard">
+                        <i data-lucide="bookmark" class="w-4 h-4 {% if is_saved %}fill-emerald-500 text-emerald-500{% endif %}" id="bookmark-icon"></i>
+                    </button>
+                    {% endif %}
+                </div>
+
+                <!-- Live Demo if available -->
+                {% if prompt.live_demo_url %}
+                <a href="{{ prompt.live_demo_url }}" target="_blank" rel="noopener noreferrer" 
+                   class="text-xs font-bold text-emerald-600 dark:text-emerald-400 hover:underline inline-flex items-center gap-1.5">
+                    <span>View Live Demo</span>
+                    <i data-lucide="external-link" class="w-3.5 h-3.5"></i>
+                </a>
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- Right 4 cols: Sticky Pricing & 1-on-1 Assistance Box -->
+        <div class="lg:col-span-4 space-y-6">
+            <!-- Purchase / Access Card -->
+            <div class="p-6 sm:p-7 rounded-3xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-xl space-y-5">
+                <div class="flex items-center justify-between">
+                    <span class="text-xs font-bold uppercase tracking-wider text-slate-500">Master Prompt License</span>
+                    {% if prompt.is_free %}
+                        <span class="px-3 py-1 rounded-full text-xs font-extrabold uppercase bg-emerald-500 text-white">Free</span>
+                    {% else %}
+                        <span class="text-xl font-heading font-extrabold text-slate-900 dark:text-white">
+                            KES {{ prompt.price_kes|floatformat:0 }} <span class="text-xs text-slate-500">(${{ prompt.price_usd|floatformat:0 }} USD)</span>
+                        </span>
+                    {% endif %}
+                </div>
+
+                <p class="text-xs text-slate-600 dark:text-slate-400 leading-relaxed font-body">
+                    Complete, production-ready master prompt including database schema, backend endpoints, and frontend user interface.
+                </p>
+
+                <div class="space-y-2 text-xs text-slate-600 dark:text-slate-300">
+                    <div class="flex items-center gap-2">
+                        <i data-lucide="check-circle" class="w-4 h-4 text-emerald-500 shrink-0"></i>
+                        <span>Ready for Claude Code, Cursor & Windsurf</span>
+                    </div>
+                    <div class="flex items-center gap-2">
+                        <i data-lucide="check-circle" class="w-4 h-4 text-emerald-500 shrink-0"></i>
+                        <span>Zero external dependency lock-in</span>
+                    </div>
+                    <div class="flex items-center gap-2">
+                        <i data-lucide="check-circle" class="w-4 h-4 text-emerald-500 shrink-0"></i>
+                        <span>Lifetime prompt updates & docs</span>
+                    </div>
+                </div>
+
+                <!-- 1-on-1 Assistance Feature Box -->
+                <div class="p-5 rounded-2xl bg-gradient-to-br from-emerald-950 via-slate-900 to-slate-950 border border-emerald-500/40 text-white">
+                    <div class="flex items-center gap-2.5 mb-2">
+                        <i data-lucide="headset" class="w-5 h-5 text-emerald-400"></i>
+                        <h4 class="text-xs font-extrabold uppercase tracking-wider text-emerald-400">1-on-1 Personal Assistance</h4>
+                    </div>
+                    <p class="text-xs text-slate-300 leading-snug mb-3">
+                        Need us to adapt, customize, or deploy this system for you? We help you live at a cost:
+                    </p>
+                    <div class="flex items-baseline justify-between mb-3 pb-3 border-b border-slate-800">
+                        <span class="text-[11px] text-slate-400">Setup & Deployment Fee:</span>
+                        <span class="text-sm font-extrabold text-emerald-400">
+                            KES {{ prompt.assistance_price_kes|floatformat:0 }} <span class="text-[10px] text-slate-400">(${{ prompt.assistance_price_usd|floatformat:0 }} USD)</span>
+                        </span>
+                    </div>
+
+                    <!-- Till Info -->
+                    <div class="p-3 rounded-xl bg-black/40 border border-emerald-500/30 text-center mb-3">
+                        <span class="text-[10px] uppercase tracking-widest text-slate-400 block font-semibold">Buy Goods & Services Till</span>
+                        <span class="text-2xl font-mono font-extrabold text-white tracking-widest block mt-0.5">{{ mpesa_till }}</span>
+                        <span class="text-[10px] text-emerald-400 block mt-0.5">UniqueTechCamp / Lawi</span>
+                    </div>
+
+                    <!-- Trigger Assistance Modal -->
+                    <button type="button" onclick="openAssistanceModal()" 
+                            class="w-full btn-primary py-2.5 px-4 rounded-xl text-xs font-bold justify-center shadow-emerald-500/30">
+                        <span>Request Assistance / Submit Till</span>
+                    </button>
+                </div>
+
+                <!-- WhatsApp Quick Chat -->
+                <a href="https://wa.me/254715479955?text=Hello%20UniqueTechCamp!%20I%20am%20interested%20in%20assistance%20for%20the%20AI%20Prompt:%20{{ prompt.title|urlencode }}" 
+                   target="_blank" rel="noopener noreferrer" 
+                   class="btn-secondary w-full py-2.5 rounded-xl text-xs font-bold inline-flex items-center justify-center gap-2 !bg-[#25D366]/15 hover:!bg-[#25D366]/25 !text-[#25D366] !border-[#25D366]/40">
+                    <i class="fa-brands fa-whatsapp text-sm"></i>
+                    <span>Chat with Architect on WhatsApp</span>
+                </a>
+            </div>
+
+            <!-- Tech Stack & Tools Pills -->
+            <div class="p-5 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-sm space-y-3">
+                <span class="text-xs font-bold uppercase tracking-wider text-slate-500 block">Target AI Tools</span>
+                <div class="flex flex-wrap gap-1.5">
+                    {% for tool in prompt.ai_tools_list %}
+                    <span class="px-2.5 py-1 rounded-lg text-xs font-semibold bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300">
+                        {{ tool }}
+                    </span>
+                    {% endfor %}
+                </div>
+
+                <span class="text-xs font-bold uppercase tracking-wider text-slate-500 block pt-2">Tech Stack</span>
+                <div class="flex flex-wrap gap-1.5">
+                    {% for tech in prompt.tech_stack_list %}
+                    <span class="px-2.5 py-1 rounded-lg text-xs font-semibold bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20">
+                        {{ tech }}
+                    </span>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Interactive Content Tabs -->
+    <div class="bg-white dark:bg-slate-900 rounded-3xl border border-slate-200 dark:border-slate-800 shadow-sm overflow-hidden mb-16">
+        <!-- Tab Headers -->
+        <div class="flex border-b border-slate-200 dark:border-slate-800 overflow-x-auto bg-slate-50 dark:bg-slate-950/60 p-2 gap-2" id="prompt-tabs">
+            <button type="button" onclick="switchTab('master-prompt')" 
+                    class="tab-btn active px-5 py-3 rounded-2xl text-xs font-bold transition-all inline-flex items-center gap-2 bg-white dark:bg-slate-900 text-emerald-600 dark:text-emerald-400 shadow-sm" data-tab="master-prompt">
+                <i data-lucide="code-2" class="w-4 h-4"></i>
+                <span>Master AI Coding Prompt</span>
+            </button>
+            <button type="button" onclick="switchTab('setup-instructions')" 
+                    class="tab-btn px-5 py-3 rounded-2xl text-xs font-bold transition-all inline-flex items-center gap-2 text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white" data-tab="setup-instructions">
+                <i data-lucide="book-open" class="w-4 h-4"></i>
+                <span>Setup & Execution Guide</span>
+            </button>
+            <button type="button" onclick="switchTab('architecture')" 
+                    class="tab-btn px-5 py-3 rounded-2xl text-xs font-bold transition-all inline-flex items-center gap-2 text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white" data-tab="architecture">
+                <i data-lucide="layers" class="w-4 h-4"></i>
+                <span>Features & Architecture</span>
+            </button>
+            <button type="button" onclick="switchTab('support-till')" 
+                    class="tab-btn px-5 py-3 rounded-2xl text-xs font-bold transition-all inline-flex items-center gap-2 text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white" data-tab="support-till">
+                <i data-lucide="shield-check" class="w-4 h-4 text-emerald-500"></i>
+                <span>1-on-1 Assistance (Till 5797853)</span>
+            </button>
+        </div>
+
+        <!-- Tab 1: Master AI Coding Prompt -->
+        <div id="tab-master-prompt" class="tab-content p-6 sm:p-10">
+            <div class="flex items-center justify-between pb-4 mb-4 border-b border-slate-200 dark:border-slate-800">
+                <div>
+                    <h3 class="text-base font-bold text-slate-900 dark:text-white">AI Master Prompt Payload</h3>
+                    <p class="text-xs text-slate-500">Paste directly into Claude Code, Cursor, Windsurf, or ChatGPT.</p>
+                </div>
+                <button type="button" onclick="copyMasterPromptText()" class="btn-primary py-2 px-3 text-xs rounded-xl inline-flex items-center gap-1.5">
+                    <i data-lucide="copy" class="w-3.5 h-3.5"></i>
+                    <span>Copy Prompt</span>
+                </button>
+            </div>
+
+            <div class="relative rounded-2xl bg-slate-950 p-5 sm:p-6 border border-slate-800 text-slate-100 overflow-x-auto shadow-inner">
+                <pre class="prompt-code-block" id="master-prompt-raw">{{ prompt.master_prompt }}</pre>
+            </div>
+        </div>
+
+        <!-- Tab 2: Step-by-Step Execution Guide -->
+        <div id="tab-setup-instructions" class="tab-content hidden p-6 sm:p-10 space-y-6">
+            <h3 class="text-lg font-heading font-extrabold text-slate-900 dark:text-white">
+                How to Execute this Master Prompt
+            </h3>
+            <div class="prose dark:prose-invert max-w-none text-xs sm:text-sm text-slate-600 dark:text-slate-300 space-y-4">
+                {{ prompt.system_instructions|linebreaks }}
+            </div>
+
+            {% if prompt.prerequisites %}
+            <div class="p-5 rounded-2xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700">
+                <h4 class="text-xs font-bold uppercase tracking-wider text-slate-900 dark:text-white mb-2">Prerequisites & Accounts Needed</h4>
+                <p class="text-xs text-slate-500 dark:text-slate-400 leading-relaxed font-body">
+                    {{ prompt.prerequisites }}
+                </p>
+            </div>
+            {% endif %}
+        </div>
+
+        <!-- Tab 3: Features & Architecture -->
+        <div id="tab-architecture" class="tab-content hidden p-6 sm:p-10 space-y-6">
+            <h3 class="text-lg font-heading font-extrabold text-slate-900 dark:text-white">
+                System Overview & Specifications
+            </h3>
+            <div class="prose dark:prose-invert max-w-none text-xs sm:text-sm text-slate-600 dark:text-slate-300 leading-relaxed">
+                {{ prompt.overview|linebreaks }}
+            </div>
+
+            {% if prompt.features_as_list %}
+            <div class="pt-4">
+                <h4 class="text-sm font-bold text-slate-900 dark:text-white mb-3">Included Modules & Features</h4>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+                    {% for feat in prompt.features_as_list %}
+                    <div class="flex items-start gap-2.5 p-3 rounded-xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 text-xs text-slate-700 dark:text-slate-300">
+                        <i data-lucide="check-circle-2" class="w-4 h-4 text-emerald-500 shrink-0 mt-0.5"></i>
+                        <span>{{ feat }}</span>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+            {% endif %}
+        </div>
+
+        <!-- Tab 4: 1-on-1 Assistance & Till Support -->
+        <div id="tab-support-till" class="tab-content hidden p-6 sm:p-10 space-y-6">
+            <div class="max-w-2xl">
+                <h3 class="text-lg font-heading font-extrabold text-slate-900 dark:text-white mb-2">
+                    Professional 1-on-1 Developer Assistance
+                </h3>
+                <p class="text-xs sm:text-sm text-slate-600 dark:text-slate-300 leading-relaxed">
+                    At UniqueTechCamp, we don't just hand you a prompt and leave you stranded. We pair-program, configure your cloud APIs, connect WhatsApp automation, deploy custom Google Sheets, and ensure your system runs smoothly.
+                </p>
+            </div>
+
+            <!-- Till Instructions Grid -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 pt-2">
+                <div class="p-6 rounded-2xl bg-gradient-to-tr from-emerald-950 to-slate-900 border border-emerald-500/30 text-white">
+                    <span class="text-[10px] font-bold uppercase tracking-wider text-emerald-400 block mb-1">Payment Method: M-Pesa Buy Goods</span>
+                    <h4 class="text-base font-extrabold text-white mb-4">Safaricom Buy Goods Till</h4>
+                    
+                    <div class="p-4 rounded-xl bg-black/50 border border-emerald-500/20 text-center mb-4">
+                        <span class="text-xs text-slate-400 block">Till Number</span>
+                        <span class="text-3xl font-mono font-extrabold text-emerald-400 tracking-wider block">{{ mpesa_till }}</span>
+                        <span class="text-xs text-slate-300 block mt-1">UniqueTechCamp / Lawi</span>
+                    </div>
+
+                    <ol class="text-xs text-slate-300 space-y-1.5 list-decimal list-inside font-body">
+                        <li>Go to M-Pesa on your phone</li>
+                        <li>Select <strong>Lipa na M-Pesa</strong> &rarr; <strong>Buy Goods and Services</strong></li>
+                        <li>Enter Till: <strong>5797853</strong></li>
+                        <li>Amount: <strong>KES {{ prompt.assistance_price_kes|floatformat:0 }}</strong></li>
+                        <li>Copy the M-Pesa transaction SMS code</li>
+                    </ol>
+                </div>
+
+                <div class="p-6 rounded-2xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 flex flex-col justify-between">
+                    <div>
+                        <span class="text-[10px] font-bold uppercase tracking-wider text-slate-500 block mb-1">What's Included</span>
+                        <h4 class="text-base font-extrabold text-slate-900 dark:text-white mb-3">Scope of Assistance</h4>
+                        <ul class="text-xs text-slate-600 dark:text-slate-300 space-y-2 font-body">
+                            <li class="flex items-center gap-2"><i data-lucide="check" class="w-4 h-4 text-emerald-500"></i> Full system setup & environment setup</li>
+                            <li class="flex items-center gap-2"><i data-lucide="check" class="w-4 h-4 text-emerald-500"></i> Custom feature adaptation for your business</li>
+                            <li class="flex items-center gap-2"><i data-lucide="check" class="w-4 h-4 text-emerald-500"></i> WhatsApp bot & Google Sheets credentials config</li>
+                            <li class="flex items-center gap-2"><i data-lucide="check" class="w-4 h-4 text-emerald-500"></i> 1-on-1 Google Meet / WhatsApp screen share walk-through</li>
+                        </ul>
+                    </div>
+
+                    <div class="pt-4">
+                        <button type="button" onclick="openAssistanceModal()" class="btn-primary w-full py-3 rounded-xl text-xs font-bold">
+                            Submit Request with M-Pesa Ref &rarr;
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Related Prompts Carousel/Grid -->
+    {% if related_prompts %}
+    <div class="space-y-6">
+        <h3 class="text-xl font-heading font-extrabold text-slate-900 dark:text-white">
+            Related Prompts in {{ prompt.category.name }}
+        </h3>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+            {% for rel in related_prompts %}
+            <div class="p-5 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 flex flex-col justify-between hover:border-emerald-500/50 transition-colors">
+                <div>
+                    <span class="text-[10px] font-bold uppercase tracking-wider text-emerald-500 mb-1 block">{{ rel.category.name }}</span>
+                    <h4 class="text-sm font-bold text-slate-900 dark:text-white line-clamp-2 mb-2">
+                        <a href="{{ rel.get_absolute_url }}" class="hover:text-emerald-500 transition-colors">{{ rel.title }}</a>
+                    </h4>
+                    <p class="text-xs text-slate-500 line-clamp-2">{{ rel.tagline }}</p>
+                </div>
+                <div class="pt-4 mt-4 border-t border-slate-100 dark:border-slate-800 flex items-center justify-between">
+                    <span class="text-xs font-bold text-slate-700 dark:text-slate-300">
+                        {% if rel.is_free %}Free{% else %}KES {{ rel.price_kes|floatformat:0 }}{% endif %}
+                    </span>
+                    <a href="{{ rel.get_absolute_url }}" class="text-xs font-bold text-emerald-500 hover:underline">
+                        View &rarr;
+                    </a>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+    {% endif %}
+</article>
+
+<!-- 1-on-1 Assistance Modal (Till 5797853) -->
+<div id="assistance-modal" class="hidden fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-sm">
+    <div class="bg-white dark:bg-slate-900 rounded-3xl max-w-lg w-full p-6 sm:p-8 border border-slate-200 dark:border-slate-800 shadow-2xl relative">
+        <button type="button" onclick="closeAssistanceModal()" class="absolute top-5 right-5 text-slate-400 hover:text-white">
+            <i data-lucide="x" class="w-5 h-5"></i>
+        </button>
+
+        <div class="text-left mb-6">
+            <div class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[10px] font-bold uppercase bg-emerald-500/20 text-emerald-400 mb-2">
+                <i data-lucide="wrench" class="w-3.5 h-3.5"></i>
+                <span>Setup Desk</span>
+            </div>
+            <h3 class="text-xl font-heading font-extrabold text-slate-900 dark:text-white">
+                Request 1-on-1 Assistance
+            </h3>
+            <p class="text-xs text-slate-500 mt-1">
+                For prompt: <strong class="text-slate-900 dark:text-white">{{ prompt.title|truncatechars:40 }}</strong>
+            </p>
+        </div>
+
+        <!-- M-Pesa Till Quick Reminder -->
+        <div class="p-3.5 rounded-2xl bg-emerald-500/10 border border-emerald-500/30 text-center mb-5">
+            <span class="text-[10px] uppercase font-bold text-slate-400 block tracking-wider">Buy Goods Till:</span>
+            <span class="text-2xl font-mono font-extrabold text-emerald-500 block">{{ mpesa_till }}</span>
+            <span class="text-[11px] text-slate-300 block">Amount: KES {{ prompt.assistance_price_kes|floatformat:0 }} (${{ prompt.assistance_price_usd|floatformat:0 }} USD)</span>
+        </div>
+
+        <form method="POST" action="{% url 'ai_prompts:assist_submit' slug=prompt.slug %}" class="space-y-3.5">
+            {% csrf_token %}
+            <div>
+                <label class="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">Your Full Name *</label>
+                {{ assistance_form.client_name }}
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <div>
+                    <label class="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">Email Address *</label>
+                    {{ assistance_form.client_email }}
+                </div>
+                <div>
+                    <label class="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">Phone (+254...) *</label>
+                    {{ assistance_form.client_phone }}
+                </div>
+            </div>
+
+            <div>
+                <label class="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">M-Pesa Transaction Reference (Optional)</label>
+                {{ assistance_form.mpesa_reference }}
+            </div>
+
+            <div>
+                <label class="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">Assistance Requirements *</label>
+                {{ assistance_form.requirements }}
+            </div>
+
+            <div class="pt-2">
+                <button type="submit" class="btn-primary w-full py-3 rounded-xl text-xs font-bold">
+                    Submit Request & Connect with Architect
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_scripts %}
+<script>
+    // Tab Switching
+    function switchTab(tabId) {
+        document.querySelectorAll('.tab-btn').forEach(btn => {
+            const isActive = btn.getAttribute('data-tab') === tabId;
+            btn.classList.toggle('active', isActive);
+            btn.classList.toggle('bg-white', isActive);
+            btn.classList.toggle('dark:bg-slate-900', isActive);
+            btn.classList.toggle('text-emerald-600', isActive);
+            btn.classList.toggle('dark:text-emerald-400', isActive);
+            btn.classList.toggle('shadow-sm', isActive);
+        });
+
+        document.querySelectorAll('.tab-content').forEach(content => {
+            content.classList.toggle('hidden', content.id !== 'tab-' + tabId);
+        });
+        if (window.lucide) lucide.createIcons();
+    }
+
+    // Copy Master Prompt to Clipboard + Increment Counter
+    function copyMasterPromptText() {
+        const rawText = document.getElementById('master-prompt-raw').innerText;
+        navigator.clipboard.writeText(rawText).then(() => {
+            const btnText = document.getElementById('copy-btn-text');
+            const icon = document.getElementById('copy-icon');
+            if (btnText) btnText.textContent = "Copied to Clipboard!";
+            
+            // Call API
+            fetch("{% url 'ai_prompts:copy_api' slug=prompt.slug %}", {
+                method: "POST",
+                headers: {
+                    "X-CSRFToken": "{{ csrf_token }}",
+                    "Content-Type": "application/json"
+                }
+            })
+            .then(res => res.json())
+            .then(data => {
+                if (data.copy_count) {
+                    const countDisplay = document.getElementById('copy-count-display');
+                    if (countDisplay) countDisplay.textContent = data.copy_count;
+                }
+            });
+
+            setTimeout(() => {
+                if (btnText) btnText.textContent = "Copy Master Prompt";
+            }, 3000);
+        });
+    }
+
+    document.getElementById('copy-prompt-btn')?.addEventListener('click', copyMasterPromptText);
+
+    // Save/Bookmark Prompt
+    const bookmarkBtn = document.getElementById('bookmark-btn');
+    if (bookmarkBtn) {
+        bookmarkBtn.addEventListener('click', () => {
+            fetch("{% url 'ai_prompts:bookmark_api' slug=prompt.slug %}", {
+                method: "POST",
+                headers: {
+                    "X-CSRFToken": "{{ csrf_token }}",
+                    "Content-Type": "application/json"
+                }
+            })
+            .then(res => res.json())
+            .then(data => {
+                const icon = document.getElementById('bookmark-icon');
+                if (data.saved) {
+                    icon.classList.add('fill-emerald-500', 'text-emerald-500');
+                } else {
+                    icon.classList.remove('fill-emerald-500', 'text-emerald-500');
+                }
+            });
+        });
+    }
+
+    // Modal
+    function openAssistanceModal() {
+        document.getElementById('assistance-modal').classList.remove('hidden');
+    }
+    function closeAssistanceModal() {
+        document.getElementById('assistance-modal').classList.add('hidden');
+    }
+</script>
+{% endblock %}
