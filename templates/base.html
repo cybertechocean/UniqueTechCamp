@@ -534,6 +534,15 @@
                        class="px-3.5 py-2 rounded-xl font-medium transition-all {% if '/about/' in request.path %}bg-white/10 text-emerald-400 font-semibold shadow-inner{% else %}text-slate-200 hover:text-white hover:bg-white/5{% endif %}">
                         About
                     </a>
+
+                    <!-- AI Solutions Assistant Link (Positioned Immediately After About) -->
+                    <a href="{% url 'ai_assistant:index' %}" 
+                       class="px-3.5 py-2 rounded-xl font-medium transition-all inline-flex items-center gap-1.5 {% if '/ai-assistant/' in request.path %}bg-white/10 text-emerald-400 font-semibold shadow-inner{% else %}text-slate-200 hover:text-white hover:bg-white/5{% endif %}"
+                       title="24/7 AI Solutions Architect & Booking Desk">
+                        <i data-lucide="bot" class="w-4 h-4 text-emerald-400"></i>
+                        <span>AI Assistant</span>
+                        <span class="px-1.5 py-0.5 rounded-full bg-emerald-500/20 text-emerald-400 text-[10px] font-extrabold border border-emerald-500/30 animate-pulse">24/7</span>
+                    </a>
                 </nav>
 
                 <!-- Desktop Action Group -->
@@ -651,6 +660,12 @@
                 <a href="{% url 'core:about' %}" class="flex items-center justify-between px-4 py-3 text-sm font-semibold rounded-xl {% if '/about/' in request.path %}bg-emerald-500/20 text-emerald-400 border border-emerald-500/30{% else %}text-slate-200 hover:bg-white/5{% endif %}">
                     <span class="flex items-center gap-3"><i data-lucide="info" class="w-4 h-4 text-emerald-400"></i> About UniqueTechCamp</span>
                     <i data-lucide="chevron-right" class="w-4 h-4 text-slate-500"></i>
+                </a>
+
+                <!-- Mobile AI Assistant Link (Positioned Immediately After About) -->
+                <a href="{% url 'ai_assistant:index' %}" class="flex items-center justify-between px-4 py-3 text-sm font-semibold rounded-xl {% if '/ai-assistant/' in request.path %}bg-emerald-500/20 text-emerald-400 border border-emerald-500/30{% else %}text-slate-200 hover:bg-white/5{% endif %}">
+                    <span class="flex items-center gap-3"><i data-lucide="bot" class="w-4 h-4 text-emerald-400"></i> AI Solutions Desk</span>
+                    <span class="px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-400 text-[10px] font-bold border border-emerald-500/30 animate-pulse">24/7</span>
                 </a>
 
                 <!-- Mobile Client Account -->
@@ -867,6 +882,9 @@
         </button>
     </div>
 
+    <!-- 24/7 AI Client Acquisition & Booking Desk Widget (Positioned vertically above Support Hub) -->
+    {% include 'ai_assistant/includes/chat_widget.html' %}
+
     <!-- Footer -->
     <footer class="bg-slate-950 text-white pt-16 pb-12 border-t border-slate-800 mt-20">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -919,6 +937,7 @@
                         <li><a href="{% url 'portfolio:list' %}" class="hover:text-emerald-400 transition-colors">Portfolio/Projects</a></li>
                         <li><a href="{% url 'blog:list' %}" class="hover:text-emerald-400 transition-colors">Growth & Blog/Insights</a></li>
                         <li><a href="{% url 'appointments:book' %}" class="hover:text-emerald-400 transition-colors flex items-center gap-1.5"><span class="w-1.5 h-1.5 rounded-full bg-emerald-400"></span>Book Free Consultation</a></li>
+                        <li><a href="{% url 'ai_assistant:index' %}" class="hover:text-emerald-400 transition-colors flex items-center gap-1.5"><span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span>24/7 AI Solutions Desk</a></li>
                         {% if user.is_staff %}
                             <li><a href="{% url 'marketing:dashboard' %}" class="hover:text-emerald-400 transition-colors text-emerald-400 font-bold flex items-center gap-1.5">⚡ Marketing & Email Studio</a></li>
                         {% endif %}

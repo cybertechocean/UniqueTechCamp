@@ -1,0 +1,576 @@
+{% load static %}
+<!-- ========================================================================== -->
+<!-- Ultra-Modern Floating AI Client Acquisition & Booking Desk Widget -->
+<!-- Positioned Vertically Above the Bottom-Right Support Desk (Zero Overlap) -->
+<!-- ========================================================================== -->
+
+<div class="fixed bottom-36 lg:bottom-24 right-4 lg:right-8 z-50 flex flex-col items-end pointer-events-none" id="utc-ai-widget-wrapper">
+
+    <!-- Floating AI Chat Container Modal -->
+    <div id="utc-ai-modal" 
+         class="hidden pointer-events-auto mb-3 w-[92vw] sm:w-[390px] max-w-[420px] h-[550px] max-h-[82vh] bg-[#0b0f19]/95 backdrop-blur-2xl rounded-3xl border border-slate-700/80 shadow-[0_20px_50px_rgba(0,0,0,0.8)] flex flex-col overflow-hidden text-slate-100 transition-all duration-300 transform origin-bottom-right">
+        
+        <!-- Header -->
+        <div class="px-4 py-3 bg-gradient-to-r from-slate-950 via-slate-900 to-slate-950 border-b border-slate-800 flex items-center justify-between shrink-0">
+            <div class="flex items-center gap-3">
+                <div class="relative">
+                    <div class="w-9 h-9 rounded-xl bg-gradient-to-tr from-emerald-500 to-teal-400 p-0.5 shadow-md">
+                        <img src="{% static 'images/logo-icon.png' %}" alt="UTC AI" class="w-full h-full rounded-[10px] object-cover bg-slate-950">
+                    </div>
+                    <span class="absolute -bottom-0.5 -right-0.5 w-2.5 h-2.5 rounded-full bg-emerald-400 border-2 border-slate-900 animate-pulse"></span>
+                </div>
+                <div>
+                    <div class="flex items-center gap-1.5">
+                        <h4 class="text-xs font-bold text-white tracking-tight">UniqueTechCamp AI</h4>
+                        <span class="px-1.5 py-0.2 rounded-full bg-emerald-500/20 text-emerald-400 text-[9px] font-black border border-emerald-500/40">24/7 EAT</span>
+                    </div>
+                    <p class="text-[10px] text-slate-400 font-medium">Architecture & Booking Desk</p>
+                </div>
+            </div>
+            <div class="flex items-center gap-1">
+                <!-- Full Page Expand Action -->
+                <a href="{% url 'ai_assistant:index' %}" 
+                   class="p-1.5 text-slate-400 hover:text-emerald-400 hover:bg-slate-800/80 rounded-lg transition-colors" 
+                   title="Expand to Full Page Workspace" 
+                   aria-label="Expand Chat to Full Page">
+                    <i data-lucide="maximize-2" class="w-4 h-4"></i>
+                </a>
+                <!-- Email Transcript Trigger -->
+                <button type="button" 
+                        id="utc-ai-email-transcript-btn" 
+                        class="p-1.5 text-slate-400 hover:text-sky-400 hover:bg-slate-800/80 rounded-lg transition-colors" 
+                        title="Email Chat Transcript to Me" 
+                        aria-label="Email Transcript">
+                    <i data-lucide="mail" class="w-4 h-4"></i>
+                </button>
+                <!-- Close / Minimize -->
+                <button type="button" 
+                        id="utc-ai-close-btn" 
+                        class="p-1.5 text-slate-400 hover:text-white hover:bg-slate-800/80 rounded-lg transition-colors cursor-pointer" 
+                        aria-label="Close AI Chat">
+                    <i data-lucide="x" class="w-4 h-4"></i>
+                </button>
+            </div>
+        </div>
+
+        <!-- Scrollable Chat Stream -->
+        <div id="utc-ai-messages" class="flex-1 p-3.5 space-y-3 overflow-y-auto font-sans text-xs select-text">
+            <!-- Messages rendered dynamically via JS -->
+            <div class="text-center py-4 text-slate-400 text-[11px] flex items-center justify-center gap-2">
+                <span class="w-3.5 h-3.5 border-2 border-emerald-500 border-t-transparent rounded-full animate-spin"></span>
+                <span>Connecting to AI Architecture Desk...</span>
+            </div>
+        </div>
+
+        <!-- Dynamic Quick Suggestion Chips -->
+        <div id="utc-ai-chips-bar" class="px-3 py-1.5 bg-slate-950/60 border-t border-slate-800/80 flex items-center gap-1.5 overflow-x-auto shrink-0 scrollbar-none">
+            <button type="button" class="utc-quick-chip px-2.5 py-1 rounded-full bg-slate-800/90 hover:bg-emerald-500/20 text-slate-300 hover:text-emerald-300 border border-slate-700/80 text-[10px] font-medium whitespace-nowrap transition-all" data-text="What does a 24/7 AI WhatsApp Agent cost and how does it work?">
+                🤖 WhatsApp AI Agent
+            </button>
+            <button type="button" class="utc-quick-chip px-2.5 py-1 rounded-full bg-slate-800/90 hover:bg-emerald-500/20 text-slate-300 hover:text-emerald-300 border border-slate-700/80 text-[10px] font-medium whitespace-nowrap transition-all" data-text="Tell me about your Clinic & Healthcare Management Systems.">
+                🏥 Clinic System
+            </button>
+            <button type="button" class="utc-quick-chip px-2.5 py-1 rounded-full bg-slate-800/90 hover:bg-emerald-500/20 text-slate-300 hover:text-emerald-300 border border-slate-700/80 text-[10px] font-medium whitespace-nowrap transition-all" data-text="I want to schedule a free 1-on-1 technical discovery consultation.">
+                📅 Book Consultation
+            </button>
+            <button type="button" class="utc-quick-chip px-2.5 py-1 rounded-full bg-slate-800/90 hover:bg-emerald-500/20 text-slate-300 hover:text-emerald-300 border border-slate-700/80 text-[10px] font-medium whitespace-nowrap transition-all" data-text="Do your e-commerce stores integrate M-Pesa Daraja STK Push?">
+                💳 M-Pesa E-Commerce
+            </button>
+        </div>
+
+        <!-- Input Bar -->
+        <form id="utc-ai-input-form" class="p-2.5 bg-slate-950 border-t border-slate-800 flex items-center gap-2 shrink-0">
+            {% csrf_token %}
+            <input type="text" 
+                   id="utc-ai-query-input" 
+                   placeholder="Ask about systems, pricing, or book a call..." 
+                   autocomplete="off"
+                   class="flex-1 px-3 py-2 text-xs rounded-xl bg-slate-900 border border-slate-700 text-white placeholder:text-slate-500 focus:outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 transition-all">
+            <button type="submit" 
+                    id="utc-ai-send-btn" 
+                    class="w-8 h-8 rounded-xl bg-gradient-to-tr from-emerald-600 to-emerald-400 hover:from-emerald-500 hover:to-green-400 text-white flex items-center justify-center transition-all shadow-md active:scale-95 cursor-pointer shrink-0 disabled:opacity-50"
+                    aria-label="Send Message">
+                <i data-lucide="send" class="w-3.5 h-3.5"></i>
+            </button>
+        </form>
+    </div>
+
+    <!-- Floating Launcher Trigger Button (Stacked Vertically Above Support Desk) -->
+    <button type="button" 
+            id="utc-ai-launcher-btn" 
+            class="pointer-events-auto w-14 h-14 bg-gradient-to-tr from-[#00E676] via-emerald-500 to-teal-400 text-slate-950 font-extrabold rounded-full flex items-center justify-center shadow-[0_10px_30px_rgba(0,230,118,0.4)] hover:shadow-[0_15px_40px_rgba(0,230,118,0.6)] hover:scale-105 active:scale-95 transition-all duration-300 ring-4 ring-emerald-500/20 cursor-pointer relative group"
+            aria-expanded="false" 
+            aria-label="Open 24/7 AI Solutions Architect & Booking Desk"
+            title="Ask AI Solutions Architect (24/7 Support & Bookings)">
+        
+        <!-- Animated Luminous Pulse Ring -->
+        <span class="absolute -inset-1 rounded-full bg-[#00E676] opacity-30 group-hover:opacity-60 blur-md animate-pulse pointer-events-none"></span>
+        
+        <!-- Online Green Dot Indicator -->
+        <span class="absolute -top-1 -right-1 w-3.5 h-3.5 rounded-full bg-[#00E676] border-2 border-slate-900 animate-ping"></span>
+        <span class="absolute -top-1 -right-1 w-3.5 h-3.5 rounded-full bg-[#00E676] border-2 border-slate-900"></span>
+
+        <!-- AI Floating Tooltip Pill (Shows on Desktop Hover) -->
+        <span class="absolute right-16 px-3 py-1 rounded-xl bg-slate-900/95 border border-slate-700 text-emerald-400 text-[11px] font-bold whitespace-nowrap shadow-xl opacity-0 group-hover:opacity-100 transition-all pointer-events-none hidden md:flex items-center gap-1.5">
+            <i data-lucide="sparkles" class="w-3.5 h-3.5 text-emerald-400"></i>
+            <span>Ask AI • 24/7 Solutions Desk</span>
+        </span>
+
+        <!-- Icon Toggle -->
+        <div class="relative z-10 flex items-center justify-center text-slate-950">
+            <i data-lucide="sparkles" id="utc-ai-icon-open" class="w-6 h-6 stroke-[2.4]"></i>
+            <i data-lucide="x" id="utc-ai-icon-close" class="w-6 h-6 stroke-[2.4] hidden"></i>
+        </div>
+    </button>
+</div>
+
+<!-- ========================================================================== -->
+<!-- Frontend Client Controller Logic for UniqueTechCamp AI Assistant -->
+<!-- ========================================================================== -->
+<script>
+(function() {
+    let currentSessionId = localStorage.getItem('utc_ai_session_id') || '';
+    let hasCapturedLead = false;
+    let isFetching = false;
+
+    const modal = document.getElementById('utc-ai-modal');
+    const launcher = document.getElementById('utc-ai-launcher-btn');
+    const closeBtn = document.getElementById('utc-ai-close-btn');
+    const iconOpen = document.getElementById('utc-ai-icon-open');
+    const iconClose = document.getElementById('utc-ai-icon-close');
+    const messagesBox = document.getElementById('utc-ai-messages');
+    const inputForm = document.getElementById('utc-ai-input-form');
+    const queryInput = document.getElementById('utc-ai-query-input');
+    const sendBtn = document.getElementById('utc-ai-send-btn');
+    const emailTranscriptBtn = document.getElementById('utc-ai-email-transcript-btn');
+
+    function getCsrfToken() {
+        const input = document.querySelector('input[name="csrfmiddlewaretoken"]');
+        if (input) return input.value;
+        const match = document.cookie.match(/csrftoken=([^;]+)/);
+        return match ? match[1] : '';
+    }
+
+    function toggleChat(forceClose = false) {
+        if (!modal) return;
+        const isHidden = modal.classList.contains('hidden');
+        if (forceClose || !isHidden) {
+            modal.classList.add('hidden');
+            if (iconOpen) iconOpen.classList.remove('hidden');
+            if (iconClose) iconClose.classList.add('hidden');
+            if (launcher) launcher.setAttribute('aria-expanded', 'false');
+        } else {
+            modal.classList.remove('hidden');
+            if (iconOpen) iconOpen.classList.add('hidden');
+            if (iconClose) iconClose.classList.remove('hidden');
+            if (launcher) launcher.setAttribute('aria-expanded', 'true');
+            if (queryInput) setTimeout(() => queryInput.focus(), 150);
+            scrollToBottom();
+        }
+    }
+
+    if (launcher) {
+        launcher.addEventListener('click', (e) => {
+            e.stopPropagation();
+            toggleChat();
+        });
+    }
+
+    if (closeBtn) {
+        closeBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            toggleChat(true);
+        });
+    }
+
+    function scrollToBottom() {
+        if (messagesBox) {
+            messagesBox.scrollTop = messagesBox.scrollHeight;
+        }
+    }
+
+    function renderMessage(msg) {
+        const isUser = msg.sender === 'user';
+        const bubble = document.createElement('div');
+        bubble.className = `flex flex-col ${isUser ? 'items-end' : 'items-start'} animate-fade-in`;
+
+        const nameLabel = isUser ? 'You' : 'UniqueTechCamp AI';
+        const headerColor = isUser ? 'text-slate-400' : 'text-emerald-400';
+        const bubbleBg = isUser 
+            ? 'bg-gradient-to-tr from-emerald-600 to-green-600 text-white rounded-2xl rounded-tr-none' 
+            : 'bg-slate-900/90 border border-slate-800 text-slate-100 rounded-2xl rounded-tl-none shadow-md';
+
+        let innerContent = `
+            <div class="flex items-center gap-1.5 mb-1 px-1">
+                <span class="text-[10px] font-bold ${headerColor}">${nameLabel}</span>
+                <span class="text-[9px] text-slate-500">${msg.created_at || ''}</span>
+            </div>
+            <div class="p-3 ${bubbleBg} max-w-[90%] text-xs leading-relaxed break-words whitespace-pre-wrap">${escapeHtml(msg.message)}</div>
+        `;
+
+        // If Action Type is Lead Form
+        if (msg.action_type === 'lead_form' && !hasCapturedLead) {
+            innerContent += renderLeadFormCard();
+        }
+
+        // If Action Type is Slot Picker
+        if (msg.action_type === 'slot_picker' && msg.metadata && msg.metadata.dates) {
+            innerContent += renderSlotPickerCard(msg.metadata.dates);
+        }
+
+        // If Action Type is Booking Card
+        if (msg.action_type === 'booking_card' && msg.metadata) {
+            innerContent += renderBookingConfirmedCard(msg.metadata);
+        }
+
+        bubble.innerHTML = innerContent;
+        messagesBox.appendChild(bubble);
+        if (window.lucide) lucide.createIcons();
+        scrollToBottom();
+    }
+
+    function escapeHtml(text) {
+        if (!text) return '';
+        const div = document.createElement('div');
+        div.innerText = text;
+        return div.innerHTML;
+    }
+
+    function renderLeadFormCard() {
+        return `
+            <div class="mt-2.5 p-3 rounded-2xl bg-slate-950 border border-emerald-500/40 max-w-[94%] shadow-lg animate-fade-in text-left">
+                <div class="flex items-center gap-1.5 mb-2 text-emerald-400 font-bold text-[11px]">
+                    <i data-lucide="shield-check" class="w-3.5 h-3.5"></i>
+                    <span>Official Consultation Registration</span>
+                </div>
+                <p class="text-[10px] text-slate-400 mb-2.5 leading-snug">
+                    Enter your details to receive your customized digital roadmap and full session transcript.
+                </p>
+                <form class="utc-lead-form space-y-2">
+                    <input type="text" name="full_name" placeholder="Full Name *" required 
+                           class="w-full px-2.5 py-1.5 rounded-lg bg-slate-900 border border-slate-700 text-white text-xs placeholder:text-slate-500 focus:outline-none focus:border-emerald-500">
+                    <input type="email" name="email" placeholder="Official Email Address *" required 
+                           class="w-full px-2.5 py-1.5 rounded-lg bg-slate-900 border border-slate-700 text-white text-xs placeholder:text-slate-500 focus:outline-none focus:border-emerald-500">
+                    <input type="tel" name="phone" placeholder="WhatsApp / Phone (e.g. +254 715...) *" required 
+                           class="w-full px-2.5 py-1.5 rounded-lg bg-slate-900 border border-slate-700 text-white text-xs placeholder:text-slate-500 focus:outline-none focus:border-emerald-500">
+                    <button type="submit" class="w-full py-2 px-3 rounded-lg bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold text-xs flex items-center justify-center gap-1.5 transition-colors cursor-pointer shadow-md">
+                        <i data-lucide="check" class="w-3.5 h-3.5"></i>
+                        <span>Continue Conversation</span>
+                    </button>
+                </form>
+            </div>
+        `;
+    }
+
+    function renderSlotPickerCard(dates) {
+        let html = `
+            <div class="mt-2.5 p-3 rounded-2xl bg-slate-950 border border-sky-500/40 max-w-[94%] shadow-lg animate-fade-in text-left">
+                <div class="flex items-center gap-1.5 mb-2 text-sky-400 font-bold text-[11px]">
+                    <i data-lucide="calendar" class="w-3.5 h-3.5"></i>
+                    <span>Select 1-Hour Consultation Slot (EAT)</span>
+                </div>
+                <div class="space-y-2 max-h-56 overflow-y-auto pr-1">
+        `;
+        dates.forEach(d => {
+            html += `
+                <div class="p-2 rounded-xl bg-slate-900/90 border border-slate-800">
+                    <div class="text-[10px] font-bold text-slate-300 mb-1.5 flex items-center justify-between">
+                        <span>${d.date_display || d.date_str}</span>
+                        <span class="text-[9px] text-emerald-400 font-semibold">Available</span>
+                    </div>
+                    <div class="grid grid-cols-2 gap-1.5">
+            `;
+            d.slots.forEach(s => {
+                if (s.is_available) {
+                    html += `
+                        <button type="button" 
+                                class="utc-book-slot-btn px-2 py-1.5 rounded-lg bg-slate-800 hover:bg-emerald-500 hover:text-slate-950 text-slate-300 text-[10px] font-semibold border border-slate-700 transition-all text-center"
+                                data-date="${d.date_str}" data-slot="${s.slot_key}">
+                            ${s.label}
+                        </button>
+                    `;
+                }
+            });
+            html += `</div></div>`;
+        });
+        html += `</div></div>`;
+        return html;
+    }
+
+    function renderBookingConfirmedCard(meta) {
+        return `
+            <div class="mt-2.5 p-3.5 rounded-2xl bg-gradient-to-br from-emerald-950/60 to-slate-950 border border-emerald-500/50 max-w-[94%] shadow-xl animate-fade-in text-left">
+                <div class="flex items-center justify-between gap-2 mb-2 pb-2 border-b border-emerald-500/30">
+                    <span class="px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-400 text-[10px] font-bold">Confirmed</span>
+                    <span class="text-[10px] font-mono text-slate-400 font-bold">${meta.reference}</span>
+                </div>
+                <div class="space-y-1 text-[11px] text-slate-300">
+                    <div>📅 <strong>Date:</strong> ${meta.date}</div>
+                    <div>⏰ <strong>Time:</strong> ${meta.time} (EAT)</div>
+                    <div>💻 <strong>Platform:</strong> ${meta.channel}</div>
+                </div>
+                <div class="mt-3 flex gap-2">
+                    <a href="${meta.whatsapp_url}" target="_blank" 
+                       class="flex-1 py-1.5 px-2 rounded-lg bg-emerald-500 text-slate-950 font-bold text-[10px] text-center flex items-center justify-center gap-1">
+                        <i class="fa-brands fa-whatsapp"></i> Chat on WhatsApp
+                    </a>
+                </div>
+            </div>
+        `;
+    }
+
+    // Init Session
+    function initSession() {
+        fetch('/ai-assistant/api/init/', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': getCsrfToken()
+            },
+            body: JSON.stringify({ session_id: currentSessionId })
+        })
+        .then(res => res.json())
+        .then(data => {
+            if (data.success) {
+                currentSessionId = data.session_id;
+                localStorage.setItem('utc_ai_session_id', currentSessionId);
+                hasCapturedLead = data.has_lead;
+
+                if (messagesBox) {
+                    messagesBox.innerHTML = '';
+                    data.messages.forEach(renderMessage);
+                }
+            }
+        })
+        .catch(err => {
+            console.error('AI Init error:', err);
+            if (messagesBox) {
+                messagesBox.innerHTML = `
+                    <div class="p-3 rounded-xl bg-slate-900 border border-slate-800 text-xs text-slate-300">
+                        Hello! Welcome to UniqueTechCamp Solutions Desk. How can our engineering team help you today?
+                    </div>
+                `;
+            }
+        });
+    }
+
+    // Handle Form Submit
+    if (inputForm) {
+        inputForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            const message = (queryInput.value || '').trim();
+            if (!message || isFetching) return;
+
+            queryInput.value = '';
+            renderMessage({ sender: 'user', message: message, created_at: 'Just now' });
+
+            // Show Typing Indicator
+            const typingIndicator = document.createElement('div');
+            typingIndicator.id = 'utc-ai-typing';
+            typingIndicator.className = 'flex items-center gap-1 text-slate-500 text-[11px] p-2';
+            typingIndicator.innerHTML = `
+                <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-bounce"></span>
+                <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-bounce" style="animation-delay: 0.15s"></span>
+                <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-bounce" style="animation-delay: 0.3s"></span>
+                <span class="ml-1">Synthesizing architecture solution...</span>
+            `;
+            messagesBox.appendChild(typingIndicator);
+            scrollToBottom();
+
+            isFetching = true;
+            if (sendBtn) sendBtn.disabled = true;
+
+            fetch('/ai-assistant/api/message/', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': getCsrfToken()
+                },
+                body: JSON.stringify({
+                    session_id: currentSessionId,
+                    message: message
+                })
+            })
+            .then(res => res.json())
+            .then(data => {
+                const typing = document.getElementById('utc-ai-typing');
+                if (typing) typing.remove();
+                isFetching = false;
+                if (sendBtn) sendBtn.disabled = false;
+
+                if (data.success) {
+                    renderMessage({
+                        sender: 'assistant',
+                        message: data.reply,
+                        action_type: data.action_type,
+                        metadata: data.metadata,
+                        created_at: 'Just now'
+                    });
+                }
+            })
+            .catch(err => {
+                console.error('Message error:', err);
+                const typing = document.getElementById('utc-ai-typing');
+                if (typing) typing.remove();
+                isFetching = false;
+                if (sendBtn) sendBtn.disabled = false;
+
+                renderMessage({
+                    sender: 'assistant',
+                    message: "Our engineering desk is temporarily experiencing high inquiry volume. Please contact us directly on WhatsApp at +254 715 479 955 or email info@uniquetechcamp.org.",
+                    created_at: 'Just now'
+                });
+            });
+        });
+    }
+
+    // Handle Delegation for Lead Form & Slot Booking Buttons
+    document.addEventListener('submit', (e) => {
+        if (e.target && e.target.classList.contains('utc-lead-form')) {
+            e.preventDefault();
+            const form = e.target;
+            const fullName = form.querySelector('[name="full_name"]').value.trim();
+            const email = form.querySelector('[name="email"]').value.trim();
+            const phone = form.querySelector('[name="phone"]').value.trim();
+
+            const submitBtn = form.querySelector('button[type="submit"]');
+            if (submitBtn) {
+                submitBtn.disabled = true;
+                submitBtn.innerHTML = `<span>Saving...</span>`;
+            }
+
+            fetch('/ai-assistant/api/capture-lead/', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': getCsrfToken()
+                },
+                body: JSON.stringify({
+                    session_id: currentSessionId,
+                    full_name: fullName,
+                    email: email,
+                    phone: phone
+                })
+            })
+            .then(res => res.json())
+            .then(data => {
+                if (data.success) {
+                    hasCapturedLead = true;
+                    form.parentElement.remove(); // Remove input card
+                    renderMessage({
+                        sender: 'assistant',
+                        message: data.reply,
+                        created_at: 'Just now'
+                    });
+                } else {
+                    alert(data.error || 'Please review your contact details.');
+                    if (submitBtn) {
+                        submitBtn.disabled = false;
+                        submitBtn.innerHTML = `<span>Try Again</span>`;
+                    }
+                }
+            })
+            .catch(err => {
+                console.error('Lead error:', err);
+                alert('Connection error. Please try again.');
+                if (submitBtn) submitBtn.disabled = false;
+            });
+        }
+    });
+
+    document.addEventListener('click', (e) => {
+        // Quick Chips
+        const chip = e.target.closest('.utc-quick-chip');
+        if (chip) {
+            const promptText = chip.getAttribute('data-text');
+            if (queryInput && promptText) {
+                queryInput.value = promptText;
+                if (inputForm) inputForm.dispatchEvent(new Event('submit'));
+            }
+        }
+
+        // Slot Booking Selection
+        const slotBtn = e.target.closest('.utc-book-slot-btn');
+        if (slotBtn) {
+            const dateStr = slotBtn.getAttribute('data-date');
+            const slotKey = slotBtn.getAttribute('data-slot');
+
+            if (!confirm(`Confirm 1-hour consultation on ${dateStr} at ${slotKey} (EAT)?`)) return;
+
+            slotBtn.disabled = true;
+            slotBtn.innerText = "Booking...";
+
+            fetch('/ai-assistant/api/book/', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': getCsrfToken()
+                },
+                body: JSON.stringify({
+                    session_id: currentSessionId,
+                    date: dateStr,
+                    slot_key: slotKey,
+                    meeting_type: 'google_meet',
+                    description: 'Scheduled via AI Assistant Chat Widget'
+                })
+            })
+            .then(res => res.json())
+            .then(data => {
+                if (data.success) {
+                    renderMessage({
+                        sender: 'assistant',
+                        message: data.reply,
+                        action_type: data.action_type,
+                        metadata: data.metadata,
+                        created_at: 'Just now'
+                    });
+                } else {
+                    alert(data.error || 'Could not complete booking.');
+                    slotBtn.disabled = false;
+                    slotBtn.innerText = slotKey;
+                }
+            })
+            .catch(err => {
+                console.error('Booking error:', err);
+                alert('Connection error during booking.');
+                slotBtn.disabled = false;
+            });
+        }
+    });
+
+    // Email Transcript Button Action
+    if (emailTranscriptBtn) {
+        emailTranscriptBtn.addEventListener('click', () => {
+            if (!hasCapturedLead) {
+                alert("Please provide your email address in the chat first so we know where to send your transcript.");
+                return;
+            }
+            emailTranscriptBtn.disabled = true;
+            fetch('/ai-assistant/api/email-transcript/', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': getCsrfToken()
+                },
+                body: JSON.stringify({ session_id: currentSessionId })
+            })
+            .then(res => res.json())
+            .then(data => {
+                emailTranscriptBtn.disabled = false;
+                if (data.success) {
+                    alert(data.message || 'Transcript successfully emailed!');
+                } else {
+                    alert(data.error || 'Could not send transcript.');
+                }
+            })
+            .catch(err => {
+                emailTranscriptBtn.disabled = false;
+                alert('Connection error. Please try again.');
+            });
+        });
+    }
+
+    // Initialize on load
+    document.addEventListener('DOMContentLoaded', initSession);
+})();
+</script>

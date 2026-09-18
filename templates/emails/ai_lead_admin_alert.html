@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🚨 New High-Priority AI Assistant Lead</title>
+</head>
+<body style="margin: 0; padding: 0; background-color: #0f172a; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; color: #f8fafc;">
+    <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0" style="background-color: #0f172a; padding: 25px 15px;">
+        <tr>
+            <td align="center">
+                <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0" style="max-width: 650px; background-color: #1e293b; border: 1px solid #334155; border-radius: 16px; overflow: hidden;">
+                    
+                    <!-- Alert Header -->
+                    <tr>
+                        <td style="padding: 24px; background: linear-gradient(135deg, #064e3b 0%, #047857 100%); color: #ffffff;">
+                            <span style="display: inline-block; padding: 3px 10px; border-radius: 9999px; background-color: rgba(255, 255, 255, 0.2); font-size: 11px; font-weight: 800; text-transform: uppercase; letter-spacing: 1px;">
+                                High Priority Acquisition Alert
+                            </span>
+                            <h1 style="margin: 10px 0 4px; font-size: 20px; font-weight: 800;">
+                                🎯 New Prospect Lead: {{ lead.full_name }}
+                            </h1>
+                            <p style="margin: 0; font-size: 13px; opacity: 0.9;">
+                                Captured via UniqueTechCamp AI Assistant Engine
+                            </p>
+                        </td>
+                    </tr>
+
+                    <!-- Lead Details Card -->
+                    <tr>
+                        <td style="padding: 24px;">
+                            <table width="100%" cellspacing="0" cellpadding="8" border="0" style="font-size: 13px; background-color: #0f172a; border-radius: 12px; border: 1px solid #334155;">
+                                <tr>
+                                    <td width="35%" style="color: #94a3b8; font-weight: 600;">Full Name:</td>
+                                    <td width="65%" style="color: #ffffff; font-weight: 700;">{{ lead.full_name }}</td>
+                                </tr>
+                                <tr>
+                                    <td style="color: #94a3b8; font-weight: 600;">Email Address:</td>
+                                    <td style="color: #38bdf8; font-weight: 700;">
+                                        <a href="mailto:{{ lead.email }}" style="color: #38bdf8; text-decoration: none;">{{ lead.email }}</a>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td style="color: #94a3b8; font-weight: 600;">WhatsApp / Phone:</td>
+                                    <td style="color: #34d399; font-weight: 700;">
+                                        <a href="https://wa.me/{{ lead.clean_whatsapp_digits }}" target="_blank" style="color: #34d399; text-decoration: none;">
+                                            {{ lead.phone }} (Open WhatsApp Chat &rarr;)
+                                        </a>
+                                    </td>
+                                </tr>
+                                {% if appointment %}
+                                <tr>
+                                    <td style="color: #94a3b8; font-weight: 600;">Booked Consultation:</td>
+                                    <td style="color: #facc15; font-weight: 700;">
+                                        {{ appointment.preferred_date }} ({{ appointment.preferred_time_slot }}) [Ref: {{ appointment.booking_reference }}]
+                                    </td>
+                                </tr>
+                                {% endif %}
+                                {% if lead.industry %}
+                                <tr>
+                                    <td style="color: #94a3b8; font-weight: 600;">Industry / Niche:</td>
+                                    <td style="color: #ffffff;">{{ lead.industry }}</td>
+                                </tr>
+                                {% endif %}
+                                {% if lead.business_bottleneck %}
+                                <tr>
+                                    <td style="color: #94a3b8; font-weight: 600;">Identified Need / Challenge:</td>
+                                    <td style="color: #ffffff;">{{ lead.business_bottleneck }}</td>
+                                </tr>
+                                {% endif %}
+                                <tr>
+                                    <td style="color: #94a3b8; font-weight: 600;">Captured At:</td>
+                                    <td style="color: #cbd5e1;">{{ lead.created_at|date:"Y-m-d H:i:s" }} EAT</td>
+                                </tr>
+                            </table>
+
+                            <!-- Direct Fast Contact -->
+                            <div style="margin: 20px 0; text-align: center;">
+                                <a href="https://wa.me/{{ lead.clean_whatsapp_digits }}?text=Hello%20{{ lead.full_name }},%20this%20is%20UniqueTechCamp%20following%20up%20on%20your%20digital%20solution%20inquiry." 
+                                   target="_blank" 
+                                   style="display: inline-block; padding: 12px 24px; background-color: #22c55e; color: #ffffff; text-decoration: none; font-size: 13px; font-weight: 700; border-radius: 10px; margin-right: 8px;">
+                                    💬 WhatsApp Prospect Now
+                                </a>
+                                <a href="mailto:{{ lead.email }}?subject=UniqueTechCamp%20Consultation%20Follow-Up" 
+                                   style="display: inline-block; padding: 12px 24px; background-color: #334155; color: #ffffff; text-decoration: none; font-size: 13px; font-weight: 700; border-radius: 10px;">
+                                    ✉️ Email Client Direct
+                                </a>
+                            </div>
+
+                            <!-- Session Transcript -->
+                            {% if messages %}
+                            <div style="margin-top: 25px;">
+                                <h3 style="margin: 0 0 12px; font-size: 13px; text-transform: uppercase; color: #94a3b8; letter-spacing: 1px;">
+                                    Complete Chat Transcript ({{ messages|length }} messages)
+                                </h3>
+                                <div style="background-color: #0f172a; border-radius: 12px; padding: 15px; border: 1px solid #334155; max-height: 400px; overflow-y: auto;">
+                                    {% for msg in messages %}
+                                        <div style="margin-bottom: 12px; padding-bottom: 12px; border-bottom: 1px solid #1e293b;">
+                                            <div style="font-size: 11px; font-weight: 700; color: {% if msg.sender == 'user' %}#38bdf8{% elif msg.sender == 'assistant' %}#34d399{% else %}#facc15{% endif %}; margin-bottom: 3px;">
+                                                {% if msg.sender == 'user' %}{{ lead.full_name }}{% elif msg.sender == 'assistant' %}UniqueTechCamp AI ({{ msg.model_used|default:"AI" }}){% else %}System{% endif %}
+                                                <span style="font-weight: 400; color: #64748b; font-size: 10px; margin-left: 8px;">{{ msg.created_at|date:"H:i:s" }}</span>
+                                            </div>
+                                            <div style="font-size: 12px; line-height: 1.5; color: #e2e8f0;">
+                                                {{ msg.message|linebreaksbr }}
+                                            </div>
+                                        </div>
+                                    {% endfor %}
+                                </div>
+                            </div>
+                            {% endif %}
+                        </td>
+                    </tr>
+
+                    <!-- Footer -->
+                    <tr>
+                        <td style="padding: 15px 24px; background-color: #0f172a; border-top: 1px solid #334155; font-size: 11px; color: #64748b; text-align: center;">
+                            Sent automatically by UniqueTechCamp AI Lead Acquisition Engine • Nairobi, Kenya
+                        </td>
+                    </tr>
+
+                </table>
+            </td>
+        </tr>
+    </table>
+</body>
+</html>
