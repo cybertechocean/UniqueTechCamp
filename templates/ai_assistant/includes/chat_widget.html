@@ -264,6 +264,21 @@
         return text;
     }
 
+    function formatLocalTime(timestamp) {
+        if (!timestamp || timestamp === 'Just now') {
+            return new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+        }
+        try {
+            const date = new Date(timestamp);
+            if (isNaN(date.getTime())) {
+                return timestamp;
+            }
+            return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+        } catch (e) {
+            return timestamp;
+        }
+    }
+
     function renderMessage(msg) {
         const isUser = msg.sender === 'user';
         const bubble = document.createElement('div');
@@ -271,13 +286,14 @@
 
         const nameLabel = isUser ? 'You' : 'UniqueTechCamp AI';
         const headerColor = isUser ? 'text-slate-400' : 'text-emerald-400';
+        const timeLabel = formatLocalTime(msg.created_at);
 
         let contentHtml = '';
         if (isUser) {
             contentHtml = `
                 <div class="flex items-center gap-1.5 mb-1 px-1">
                     <span class="text-[10px] font-semibold ${headerColor}">${nameLabel}</span>
-                    <span class="text-[9px] text-slate-500">${msg.created_at || ''}</span>
+                    <span class="text-[9px] text-slate-500">${timeLabel}</span>
                 </div>
                 <div class="p-3 rounded-2xl rounded-tr-none max-w-[88%] text-xs leading-relaxed break-words shadow-md"
                      style="background: linear-gradient(135deg, #059669 0%, #0d9488 100%) !important; color: #FFFFFF !important; border: 1px solid rgba(16, 185, 129, 0.4) !important;">
@@ -291,7 +307,7 @@
                         <i data-lucide="bot" class="w-2.5 h-2.5"></i>
                     </div>
                     <span class="text-[10px] font-bold ${headerColor}">${nameLabel}</span>
-                    <span class="text-[9px] text-slate-500">${msg.created_at || ''}</span>
+                    <span class="text-[9px] text-slate-500">${timeLabel}</span>
                 </div>
                 <div class="p-3.5 rounded-2xl rounded-tl-none max-w-[92%] text-xs leading-relaxed break-words shadow-xl"
                      style="background-color: #111827 !important; color: #F8FAFC !important; border: 1px solid rgba(71, 85, 105, 0.7) !important;">
@@ -438,7 +454,7 @@
                 renderMessage({
                     sender: 'assistant',
                     message: "Welcome to UniqueTechCamp! I am your 24/7 AI Solutions Architect. We develop/engineer high-converting web applications, 24/7 WhatsApp/Email qualification bots, clinic systems, and e-commerce platforms.",
-                    created_at: 'Just now'
+                    created_at: new Date().toISOString()
                 });
             }
         });
@@ -487,7 +503,7 @@
             if (!message || isFetching) return;
 
             queryInput.value = '';
-            renderMessage({ sender: 'user', message: message, created_at: 'Just now' });
+            renderMessage({ sender: 'user', message: message, created_at: new Date().toISOString() });
 
             // Show Typing Indicator
             const typingIndicator = document.createElement('div');
@@ -533,7 +549,7 @@
                         message: data.reply,
                         action_type: data.action_type,
                         metadata: data.metadata,
-                        created_at: 'Just now'
+                        created_at: data.created_at || new Date().toISOString()
                     });
                 }
             })
@@ -546,7 +562,7 @@
                 renderMessage({
                     sender: 'assistant',
                     message: "Our engineering desk is temporarily busy. Please contact our architects on WhatsApp at +254 715 479 955.",
-                    created_at: 'Just now'
+                    created_at: new Date().toISOString()
                 });
             });
         });
@@ -639,7 +655,7 @@
                         message: data.reply,
                         action_type: data.action_type,
                         metadata: data.metadata,
-                        created_at: 'Just now'
+                        created_at: data.created_at || new Date().toISOString()
                     });
                 } else {
                     slotBtn.disabled = false;

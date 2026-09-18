@@ -7,56 +7,86 @@ def build_system_knowledge_prompt():
     """
     Dynamically compiles the full verified knowledge base of UniqueTechCamp into an ultra-precise
     system grounding prompt for the Gemini AI generation engine.
-    Ensures ZERO hallucination, accurate service scope, and authentic Nairobi, Kenya contact info.
+    Ensures ZERO hallucination, authentic Nairobi, Kenya contact info, and live database facts.
     """
-    # Fetch live service categories and services from the database
+    # 1. Fetch live service categories and services from the database
     services_summary = []
     try:
-        from services.models import ServiceCategory, Service
+        from services.models import ServiceCategory
         categories = ServiceCategory.objects.filter(is_active=True).prefetch_related('services').order_by('order')
         for cat in categories:
-            cat_services = cat.services.filter(is_active=True).order_by('order')[:8]
-            service_titles = [s.title for s in cat_services]
-            if service_titles:
-                services_summary.append(f"- **{cat.name}** ({len(service_titles)} services): {', '.join(service_titles)}")
+            cat_services = cat.services.filter(is_active=True).order_by('order')
+            titles = [s.title for s in cat_services]
+            if titles:
+                services_summary.append(f"- **{cat.name}** ({len(titles)} services): {', '.join(titles[:10])}")
     except Exception as e:
         logger.warning(f"Could not load live services for grounding: {e}")
 
     services_block = "\n".join(services_summary) if services_summary else (
-        "- **AI Chatbot Development & Lead Gen**: 24/7 WhatsApp qualification bots, website lead funnels, automated follow-up systems.\n"
-        "- **Custom Web Applications**: High-converting web systems built with Django, Tailwind CSS, and modern web architectures.\n"
-        "- **Retail & E-Commerce Engines**: Storefronts with M-Pesa Daraja STK Push, card payments, client self-service portals.\n"
-        "- **Healthcare & Clinic Systems**: Patient scheduling, EHR records, doctor queues, automated appointment reminders.\n"
-        "- **Digital Business Setup**: Google Business Profile verification, business email, domain & SSL configuration.\n"
-        "- **AI Project Prompts Marketplace**: Production-tested Master Coding Prompts and 1-on-1 implementation assistance."
+        "- **Digital Business Setup** (Google Business Profile, domain, email, business registration)\n"
+        "- **Social Media & Digital Marketing** (Meta ads, Google Ads, SEO, growth funnels)\n"
+        "- **Graphic Design & Branding** (Logos, brand identities, pitch decks, marketing collateral)\n"
+        "- **Business Intelligence & Reporting** (Dashboards, KPI trackers, SQL analytics)\n"
+        "- **Web Development & AI Solutions** (High-performance web apps, E-commerce, WhatsApp AI bots)"
     )
 
-    prompt = f"""You are the official conversational AI Solutions Architect and Client Acquisition Engine for UniqueTechCamp (https://uniquetechcamp.org/).
+    # 2. Fetch live real portfolio projects from database
+    projects_summary = []
+    try:
+        from portfolio.models import Project
+        projects = Project.objects.all().order_by('order')
+        for p in projects:
+            projects_summary.append(f"- **{p.title}** ({p.live_demo_url}): {p.short_description} Built with: {p.technologies}")
+    except Exception as e:
+        logger.warning(f"Could not load live portfolio for grounding: {e}")
 
-### Core Identity & Positioning:
+    projects_block = "\n".join(projects_summary) if projects_summary else (
+        "- **LIMBS Orthopaedic** (https://limbsorthopaedic.org/): Clinical mobility and prosthetics portal in Nairobi\n"
+        "- **Ruwe Holy Ghost Church** (https://ruweholyghostchurch.org/): East Africa community & diaspora sanctuary\n"
+        "- **Gen-Z Constructors** (https://genzconstructors.co.ke/): Civil engineering & modern construction showcase\n"
+        "- **KAWA'S Café** (https://kawas.co.ke/): Luxury specialty coffee & artisan dessert portal in Nyali, Mombasa\n"
+        "- **Orthobest Care Hub** (https://orthobestcarehub.co.ke/): Orthopedic & mobility e-commerce store with M-Pesa\n"
+        "- **UniqueTechCamp** (https://uniquetechcamp.org/): High-performance web & AI revenue engine"
+    )
+
+    prompt = f"""You are the official conversational AI Solutions Architect and Senior Engineering Consultant for UniqueTechCamp (https://uniquetechcamp.org/).
+
+### Core Identity & Corporate Profile:
 - **Company**: UniqueTechCamp Limited
-- **Tagline**: WEBSITE • CLIENTS • INCOME — High-Performance Web & AI Systems
-- **Headquarters**: Nairobi CBD, Nairobi County, Kenya
+- **Tagline**: WEBSITE • CLIENTS • INCOME — High-Performance Web Applications & AI Revenue Systems
+- **Headquarters**: Nairobi Central Business District (CBD), Nairobi County, Kenya
 - **Operating Timezone**: East Africa Time (EAT / UTC+3)
 - **Consultation Hours**: Sunday to Friday, 8:00 AM to 8:00 PM EAT (Saturdays closed)
-- **Official Contact Numbers**: Phone & WhatsApp: +254 715 479 955
-- **Official Email**: info@uniquetechcamp.org
-- **M-Pesa Buy Goods & Services Till**: 5797853 (UniqueTechCamp)
-- **Currency Accepted**: Kenya Shillings (KES) and US Dollars (USD)
+- **Direct Contact Numbers**: Phone & WhatsApp: **+254 715 479 955**
+- **Official Email**: **info@uniquetechcamp.org**
+- **Safaricom M-Pesa Buy Goods & Services Till**: **5797853** (Name: UniqueTechCamp)
+- **Currencies Accepted**: Kenya Shillings (KES) and US Dollars (USD)
+- **Tech Stack**: Python 3.12, Django 5, Tailwind CSS, PostgreSQL/MariaDB, Google Gemini AI, Safaricom Daraja STK Push, Redis, WhiteNoise.
 
-### Verified Service Spectrum (20 Categories, 165+ Solutions):
+### Who We Are & Why Clients Choose Us:
+- We reject generic, static websites that leak 95% of traffic. We build complete, high-converting digital revenue machines.
+- Every platform we engineer integrates sub-second mobile load speeds, 24/7 autonomous WhatsApp/Email lead qualification chatbots, and instant appointment booking.
+- We offer free 1-hour technical discovery consultations via Google Meet, WhatsApp Video, Phone, or in-person at our Nairobi CBD headquarters.
+
+### Verified Real Client Production Projects:
+{projects_block}
+
+### Verified 20 Service Categories & 165+ Digital Growth Services:
 {services_block}
 
-### Key Differentiators:
-- UniqueTechCamp does NOT build generic, static websites that sit idle. We build end-to-end client acquisition and revenue growth systems.
-- Every platform is optimized for sub-second page loads, mobile responsiveness, seamless M-Pesa & international payments, and automated 24/7 WhatsApp lead qualification.
-- Free Discovery Consultations: We offer structured 1-hour strategy and architecture consultations via Google Meet, WhatsApp Call, Direct Phone, or in-person at our Nairobi CBD headquarters.
+### WhatsApp AI Qualification Agents & Integrations:
+- Our 24/7 AI WhatsApp bots connect via WhatsApp Cloud API with secure webhook listeners on Django.
+- Features: Real-time prospect qualification, bilingual responses (English & Swahili), PDF catalog delivery, automated slot booking, and instant two-way synchronization into CRMs (HubSpot, Salesforce, Zoho) and Google Sheets via REST APIs.
 
-### Strict Knowledge Grounding & Zero-Hallucination Policy:
-1. Ground every statement strictly in the capabilities of UniqueTechCamp.
-2. If a user asks about services we do not provide (such as hardware PC repairs, non-technical legal defense, crypto trading schemes), politely explain that this falls outside our public scope and recommend discussing their custom software needs with our human technical consultants.
-3. If asked about exact pricing for bespoke custom development, provide typical scope guidance or invite them to schedule a free technical discovery call where we calculate exact project deliverables and milestones. For prompt marketplace items, mention KES and USD options.
-4. Always maintain a welcoming, sharp, confident, and professional engineering tone.
-5. Emphasize that the client will receive session summaries and personal follow-up via WhatsApp (+254 715 479 955) and email (info@uniquetechcamp.org).
+### AI Master Project Prompts Marketplace:
+- We provide production-grade, battle-tested AI Master Coding Prompts (Free & Premium) for founders and developers building real web apps.
+- Payments via M-Pesa Till 5797853, with dedicated 1-on-1 architecture setup support available.
+
+### Guidelines for Answers:
+1. Always give specific, authentic, and knowledgeable answers. Never say generic robotic replies.
+2. If asked for a list of services, present key categories clearly with bullet points and mention that our complete catalog features 165+ services across 20 industry sectors at https://uniquetechcamp.org/services/.
+3. If asked about our real projects, cite LIMBS Orthopaedic, Ruwe Holy Ghost Church, Gen-Z Constructors, KAWA'S Café, Orthobest Care Hub, and UniqueTechCamp with their live URLs.
+4. Format responses cleanly with GitHub Markdown (bold headers, bulleted lists, clickable links).
+5. Always offer to book a free discovery consultation with our senior solutions architect.
 """
     return prompt.strip()

@@ -130,7 +130,7 @@ class ChatInitApiView(View):
                 'model_used': msg.model_used,
                 'action_type': msg.action_type,
                 'metadata': msg.metadata,
-                'created_at': msg.created_at.strftime('%H:%M'),
+                'created_at': msg.created_at.isoformat(),
             })
 
         return JsonResponse({
@@ -209,6 +209,7 @@ class SendMessageApiView(View):
                 'model_used': 'lead-gatekeeper',
                 'has_lead': False,
                 'metadata': {},
+                'created_at': bot_msg.created_at.isoformat(),
             })
 
         # 4. Lead is Secured: Check for Booking Intent
@@ -239,7 +240,8 @@ class SendMessageApiView(View):
                 'action_type': 'slot_picker',
                 'model_used': 'booking-scheduler',
                 'has_lead': True,
-                'metadata': {'dates': upcoming_options}
+                'metadata': {'dates': upcoming_options},
+                'created_at': bot_msg.created_at.isoformat(),
             })
 
         # 4. Standard Inquiry: Pass to Gemini Multi-Model Cascade
@@ -275,6 +277,7 @@ class SendMessageApiView(View):
             'is_fallback': ai_result['is_fallback'],
             'has_lead': True,
             'metadata': {},
+            'created_at': bot_msg.created_at.isoformat(),
         })
 
 
@@ -371,6 +374,7 @@ class CaptureLeadApiView(View):
                 'reply': fulfilled_reply,
                 'action_type': 'normal',
                 'model_used': ai_result['model_used'],
+                'created_at': timezone.now().isoformat(),
             })
 
         # No pending query: present curated introductory discovery options
@@ -399,6 +403,7 @@ class CaptureLeadApiView(View):
             'reply': welcome_reply,
             'action_type': 'normal',
             'model_used': 'system-desk',
+            'created_at': timezone.now().isoformat(),
         })
 
 
@@ -521,7 +526,7 @@ class BookConsultationApiView(View):
             'whatsapp_url': f"https://wa.me/254715479955?text=Hello%20UniqueTechCamp!%20I%20have%20booked%20consultation%20{appointment.booking_reference}.",
         }
 
-        ChatMessage.objects.create(
+        bot_msg = ChatMessage.objects.create(
             session=session,
             sender='assistant',
             message=confirmation_msg,
@@ -538,6 +543,7 @@ class BookConsultationApiView(View):
             'reply': confirmation_msg,
             'action_type': 'booking_card',
             'metadata': card_meta,
+            'created_at': bot_msg.created_at.isoformat(),
         })
 
 
