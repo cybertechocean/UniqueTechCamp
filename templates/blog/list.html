@@ -176,12 +176,12 @@
                     Stop buying static/generic websites. Deploy A Client Acquisition Machine.
                 </h3>
                 <p class="text-xs md:text-sm text-gray-300 leading-relaxed">
-                    We embed AI Lead Generation forms, 24/7 WhatsApp qualification bots, and automated customer follow-ups into high-speed websites tailored for 16+ industries.
+                    We embed AI Lead Generation forms, 24/7 WhatsApp qualification bots, and automated customer follow-ups into high-speed websites tailored for {{ total_categories_count|default:'20' }} specialized industries.
                 </p>
             </div>
             <div class="shrink-0 flex flex-col sm:flex-row gap-3">
                 <a href="{% url 'services:list' %}" class="btn-primary py-3 px-6 rounded-xl text-xs font-semibold">
-                    Explore 100+ Services
+                    Explore {{ total_services_count|default:'165' }}+ Services
                 </a>
                 <a href="https://wa.me/254715479955?text=Hello%20UniqueTechCamp,%20I%20read%20your%20blog%20and%20want%20to%20discuss%20an%20AI%20growth%20system." target="_blank" rel="noopener noreferrer" class="btn-secondary py-3 px-6 rounded-xl text-xs font-semibold !bg-white/10 !text-white !border-white/20 hover:!bg-white/20">
                     Talk with Architect

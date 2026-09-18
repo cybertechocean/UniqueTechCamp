@@ -324,7 +324,7 @@
       Our <span class="gradient-text">Services</span>
     </h1>
     <p class="text-lg md:text-xl text-slate-300 max-w-2xl mx-auto leading-relaxed">
-      Comprehensive digital solutions across <strong class="text-white">20 specialized categories</strong> & <strong class="text-white">165+ growth services</strong> — from
+      Comprehensive digital solutions across <strong class="text-white">{{ total_categories_count|default:"20" }} specialized categories</strong> & <strong class="text-white">{{ total_services_count|default:"165" }}+ growth services</strong> — from
       Digital Business Setup & Social Media Marketing to AI automation and custom web applications.
     </p>
   </div>
@@ -359,7 +359,7 @@
                 {% elif current_q %}
                   Search: <span class="text-emerald-600 font-semibold">"{{ current_q }}"</span>
                 {% else %}
-                  Click to search, sort & browse 20 categories
+                  Click to search, sort & browse {{ total_categories_count|default:"20" }} categories
                 {% endif %}
               </div>
             </div>

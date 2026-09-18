@@ -1153,7 +1153,7 @@
                 dropdown.innerHTML = `
                     <div class="p-3 text-center text-xs text-gray-400 flex items-center justify-center gap-2">
                         <span class="inline-block w-4 h-4 border-2 border-emerald-500 border-t-transparent rounded-full animate-spin"></span>
-                        Searching 100+ services & articles...
+                        Searching {{ total_services_count|default:'165' }}+ services & articles...
                     </div>
                 `;
                 dropdown.classList.remove('hidden');

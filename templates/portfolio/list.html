@@ -1,7 +1,7 @@
 {% extends 'base.html' %}
 
 {% block title %}Our Portfolio - UniqueTechCamp | Real Projects, Real Results{% endblock %}
-{% block description %}Explore UniqueTechCamp's portfolio of successful web development, AI integration, and custom software projects across 14+ industry sectors in East Africa.{% endblock %}
+{% block description %}Explore UniqueTechCamp's portfolio of successful web development, AI integration, and custom software projects across {{ total_categories_count|default:"20" }} industry sectors in East Africa.{% endblock %}
 
 {% block extra_head %}
 <style>
@@ -250,7 +250,7 @@
 
       <!-- Sub-heading -->
       <p class="text-lg md:text-xl text-slate-300 max-w-2xl mx-auto leading-relaxed mb-10 fade-in delay-2">
-        Explore how we've helped businesses across <strong class="text-white">14+ industry sectors</strong> transform
+        Explore how we've helped businesses across <strong class="text-white">{{ total_categories_count|default:"20" }} industry sectors</strong> transform
         with premium websites, AI solutions, and custom web applications.
       </p>
 
@@ -270,7 +270,7 @@
     <!-- Stats row -->
     <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mt-20 fade-in delay-3">
       <div class="hero-stat">
-        <div class="text-3xl font-bold gradient-text mb-1">14+</div>
+        <div class="text-3xl font-bold gradient-text mb-1">{{ total_categories_count|default:"20" }}</div>
         <div class="text-slate-400 text-sm font-medium">Industries Served</div>
       </div>
       <div class="hero-stat">
