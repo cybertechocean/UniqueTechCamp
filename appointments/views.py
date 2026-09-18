@@ -58,6 +58,9 @@ class AppointmentBookView(View):
             if preferred_date < timezone.now().date():
                 messages.error(request, "Please select an upcoming date for your consultation.")
                 return redirect(request.get_full_path())
+            if preferred_date.weekday() == 5:
+                messages.error(request, "UniqueTechCamp is closed on Saturdays. Consultations are available Sunday through Friday.")
+                return redirect(request.get_full_path())
         except ValueError:
             messages.error(request, "Invalid date format provided. Please pick a valid calendar date.")
             return redirect(request.get_full_path())

@@ -15,8 +15,8 @@ class AiAssistantTests(TestCase):
     def setUp(self):
         self.client = Client()
         self.tomorrow = timezone.now().date() + datetime.timedelta(days=1)
-        # Ensure tomorrow is not Sunday for standard tests
-        if self.tomorrow.weekday() == 6:
+        # Ensure tomorrow is not Saturday (weekday 5) since Saturday is closed
+        while self.tomorrow.weekday() == 5:
             self.tomorrow += datetime.timedelta(days=1)
 
     def test_session_init_creates_session_and_welcome(self):
@@ -113,14 +113,23 @@ class AiAssistantTests(TestCase):
         self.assertIn('Do you build clinic management systems?', cap_res.json()['reply'])
 
     def test_availability_engine(self):
-        """Tests Sunday check and slot availability verification."""
-        # Test a Sunday
+        """Tests Saturday closure check and Sunday/weekday slot availability verification."""
+        # Test a Saturday
+        saturday = timezone.now().date()
+        while saturday.weekday() != 5:
+            saturday += datetime.timedelta(days=1)
+
+        sat_slots = get_available_slots_for_date(saturday)
+        self.assertFalse(sat_slots['is_operating_day'])
+
+        # Test Sunday (now an operating day!)
         sunday = timezone.now().date()
         while sunday.weekday() != 6:
             sunday += datetime.timedelta(days=1)
 
         sun_slots = get_available_slots_for_date(sunday)
-        self.assertFalse(sun_slots['is_operating_day'])
+        self.assertTrue(sun_slots['is_operating_day'])
+        self.assertGreaterEqual(len(sun_slots['slots']), 6)
 
         # Test valid business date
         biz_date = self.tomorrow
@@ -208,4 +217,4 @@ class AiAssistantTests(TestCase):
         res = self.client.get(reverse('ai_assistant:index'))
         self.assertEqual(res.status_code, 200)
         self.assertContains(res, "AI Solutions Architect")
-        self.assertContains(res, "24/7 AI Architecture Engine")
+        self.assertContains(res, "AI Architecture Desk")

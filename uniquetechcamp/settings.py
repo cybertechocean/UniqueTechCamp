@@ -399,5 +399,5 @@ ADMIN_EMAIL_GMAIL = "UniqueTechCamp@gmail.com"
 # ------------------------------------------------------------------------------
 # Google Gemini Generative AI Configuration
 # ------------------------------------------------------------------------------
-GEMINI_API_KEY = env("GEMINI_API_KEY", default=env("GOOGLE_API_KEY", default=""))
+GEMINI_API_KEY = env("GEMINI_API_KEY", default="")
 

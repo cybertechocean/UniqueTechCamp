@@ -9,10 +9,10 @@ logger = logging.getLogger(__name__)
 
 # Free tier cascading models list
 FREE_TIER_MODELS_CASCADE = [
-    "gemini-2.5-flash",
-    "gemini-2.0-flash",
-    "gemini-1.5-flash",
-    "gemini-1.5-flash-8b",
+    "gemini-3.6-flash",
+    "gemini-2.5-flash-lite",
+    "gemma-4-26b-a4b-it",
+    "gemini-flash-latest",
 ]
 
 POLISHED_PEAK_FALLBACK_MESSAGE = (
@@ -21,7 +21,7 @@ POLISHED_PEAK_FALLBACK_MESSAGE = (
     "via WhatsApp or email shortly. You can also reach our live desk immediately at +254 715 479 955."
 )
 
-def call_gemini_api(model: str, api_key: str, system_prompt: str, chat_history: list, timeout: int = 15):
+def call_gemini_api(model: str, api_key: str, system_prompt: str, chat_history: list, timeout: int = 6):
     """
     Calls Google's Generative Language REST API for the specified model.
     Accepts system instruction and conversation history.
@@ -126,11 +126,12 @@ def generate_conversational_response(chat_history: list, user_message: str, clie
             error_logs.append(err_msg)
             continue
 
-    # If all models in the cascade failed, return graceful brand-safe message
-    logger.error("All Gemini free-tier cascade models exhausted. Serving brand-safe fallback.")
+    # If all remote models in the cascade failed or timed out, serve intelligent domain-grounded response
+    logger.info("Serving domain-grounded response from UniqueTechCamp knowledge engine.")
+    local_reply = generate_local_grounded_response(user_message, client_context)
     return {
-        "text": POLISHED_PEAK_FALLBACK_MESSAGE,
-        "model_used": "emergency-fallback-desk",
+        "text": local_reply,
+        "model_used": "utc-knowledge-engine",
         "is_fallback": True,
         "error_logs": error_logs
     }
@@ -148,7 +149,7 @@ def generate_local_grounded_response(query: str, client_context: dict = None) ->
         return (
             f"Hello {name}! We'd be delighted to discuss your technical architecture. "
             "UniqueTechCamp offers free 1-hour discovery consultations with our senior engineering team. "
-            "You can choose an upcoming slot between Monday and Saturday (8:00 AM – 8:00 PM EAT) via Google Meet, "
+            "You can choose an upcoming slot between Sunday and Friday (8:00 AM – 8:00 PM EAT, Saturdays closed) via Google Meet, "
             "WhatsApp Video, or in-person at our Nairobi CBD office. Would you like to select a preferred date and time?"
         )
     elif any(k in q for k in ['whatsapp', 'bot', 'chatbot', 'automation', 'lead gen']):
@@ -179,7 +180,7 @@ def generate_local_grounded_response(query: str, client_context: dict = None) ->
     elif any(k in q for k in ['contact', 'location', 'where', 'phone', 'email', 'address']):
         return (
             "UniqueTechCamp is headquartered in the Nairobi Central Business District (CBD), Nairobi County, Kenya. "
-            "Our support and engineering desk operates Monday to Saturday from 8:00 AM to 8:00 PM East Africa Time (EAT). "
+            "Our support and engineering desk operates Sunday to Friday from 8:00 AM to 8:00 PM East Africa Time (EAT), closed on Saturdays. "
             "You can reach us directly via Phone/WhatsApp at **+254 715 479 955** or email us at **info@uniquetechcamp.org**."
         )
     else:

@@ -57,14 +57,20 @@ class ChatInitApiView(View):
         session_id_str = body.get('session_id') or request.session.get('ai_chat_session_id')
         session = None
 
+        # Determine authenticated user
+        user = request.user if request.user.is_authenticated else None
+
         if session_id_str:
             try:
                 session = ChatSession.objects.filter(session_id=session_id_str, is_active=True).first()
             except Exception:
                 session = None
 
+        # If user is authenticated and no session found by ID, pick their most recent active session
+        if user and not session:
+            session = ChatSession.objects.filter(user=user, is_active=True).order_by('-created_at').first()
+
         if not session:
-            user = request.user if request.user.is_authenticated else None
             session = ChatSession.objects.create(
                 user=user,
                 ip_address=get_client_ip(request),
@@ -72,36 +78,47 @@ class ChatInitApiView(View):
             )
             request.session['ai_chat_session_id'] = str(session.session_id)
 
-            # Check if user has an existing LeadCapture or UserProfile
-            if user and hasattr(user, 'profile'):
-                profile = user.profile
+            # Auto-link lead if client is logged in
+            if user:
+                phone = user.profile.phone if hasattr(user, 'profile') and user.profile.phone else ''
                 lead, _ = LeadCapture.objects.get_or_create(
                     email=user.email,
                     defaults={
                         'full_name': user.get_full_name() or user.username,
-                        'phone': profile.phone,
+                        'phone': phone,
                     }
                 )
                 session.lead = lead
                 session.status = 'lead_captured'
                 session.save(update_fields=['lead', 'status'])
 
-            # Add default warm welcome message
+            # Single short welcome message as requested (no immediate lead form)
             initial_welcome = (
                 "Welcome to UniqueTechCamp! I am your 24/7 AI Solutions Architect. "
-                "We engineer high-converting web applications, 24/7 WhatsApp qualification bots, "
-                "clinic systems, and e-commerce platforms.\n\n"
-                "To ensure you receive our tailored recommendations, a full session transcript, "
-                "and follow-up from our senior engineering team in Nairobi, please introduce yourself below."
+                "We develop/engineer high-converting web applications, 24/7 WhatsApp/Email qualification bots, "
+                "clinic systems, and e-commerce platforms."
             )
-            action_type = 'normal' if session.lead else 'lead_form'
             ChatMessage.objects.create(
                 session=session,
                 sender='assistant',
                 message=initial_welcome,
                 model_used='system-desk',
-                action_type=action_type
+                action_type='normal'
             )
+        elif user and not session.lead:
+            # Associate logged-in user with existing anonymous session
+            session.user = user
+            phone = user.profile.phone if hasattr(user, 'profile') and user.profile.phone else ''
+            lead, _ = LeadCapture.objects.get_or_create(
+                email=user.email,
+                defaults={
+                    'full_name': user.get_full_name() or user.username,
+                    'phone': phone,
+                }
+            )
+            session.lead = lead
+            session.status = 'lead_captured'
+            session.save(update_fields=['user', 'lead', 'status'])
 
         # Serialize messages
         messages_data = []
@@ -152,16 +169,31 @@ class SendMessageApiView(View):
             message=user_message,
         )
 
-        # 2. Check if Lead Info is Secured
+        # 2. Check if user is authenticated and auto-link lead if missing
+        if request.user.is_authenticated and not session.lead:
+            session.user = request.user
+            phone = request.user.profile.phone if hasattr(request.user, 'profile') and request.user.profile.phone else ''
+            lead, _ = LeadCapture.objects.get_or_create(
+                email=request.user.email,
+                defaults={
+                    'full_name': request.user.get_full_name() or request.user.username,
+                    'phone': phone,
+                }
+            )
+            session.lead = lead
+            session.status = 'lead_captured'
+            session.save(update_fields=['user', 'lead', 'status'])
+
+        # 3. Check if Lead Info is Secured
         if not session.lead:
             # Preserve user's pending query so we answer it the moment contact details are submitted
             session.pending_query = user_message
             session.save(update_fields=['pending_query'])
 
             lead_request_msg = (
-                "To provide you with our comprehensive architecture roadmap, a complete session transcript, "
-                "and follow-up support from our engineering team, could you please provide your Full Name, "
-                "Email Address, and WhatsApp/Phone Number?"
+                "Thank you for reaching out! To tailor our technical recommendations specifically for your project, "
+                "deliver your full session transcript, and connect you directly with our senior engineers, please "
+                "share your contact details below:"
             )
             bot_msg = ChatMessage.objects.create(
                 session=session,
@@ -179,7 +211,7 @@ class SendMessageApiView(View):
                 'metadata': {},
             })
 
-        # 3. Lead is Secured: Check for Booking Intent
+        # 4. Lead is Secured: Check for Booking Intent
         msg_lower = user_message.lower()
         booking_signals = ['book', 'appointment', 'schedule', 'consultation', 'discovery call', 'meet with you', 'strategy session', 'available slot']
         if any(sig in msg_lower for sig in booking_signals):
@@ -189,7 +221,7 @@ class SendMessageApiView(View):
             upcoming_options = find_next_available_dates(4)
             reply_text = (
                 f"I would be glad to arrange a 1-hour discovery consultation for you, {session.lead.full_name}! "
-                "Our sessions are conducted Monday to Saturday between 8:00 AM and 8:00 PM East Africa Time (EAT) "
+                "Our sessions are conducted Sunday to Friday between 8:00 AM and 8:00 PM East Africa Time (EAT, closed Saturdays) "
                 "via Google Meet, WhatsApp Call, or in-person at our Nairobi CBD headquarters. "
                 "Please choose your preferred upcoming date and window below:"
             )
@@ -298,8 +330,11 @@ class CaptureLeadApiView(View):
         session.status = 'lead_captured'
         session.save(update_fields=['lead', 'status'])
 
-        # Send Real-Time Internal Admin Alert
-        send_lead_admin_alert_email(lead, session)
+        # Send Real-Time Internal Admin Alert (safely so SMTP timeouts never block HTTP response)
+        try:
+            send_lead_admin_alert_email(lead, session)
+        except Exception as e:
+            logger.warning(f"Could not send admin alert email: {e}")
 
         # Fulfill pending query if user asked something before submitting details
         pending_query = session.pending_query.strip()
@@ -398,7 +433,7 @@ class BookConsultationApiView(View):
 
         session_id = data.get('session_id')
         date_str = data.get('date')
-        slot_key = data.get('slot_key')
+        slot_key = data.get('slot_key') or data.get('slot')
         meeting_type = data.get('meeting_type', 'google_meet')
         service_id = data.get('service_id')
         description = data.get('description', 'AI Consultation discovery session')
@@ -414,8 +449,8 @@ class BookConsultationApiView(View):
             preferred_date = datetime.date.fromisoformat(date_str)
             if preferred_date < timezone.now().date():
                 return JsonResponse({'success': False, 'error': 'Please choose an upcoming calendar date.'}, status=400)
-            if preferred_date.weekday() == 6:
-                return JsonResponse({'success': False, 'error': 'UniqueTechCamp is closed on Sundays.'}, status=400)
+            if preferred_date.weekday() == 5:
+                return JsonResponse({'success': False, 'error': 'UniqueTechCamp is closed on Saturdays. Consultations are available Sunday through Friday.'}, status=400)
         except ValueError:
             return JsonResponse({'success': False, 'error': 'Invalid date format provided.'}, status=400)
 
@@ -519,10 +554,23 @@ class EmailTranscriptApiView(View):
         session_id = data.get('session_id')
         session = get_object_or_404(ChatSession, session_id=session_id)
 
-        if not session.lead:
-            return JsonResponse({'success': False, 'error': 'Please provide your email address first.'}, status=400)
+        lead = session.lead
+        if not lead and request.user.is_authenticated:
+            phone = request.user.profile.phone if hasattr(request.user, 'profile') and request.user.profile.phone else ''
+            lead, _ = LeadCapture.objects.get_or_create(
+                email=request.user.email,
+                defaults={
+                    'full_name': request.user.get_full_name() or request.user.username,
+                    'phone': phone,
+                }
+            )
+            session.lead = lead
+            session.save(update_fields=['lead'])
 
-        sent = send_lead_transcript_email(session.lead, session, request)
+        if not lead or not lead.email:
+            return JsonResponse({'success': False, 'error': 'Please provide your contact details in the chat first so we know where to send your transcript.'}, status=400)
+
+        sent = send_lead_transcript_email(lead, session, request)
         if sent:
-            return JsonResponse({'success': True, 'message': f"Transcript sent to {session.lead.email}"})
-        return JsonResponse({'success': False, 'error': 'Could not send transcript email. Please try again shortly.'}, status=500)
+            return JsonResponse({'success': True, 'message': f"Transcript successfully sent to {lead.email}"})
+        return JsonResponse({'success': False, 'error': 'Could not dispatch transcript email. Please check your email address.'}, status=500)

@@ -5,11 +5,14 @@
 {% block description %}Scope custom web applications, 24/7 WhatsApp AI qualification bots, clinic systems, and schedule a free technical consultation with UniqueTechCamp software architects in Nairobi.{% endblock %}
 
 {% block content %}
-<div class="min-h-screen pt-24 pb-20 px-3 sm:px-6 lg:px-8 max-w-7xl mx-auto text-slate-100">
+<!-- Hero Section (Matches Blog & Platform Hero Styling) -->
+<section class="bg-gradient-to-b from-slate-900 via-slate-950 to-slate-900 text-white py-16 px-4 relative overflow-hidden border-b border-slate-800/60">
+    <div class="absolute -top-32 -left-32 w-80 h-80 bg-primary/20 rounded-full blur-3xl pointer-events-none"></div>
+    <div class="absolute -bottom-32 -right-32 w-80 h-80 bg-emerald-500/15 rounded-full blur-3xl pointer-events-none"></div>
 
-    <!-- Top Breadcrumbs & Live Status Bar -->
-    <div class="flex flex-wrap items-center justify-between gap-3 mb-6">
-        <nav class="flex items-center gap-2 text-xs font-medium text-slate-400" aria-label="Breadcrumb">
+    <div class="max-w-4xl mx-auto text-center relative z-10">
+        <!-- Top Breadcrumbs -->
+        <nav class="inline-flex items-center gap-2 text-xs font-medium text-slate-400 mb-4 bg-slate-900/80 px-3.5 py-1.5 rounded-full border border-slate-800" aria-label="Breadcrumb">
             <a href="{% url 'core:home' %}" class="hover:text-emerald-400 transition-colors flex items-center gap-1">
                 <i data-lucide="home" class="w-3.5 h-3.5"></i> Home
             </a>
@@ -18,32 +21,28 @@
                 <i data-lucide="bot" class="w-3.5 h-3.5 text-emerald-400"></i> AI Solutions Desk
             </span>
         </nav>
-        
-        <div class="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 text-xs font-bold shadow-inner">
-            <span class="w-2 h-2 rounded-full bg-emerald-400 animate-ping"></span>
-            <span>Live 24/7 AI Architecture Engine (EAT / UTC+3)</span>
-        </div>
-    </div>
 
-    <!-- Header Section -->
-    <div class="mb-6 text-center md:text-left">
-        <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-slate-900 border border-slate-700/80 text-emerald-400 text-xs font-semibold mb-2 shadow-sm">
-            <i data-lucide="sparkles" class="w-3.5 h-3.5 text-emerald-400"></i>
-            <span>Interactive Project Architecture & Direct Booking</span>
+        <div>
+            <span class="inline-flex items-center gap-2 px-4 py-1 rounded-full text-xs font-semibold uppercase tracking-wider bg-primary/20 text-primary border border-primary/30 mb-4">
+                <i data-lucide="sparkles" class="w-3.5 h-3.5"></i> 24/7 Live AI Architecture Desk
+            </span>
         </div>
-        <h1 class="text-2xl sm:text-4xl font-extrabold text-white tracking-tight leading-tight">
-            Consult Our <span class="text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 via-teal-300 to-green-400">AI Solutions Architect</span>
+        <h1 class="text-3xl md:text-5xl font-heading font-extrabold tracking-tight mb-4">
+            Consult Our <span class="text-primary">AI Solutions Architect</span>
         </h1>
-        <p class="mt-2 text-xs sm:text-sm text-slate-400 max-w-3xl leading-relaxed">
-            Scope your web system, learn how our 24/7 WhatsApp AI Bots capture qualified clients, inquire about Safaricom M-Pesa STK Push checkouts, or instantly schedule a 1-on-1 discovery consultation with our senior engineers in Nairobi.
+        <p class="text-gray-300 text-sm md:text-base max-w-2xl mx-auto leading-relaxed">
+            Interactive system scoping, 24/7 WhatsApp AI qualification bots, clinic systems, and direct 1-on-1 discovery consultation booking with our senior software architects in Nairobi.
         </p>
     </div>
+</section>
+
+<div class="py-10 px-3 sm:px-6 lg:px-8 max-w-7xl mx-auto text-slate-100">
 
     <!-- Main Workspace Grid: Chat (8 Cols) + Sidebar (4 Cols) -->
     <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
         
         <!-- Chat Workspace Column (8 cols on desktop) -->
-        <div class="lg:col-span-8 flex flex-col bg-[#0B0F19] border border-slate-800 rounded-3xl shadow-[0_20px_50px_rgba(0,0,0,0.8)] overflow-hidden h-[720px] max-h-[85vh] relative">
+        <div class="lg:col-span-8 flex flex-col bg-[#0B0F19] border border-slate-800 rounded-3xl shadow-[0_20px_50px_rgba(0,0,0,0.8)] overflow-hidden h-[740px] max-h-[85vh] relative">
             
             <!-- Terminal / Studio Topbar -->
             <div class="px-4 sm:px-6 py-3.5 bg-slate-950 border-b border-slate-800 flex items-center justify-between shrink-0">
@@ -63,23 +62,9 @@
                     </div>
                 </div>
 
-                <!-- Top Right Utility Actions -->
-                <div class="flex items-center gap-2">
-                    <button type="button" 
-                            id="fullpage-email-transcript-btn" 
-                            class="px-2.5 py-1.5 rounded-xl bg-slate-900 hover:bg-slate-800 border border-slate-700 text-[11px] font-semibold text-slate-300 hover:text-emerald-400 transition-colors flex items-center gap-1.5 cursor-pointer shadow-sm"
-                            title="Email Full Session Transcript">
-                        <i data-lucide="mail" class="w-3.5 h-3.5 text-emerald-400"></i>
-                        <span class="hidden sm:inline">Email Transcript</span>
-                    </button>
-                    <a href="https://wa.me/254715479955?text=Hello%20UniqueTechCamp!%20I%20am%20chatting%20with%20your%20AI%20Solutions%20Desk." 
-                       target="_blank"
-                       rel="noopener noreferrer"
-                       class="px-2.5 py-1.5 rounded-xl bg-emerald-500/20 hover:bg-emerald-500/30 border border-emerald-500/40 text-[11px] font-bold text-emerald-400 transition-colors flex items-center gap-1.5 shadow-sm"
-                       title="Chat with Senior Software Architect on WhatsApp">
-                        <i class="fa-brands fa-whatsapp text-sm text-[#25D366]"></i>
-                        <span class="hidden sm:inline">Live WhatsApp</span>
-                    </a>
+                <div class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 text-[11px] font-bold">
+                    <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+                    <span>Active Now</span>
                 </div>
             </div>
 
@@ -127,6 +112,29 @@
                     <i data-lucide="send" class="w-4 h-4"></i>
                 </button>
             </form>
+
+            <!-- Bottom Actions Bar: Email Transcript & Live WhatsApp (Moved below send button) -->
+            <div class="px-4 py-2.5 bg-slate-950 border-t border-slate-800/80 flex flex-wrap items-center justify-between gap-2.5 text-xs shrink-0">
+                <div class="flex items-center gap-2">
+                    <button type="button" 
+                            id="fullpage-email-transcript-btn" 
+                            class="px-3 py-1.5 rounded-xl bg-slate-900 hover:bg-slate-800 border border-slate-700 text-[11px] font-semibold text-slate-300 hover:text-emerald-400 transition-colors flex items-center gap-1.5 cursor-pointer shadow-sm"
+                            title="Email Consultation Transcript">
+                        <i data-lucide="mail" class="w-3.5 h-3.5 text-emerald-400"></i>
+                        <span>Email Transcript</span>
+                    </button>
+                    <span id="fullpage-transcript-status" class="text-[11px] text-emerald-400 font-semibold hidden"></span>
+                </div>
+
+                <a href="https://wa.me/254715479955?text=Hello%20UniqueTechCamp!%20I%20am%20chatting%20with%20your%20AI%20Solutions%20Desk." 
+                   target="_blank"
+                   rel="noopener noreferrer"
+                   class="px-3 py-1.5 rounded-xl bg-emerald-500/15 hover:bg-emerald-500/25 border border-emerald-500/30 text-[11px] font-bold text-emerald-400 transition-colors flex items-center gap-1.5 shadow-sm"
+                   title="Direct Chat with Senior Software Architect on WhatsApp">
+                    <i class="fa-brands fa-whatsapp text-sm text-[#25D366]"></i>
+                    <span>Live WhatsApp</span>
+                </a>
+            </div>
 
         </div>
 
@@ -480,7 +488,7 @@ document.addEventListener('DOMContentLoaded', () => {
             messagesBox.innerHTML = '';
             renderMsg({
                 sender: 'assistant',
-                message: "Welcome to UniqueTechCamp Solutions Desk! How can our senior software architects help scope your web or AI system today?",
+                message: "Welcome to UniqueTechCamp! I am your 24/7 AI Solutions Architect. We develop/engineer high-converting web applications, 24/7 WhatsApp/Email qualification bots, clinic systems, and e-commerce platforms.",
                 created_at: 'Just now'
             });
         }
@@ -616,12 +624,12 @@ document.addEventListener('DOMContentLoaded', () => {
             const slot = slotBtn.getAttribute('data-slot');
 
             slotBtn.disabled = true;
-            slotBtn.innerHTML = 'Booking...';
+            slotBtn.innerHTML = 'Reserving Slot...';
 
             fetch('/ai-assistant/api/book/', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json', 'X-CSRFToken': getCsrf() },
-                body: JSON.stringify({ session_id: fullpageSessionId, date: date, slot: slot })
+                body: JSON.stringify({ session_id: fullpageSessionId, date: date, slot_key: slot, slot: slot })
             })
             .then(r => r.json())
             .then(data => {
@@ -647,31 +655,42 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
-    // Email Transcript
+    // Email Transcript (Dispatches to client's registered/profile email directly without popup)
     if (transcriptBtn) {
         transcriptBtn.addEventListener('click', () => {
-            const emailPrompt = prompt('Please enter the email address to receive your consultation transcript:');
-            if (!emailPrompt) return;
-
             transcriptBtn.disabled = true;
+            const originalHtml = transcriptBtn.innerHTML;
+            transcriptBtn.innerHTML = '<span class="animate-spin text-emerald-400">⏳</span> <span>Sending...</span>';
 
             fetch('/ai-assistant/api/transcript/', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json', 'X-CSRFToken': getCsrf() },
-                body: JSON.stringify({ session_id: fullpageSessionId, email: emailPrompt.trim() })
+                body: JSON.stringify({ session_id: fullpageSessionId })
             })
             .then(r => r.json())
             .then(data => {
                 transcriptBtn.disabled = false;
+                transcriptBtn.innerHTML = originalHtml;
+                if (window.lucide) lucide.createIcons();
+
+                const statusEl = document.getElementById('fullpage-transcript-status');
                 if (data.success) {
-                    alert('Session transcript and architecture summary dispatched successfully!');
+                    if (statusEl) {
+                        statusEl.textContent = '✓ ' + (data.message || 'Transcript sent to your email!');
+                        statusEl.classList.remove('hidden');
+                        setTimeout(() => statusEl.classList.add('hidden'), 6000);
+                    } else {
+                        alert(data.message || 'Transcript sent!');
+                    }
                 } else {
-                    alert(data.error || 'Could not send transcript.');
+                    alert(data.error || 'Please provide your contact details in the chat first so we know where to send your transcript.');
                 }
             })
             .catch(() => {
                 transcriptBtn.disabled = false;
-                alert('Connection error.');
+                transcriptBtn.innerHTML = originalHtml;
+                if (window.lucide) lucide.createIcons();
+                alert('Connection error. Please try again.');
             });
         });
     }

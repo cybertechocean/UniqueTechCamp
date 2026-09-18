@@ -29,12 +29,12 @@ def get_available_slots_for_date(date_obj: datetime.date) -> dict:
             "slots": []
         }
 
-    # Sunday check (date_obj.weekday() == 6 is Sunday)
-    if date_obj.weekday() == 6:
+    # Saturday check (date_obj.weekday() == 5 is Saturday)
+    if date_obj.weekday() == 5:
         return {
             "date_str": date_obj.strftime("%Y-%m-%d"),
             "is_operating_day": False,
-            "message": "UniqueTechCamp is closed on Sundays. Our consultation hours are Monday through Saturday, 8:00 AM to 8:00 PM EAT.",
+            "message": "UniqueTechCamp is closed on Saturdays. Our consultation hours are Sunday through Friday, 8:00 AM to 8:00 PM EAT.",
             "slots": []
         }
 

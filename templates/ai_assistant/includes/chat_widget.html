@@ -56,14 +56,6 @@
                    aria-label="Expand Chat to Full Page">
                     <i data-lucide="maximize-2" class="w-4 h-4"></i>
                 </a>
-                <!-- Email Transcript Trigger -->
-                <button type="button" 
-                        id="utc-ai-email-transcript-btn" 
-                        class="p-1.5 text-slate-400 hover:text-sky-400 hover:bg-slate-800/80 rounded-lg transition-colors cursor-pointer" 
-                        title="Email Chat Transcript to Me" 
-                        aria-label="Email Transcript">
-                    <i data-lucide="mail" class="w-4 h-4"></i>
-                </button>
                 <!-- Close / Minimize -->
                 <button type="button" 
                         id="utc-ai-close-btn" 
@@ -114,6 +106,29 @@
                 <i data-lucide="send" class="w-4 h-4"></i>
             </button>
         </form>
+
+        <!-- Bottom Actions Bar: Email Transcript & WhatsApp (Moved below send button) -->
+        <div class="px-3 py-2 bg-slate-950 border-t border-slate-800/80 flex items-center justify-between text-[11px] shrink-0">
+            <div class="flex items-center gap-1.5">
+                <button type="button" 
+                        id="utc-ai-email-transcript-btn" 
+                        class="px-2 py-1 rounded-lg bg-slate-900 hover:bg-slate-800 border border-slate-700/80 text-slate-300 hover:text-emerald-400 transition-colors flex items-center gap-1 cursor-pointer text-[10px] font-semibold"
+                        title="Email Consultation Transcript">
+                    <i data-lucide="mail" class="w-3 h-3 text-emerald-400"></i>
+                    <span>Email Transcript</span>
+                </button>
+                <span id="utc-widget-transcript-status" class="text-[10px] text-emerald-400 font-bold hidden"></span>
+            </div>
+
+            <a href="https://wa.me/254715479955?text=Hello%20UniqueTechCamp!%20I%20am%20chatting%20with%20your%20AI%20Solutions%20Desk." 
+               target="_blank"
+               rel="noopener noreferrer"
+               class="px-2 py-1 rounded-lg bg-emerald-500/15 hover:bg-emerald-500/25 border border-emerald-500/30 text-emerald-400 transition-colors flex items-center gap-1 text-[10px] font-bold"
+               title="Direct WhatsApp with Senior Software Architect">
+                <i class="fa-brands fa-whatsapp text-xs text-[#25D366]"></i>
+                <span>WhatsApp</span>
+            </a>
+        </div>
     </div>
 
     <!-- Floating Launcher Trigger Button (Stacked Vertically Above Support Desk) -->
@@ -422,14 +437,14 @@
                 messagesBox.innerHTML = '';
                 renderMessage({
                     sender: 'assistant',
-                    message: "Hello! Welcome to UniqueTechCamp Solutions Desk. How can our senior engineers help you today?",
+                    message: "Welcome to UniqueTechCamp! I am your 24/7 AI Solutions Architect. We develop/engineer high-converting web applications, 24/7 WhatsApp/Email qualification bots, clinic systems, and e-commerce platforms.",
                     created_at: 'Just now'
                 });
             }
         });
     }
 
-    // Toggle Modal
+    // Toggle Modal & Synchronize Sessions
     function toggleWidget(open) {
         if (!modal) return;
         const willOpen = open !== undefined ? open : modal.classList.contains('hidden');
@@ -438,11 +453,9 @@
             if (iconOpen) iconOpen.classList.add('hidden');
             if (iconClose) iconClose.classList.remove('hidden');
             if (launcher) launcher.setAttribute('aria-expanded', 'true');
-            if (!currentSessionId || !messagesBox.children.length) {
-                initSession();
-            } else {
-                scrollToBottom();
-            }
+            // Always sync with latest session state
+            currentSessionId = localStorage.getItem('utc_ai_session_id') || currentSessionId;
+            initSession();
             if (queryInput) queryInput.focus();
         } else {
             modal.classList.add('hidden');
@@ -603,7 +616,7 @@
             const slot = slotBtn.getAttribute('data-slot');
 
             slotBtn.disabled = true;
-            slotBtn.innerHTML = 'Booking...';
+            slotBtn.innerHTML = 'Reserving...';
 
             fetch('/ai-assistant/api/book/', {
                 method: 'POST',
@@ -614,6 +627,7 @@
                 body: JSON.stringify({
                     session_id: currentSessionId,
                     date: date,
+                    slot_key: slot,
                     slot: slot
                 })
             })
@@ -641,13 +655,12 @@
         }
     });
 
-    // Email Transcript
+    // Email Transcript (Dispatches to client's registered/profile email directly without popup)
     if (emailTranscriptBtn) {
         emailTranscriptBtn.addEventListener('click', () => {
-            const emailPrompt = prompt('Enter your email to receive this chat transcript:');
-            if (!emailPrompt) return;
-
             emailTranscriptBtn.disabled = true;
+            const originalHtml = emailTranscriptBtn.innerHTML;
+            emailTranscriptBtn.innerHTML = '<span class="animate-spin text-emerald-400">⏳</span>';
 
             fetch('/ai-assistant/api/transcript/', {
                 method: 'POST',
@@ -655,23 +668,32 @@
                     'Content-Type': 'application/json',
                     'X-CSRFToken': getCsrfToken()
                 },
-                body: JSON.stringify({
-                    session_id: currentSessionId,
-                    email: emailPrompt.trim()
-                })
+                body: JSON.stringify({ session_id: currentSessionId })
             })
             .then(res => res.json())
             .then(data => {
                 emailTranscriptBtn.disabled = false;
+                emailTranscriptBtn.innerHTML = originalHtml;
+                if (window.lucide) lucide.createIcons();
+
+                const statusEl = document.getElementById('utc-widget-transcript-status');
                 if (data.success) {
-                    alert('Transcript dispatched successfully!');
+                    if (statusEl) {
+                        statusEl.textContent = '✓ Sent!';
+                        statusEl.classList.remove('hidden');
+                        setTimeout(() => statusEl.classList.add('hidden'), 5000);
+                    } else {
+                        alert(data.message || 'Transcript sent!');
+                    }
                 } else {
-                    alert(data.error || 'Could not dispatch transcript.');
+                    alert(data.error || 'Please provide your contact details in the chat first.');
                 }
             })
             .catch(() => {
                 emailTranscriptBtn.disabled = false;
-                alert('Network error.');
+                emailTranscriptBtn.innerHTML = originalHtml;
+                if (window.lucide) lucide.createIcons();
+                alert('Connection error. Please try again.');
             });
         });
     }

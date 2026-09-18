@@ -38,7 +38,7 @@ def build_system_knowledge_prompt():
 - **Tagline**: WEBSITE • CLIENTS • INCOME — High-Performance Web & AI Systems
 - **Headquarters**: Nairobi CBD, Nairobi County, Kenya
 - **Operating Timezone**: East Africa Time (EAT / UTC+3)
-- **Consultation Hours**: Monday to Saturday, 8:00 AM to 8:00 PM EAT (Sundays closed)
+- **Consultation Hours**: Sunday to Friday, 8:00 AM to 8:00 PM EAT (Saturdays closed)
 - **Official Contact Numbers**: Phone & WhatsApp: +254 715 479 955
 - **Official Email**: info@uniquetechcamp.org
 - **M-Pesa Buy Goods & Services Till**: 5797853 (UniqueTechCamp)

@@ -158,7 +158,7 @@
                 Consultation Date <span class="text-rose-500">*</span>
               </label>
               <input type="date" id="preferred_date" name="preferred_date" min="{{ min_date }}" max="{{ max_date }}" value="{{ min_date }}" required class="w-full px-4 py-3.5 rounded-2xl border border-slate-300 bg-slate-50 focus:bg-white focus:border-emerald-500 focus:ring-4 focus:ring-emerald-500/10 transition-all text-sm font-semibold text-slate-900 cursor-pointer">
-              <p class="text-[11px] text-slate-400 mt-2">Monday through Saturday available</p>
+              <p class="text-[11px] text-slate-400 mt-2">Sunday through Friday available (Closed Saturdays)</p>
             </div>
 
             <!-- Time Slots -->
@@ -429,7 +429,18 @@
     }
 
     serviceSelect.addEventListener('change', updatePreview);
-    dateInput.addEventListener('change', updatePreview);
+    dateInput.addEventListener('change', function() {
+      if (this.value) {
+        const parts = this.value.split('-');
+        const selectedDate = new Date(parts[0], parts[1] - 1, parts[2]);
+        if (selectedDate.getDay() === 6) {
+          alert('UniqueTechCamp is closed on Saturdays. Please select any date from Sunday through Friday.');
+          this.value = '';
+          return;
+        }
+      }
+      updatePreview();
+    });
     slotRadios.forEach(r => r.addEventListener('change', updatePreview));
     channelRadios.forEach(r => r.addEventListener('change', updatePreview));
 
