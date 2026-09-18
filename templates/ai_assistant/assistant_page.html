@@ -1,140 +1,166 @@
 {% extends 'base.html' %}
 {% load static %}
 
-{% block title %}24/7 AI Solutions Architect & Consultation Desk | UniqueTechCamp{% endblock %}
-{% block description %}Consult with UniqueTechCamp's 24/7 AI Solutions Architect to scope custom web applications, WhatsApp qualification bots, clinic systems, and schedule a free technical consultation.{% endblock %}
+{% block title %}24/7 AI Solutions Architect & Project Scoping Desk | UniqueTechCamp{% endblock %}
+{% block description %}Scope custom web applications, 24/7 WhatsApp AI qualification bots, clinic systems, and schedule a free technical consultation with UniqueTechCamp software architects in Nairobi.{% endblock %}
 
 {% block content %}
-<div class="min-h-screen pt-28 pb-20 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto">
+<div class="min-h-screen pt-24 pb-20 px-3 sm:px-6 lg:px-8 max-w-7xl mx-auto text-slate-100">
 
-    <!-- Top Breadcrumbs & Status -->
-    <div class="flex flex-wrap items-center justify-between gap-4 mb-6">
-        <div class="flex items-center gap-2 text-xs font-medium text-slate-400">
-            <a href="{% url 'core:home' %}" class="hover:text-emerald-400 transition-colors">Home</a>
+    <!-- Top Breadcrumbs & Live Status Bar -->
+    <div class="flex flex-wrap items-center justify-between gap-3 mb-6">
+        <nav class="flex items-center gap-2 text-xs font-medium text-slate-400" aria-label="Breadcrumb">
+            <a href="{% url 'core:home' %}" class="hover:text-emerald-400 transition-colors flex items-center gap-1">
+                <i data-lucide="home" class="w-3.5 h-3.5"></i> Home
+            </a>
             <span>/</span>
-            <span class="text-white font-semibold">AI Solutions Desk</span>
-        </div>
-        <div class="flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 text-xs font-bold shadow-inner">
-            <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+            <span class="text-white font-semibold flex items-center gap-1">
+                <i data-lucide="bot" class="w-3.5 h-3.5 text-emerald-400"></i> AI Solutions Desk
+            </span>
+        </nav>
+        
+        <div class="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 text-xs font-bold shadow-inner">
+            <span class="w-2 h-2 rounded-full bg-emerald-400 animate-ping"></span>
             <span>Live 24/7 AI Architecture Engine (EAT / UTC+3)</span>
         </div>
     </div>
 
     <!-- Header Section -->
-    <div class="mb-8 text-center md:text-left">
-        <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-slate-900 border border-slate-700/80 text-slate-300 text-xs font-semibold mb-3">
-            <i data-lucide="cpu" class="w-3.5 h-3.5 text-emerald-400"></i>
-            <span>Interactive Project Scoping & Direct Scheduling</span>
+    <div class="mb-6 text-center md:text-left">
+        <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-slate-900 border border-slate-700/80 text-emerald-400 text-xs font-semibold mb-2 shadow-sm">
+            <i data-lucide="sparkles" class="w-3.5 h-3.5 text-emerald-400"></i>
+            <span>Interactive Project Architecture & Direct Booking</span>
         </div>
         <h1 class="text-2xl sm:text-4xl font-extrabold text-white tracking-tight leading-tight">
             Consult Our <span class="text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 via-teal-300 to-green-400">AI Solutions Architect</span>
         </h1>
-        <p class="mt-2 text-sm sm:text-base text-slate-400 max-w-3xl leading-relaxed">
-            Scope your web platform, ask about M-Pesa integrations, discover tailored WhatsApp qualification agents, or book a free 1-hour discovery consultation with our senior engineers in Nairobi.
+        <p class="mt-2 text-xs sm:text-sm text-slate-400 max-w-3xl leading-relaxed">
+            Scope your web system, learn how our 24/7 WhatsApp AI Bots capture qualified clients, inquire about Safaricom M-Pesa STK Push checkouts, or instantly schedule a 1-on-1 discovery consultation with our senior engineers in Nairobi.
         </p>
     </div>
 
-    <!-- Main Workspace Grid: Chat (2 Cols) + Sidebar (1 Col) -->
-    <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-8 items-start">
+    <!-- Main Workspace Grid: Chat (8 Cols) + Sidebar (4 Cols) -->
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
         
-        <!-- Large Interactive Chat Workspace (8 cols) -->
-        <div class="lg:col-span-8 flex flex-col bg-[#0b0f19] border border-slate-800 rounded-3xl shadow-2xl overflow-hidden h-[680px]">
+        <!-- Chat Workspace Column (8 cols on desktop) -->
+        <div class="lg:col-span-8 flex flex-col bg-[#0B0F19] border border-slate-800 rounded-3xl shadow-[0_20px_50px_rgba(0,0,0,0.8)] overflow-hidden h-[720px] max-h-[85vh] relative">
             
             <!-- Terminal / Studio Topbar -->
-            <div class="px-5 py-3.5 bg-slate-950 border-b border-slate-800 flex items-center justify-between shrink-0">
+            <div class="px-4 sm:px-6 py-3.5 bg-slate-950 border-b border-slate-800 flex items-center justify-between shrink-0">
                 <div class="flex items-center gap-3">
-                    <div class="w-3 h-3 rounded-full bg-rose-500/80"></div>
-                    <div class="w-3 h-3 rounded-full bg-amber-500/80"></div>
-                    <div class="w-3 h-3 rounded-full bg-emerald-500/80"></div>
-                    <span class="text-xs font-mono font-bold text-slate-300 ml-2">uniquetechcamp-ai-desk:v2.5</span>
+                    <div class="relative">
+                        <div class="w-9 h-9 rounded-xl bg-gradient-to-tr from-emerald-500 to-teal-400 p-0.5 shadow-md flex items-center justify-center">
+                            <img src="{% static 'images/logo-icon.png' %}" alt="UTC Logo" class="w-full h-full rounded-[10px] object-cover bg-slate-950">
+                        </div>
+                        <span class="absolute -bottom-0.5 -right-0.5 w-2.5 h-2.5 rounded-full bg-emerald-400 border-2 border-slate-950"></span>
+                    </div>
+                    <div>
+                        <div class="flex items-center gap-2">
+                            <h2 class="text-xs sm:text-sm font-bold text-white tracking-tight">UniqueTechCamp AI Desk</h2>
+                            <span class="px-1.5 py-0.5 rounded-full bg-emerald-500/20 text-emerald-400 text-[10px] font-black border border-emerald-500/40">24/7 EAT</span>
+                        </div>
+                        <p class="text-[10px] sm:text-[11px] text-slate-400 font-medium">Senior Solutions Architect & Direct Booking</p>
+                    </div>
                 </div>
+
+                <!-- Top Right Utility Actions -->
                 <div class="flex items-center gap-2">
                     <button type="button" 
                             id="fullpage-email-transcript-btn" 
-                            class="px-2.5 py-1 rounded-lg bg-slate-900 hover:bg-slate-800 border border-slate-700 text-[11px] font-semibold text-slate-300 hover:text-emerald-400 transition-colors flex items-center gap-1.5"
+                            class="px-2.5 py-1.5 rounded-xl bg-slate-900 hover:bg-slate-800 border border-slate-700 text-[11px] font-semibold text-slate-300 hover:text-emerald-400 transition-colors flex items-center gap-1.5 cursor-pointer shadow-sm"
                             title="Email Full Session Transcript">
-                        <i data-lucide="mail" class="w-3.5 h-3.5"></i>
+                        <i data-lucide="mail" class="w-3.5 h-3.5 text-emerald-400"></i>
                         <span class="hidden sm:inline">Email Transcript</span>
                     </button>
-                    <a href="https://wa.me/254715479955?text=Hello%20UniqueTechCamp!%20I%20am%20chatting%20with%20your%20AI%20Desk." 
+                    <a href="https://wa.me/254715479955?text=Hello%20UniqueTechCamp!%20I%20am%20chatting%20with%20your%20AI%20Solutions%20Desk." 
                        target="_blank"
-                       class="px-2.5 py-1 rounded-lg bg-emerald-500/20 hover:bg-emerald-500/30 border border-emerald-500/40 text-[11px] font-bold text-emerald-400 transition-colors flex items-center gap-1">
-                        <i class="fa-brands fa-whatsapp"></i>
+                       rel="noopener noreferrer"
+                       class="px-2.5 py-1.5 rounded-xl bg-emerald-500/20 hover:bg-emerald-500/30 border border-emerald-500/40 text-[11px] font-bold text-emerald-400 transition-colors flex items-center gap-1.5 shadow-sm"
+                       title="Chat with Senior Software Architect on WhatsApp">
+                        <i class="fa-brands fa-whatsapp text-sm text-[#25D366]"></i>
                         <span class="hidden sm:inline">Live WhatsApp</span>
                     </a>
                 </div>
             </div>
 
-            <!-- Messages Stream -->
-            <div id="fullpage-chat-messages" class="flex-1 p-5 space-y-4 overflow-y-auto font-sans text-xs sm:text-sm select-text">
-                <div class="text-center py-8 text-slate-500 text-xs flex items-center justify-center gap-2">
+            <!-- Messages Stream Area -->
+            <div id="fullpage-chat-messages" 
+                 class="flex-1 p-4 sm:p-6 space-y-4 overflow-y-auto font-sans text-xs sm:text-sm select-text scroll-smooth"
+                 style="background: radial-gradient(circle at top right, rgba(16, 185, 129, 0.04), transparent 40%), #0B0F19;">
+                <div class="text-center py-8 text-slate-400 text-xs flex items-center justify-center gap-2">
                     <span class="w-4 h-4 border-2 border-emerald-500 border-t-transparent rounded-full animate-spin"></span>
-                    <span>Initializing AI Solutions Architecture Session...</span>
+                    <span>Initializing AI Architecture Workspace...</span>
                 </div>
             </div>
 
             <!-- Suggestion Quick-Pill Carousel -->
-            <div class="px-4 py-2 bg-slate-950/80 border-t border-slate-800 flex items-center gap-2 overflow-x-auto scrollbar-none shrink-0">
+            <div class="px-4 py-2.5 bg-slate-950/90 border-t border-slate-800 flex items-center gap-2 overflow-x-auto scrollbar-none shrink-0">
                 <span class="text-[10px] font-bold uppercase tracking-wider text-slate-500 whitespace-nowrap">Suggested:</span>
-                <button type="button" class="fullpage-quick-chip px-3 py-1 rounded-xl bg-slate-900 hover:bg-emerald-500/20 text-slate-300 hover:text-emerald-300 border border-slate-700 text-xs whitespace-nowrap transition-colors" data-prompt="How do your 24/7 AI WhatsApp qualification bots integrate with CRM and Google Sheets?">
+                <button type="button" class="fullpage-quick-chip px-3 py-1.5 rounded-xl bg-slate-900 hover:bg-emerald-500/20 text-slate-300 hover:text-emerald-300 border border-slate-800 hover:border-emerald-500/40 text-xs whitespace-nowrap transition-all cursor-pointer shadow-sm" data-prompt="How do your 24/7 AI WhatsApp qualification bots integrate with CRM and Google Sheets?">
                     🤖 WhatsApp AI Bots
                 </button>
-                <button type="button" class="fullpage-quick-chip px-3 py-1 rounded-xl bg-slate-900 hover:bg-emerald-500/20 text-slate-300 hover:text-emerald-300 border border-slate-700 text-xs whitespace-nowrap transition-colors" data-prompt="I need a Clinic Management System with patient appointments and M-Pesa billing.">
+                <button type="button" class="fullpage-quick-chip px-3 py-1.5 rounded-xl bg-slate-900 hover:bg-emerald-500/20 text-slate-300 hover:text-emerald-300 border border-slate-800 hover:border-emerald-500/40 text-xs whitespace-nowrap transition-all cursor-pointer shadow-sm" data-prompt="I need a Clinic Management System with patient appointments and M-Pesa billing.">
                     🏥 Clinic Management
                 </button>
-                <button type="button" class="fullpage-quick-chip px-3 py-1 rounded-xl bg-slate-900 hover:bg-emerald-500/20 text-slate-300 hover:text-emerald-300 border border-slate-700 text-xs whitespace-nowrap transition-colors" data-prompt="I want to schedule a free 1-hour discovery consultation with your engineering team.">
+                <button type="button" class="fullpage-quick-chip px-3 py-1.5 rounded-xl bg-slate-900 hover:bg-emerald-500/20 text-slate-300 hover:text-emerald-300 border border-slate-800 hover:border-emerald-500/40 text-xs whitespace-nowrap transition-all cursor-pointer shadow-sm" data-prompt="I want to schedule a free 1-hour discovery consultation with your engineering team.">
                     📅 Schedule Consultation
                 </button>
-                <button type="button" class="fullpage-quick-chip px-3 py-1 rounded-xl bg-slate-900 hover:bg-emerald-500/20 text-slate-300 hover:text-emerald-300 border border-slate-700 text-xs whitespace-nowrap transition-colors" data-prompt="Tell me about your Master Coding Prompts marketplace and 1-on-1 assistance.">
+                <button type="button" class="fullpage-quick-chip px-3 py-1.5 rounded-xl bg-slate-900 hover:bg-emerald-500/20 text-slate-300 hover:text-emerald-300 border border-slate-800 hover:border-emerald-500/40 text-xs whitespace-nowrap transition-all cursor-pointer shadow-sm" data-prompt="Tell me about your Master Coding Prompts marketplace and 1-on-1 assistance.">
                     ✨ AI Coding Prompts
                 </button>
             </div>
 
-            <!-- Input Bar -->
-            <form id="fullpage-chat-form" class="p-3.5 bg-slate-950 border-t border-slate-800 flex items-center gap-3 shrink-0">
+            <!-- Modern Input Bar -->
+            <form id="fullpage-chat-form" class="p-3 sm:p-4 bg-slate-950 border-t border-slate-800 flex items-center gap-3 shrink-0">
                 {% csrf_token %}
-                <input type="text" 
-                       id="fullpage-chat-input" 
-                       placeholder="Ask about project architecture, pricing milestones, or schedule a call..." 
-                       autocomplete="off"
-                       class="flex-1 px-4 py-3 text-sm rounded-xl bg-slate-900 border border-slate-700 text-white placeholder:text-slate-500 focus:outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 transition-all">
+                <div class="relative flex-1">
+                    <input type="text" 
+                           id="fullpage-chat-input" 
+                           placeholder="Ask about project architecture, pricing milestones, or schedule a call..." 
+                           autocomplete="off"
+                           class="w-full pl-4 pr-10 py-3.5 text-xs sm:text-sm rounded-2xl bg-slate-900 border border-slate-700/90 text-white placeholder:text-slate-500 focus:outline-none focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20 transition-all shadow-inner">
+                </div>
                 <button type="submit" 
                         id="fullpage-send-btn" 
-                        class="px-5 py-3 rounded-xl bg-gradient-to-tr from-emerald-600 to-emerald-400 hover:from-emerald-500 hover:to-green-400 text-slate-950 font-bold text-sm flex items-center gap-2 transition-all shadow-lg active:scale-95 cursor-pointer shrink-0">
+                        class="px-5 py-3.5 rounded-2xl bg-gradient-to-tr from-emerald-500 to-green-400 hover:from-emerald-400 hover:to-green-300 text-slate-950 font-bold text-xs sm:text-sm flex items-center justify-center gap-2 transition-all shadow-lg shadow-emerald-500/30 hover:scale-[1.02] active:scale-95 cursor-pointer shrink-0 disabled:opacity-50">
                     <span>Send</span>
                     <i data-lucide="send" class="w-4 h-4"></i>
                 </button>
             </form>
+
         </div>
 
-        <!-- Sidebar / Guidance (4 cols) -->
+        <!-- Sidebar Column (4 cols on desktop) -->
         <div class="lg:col-span-4 space-y-6">
             
-            <!-- Quick Consultation Card -->
+            <!-- Strategy Call Card -->
             <div class="p-6 rounded-3xl bg-slate-900/90 border border-slate-800 shadow-xl relative overflow-hidden">
                 <div class="absolute -right-8 -top-8 w-28 h-28 bg-emerald-500/10 rounded-full blur-2xl pointer-events-none"></div>
                 <div class="flex items-center gap-3 mb-3">
-                    <div class="w-10 h-10 rounded-2xl bg-emerald-500/20 text-emerald-400 flex items-center justify-center">
+                    <div class="w-10 h-10 rounded-2xl bg-emerald-500/20 text-emerald-400 flex items-center justify-center shadow-inner">
                         <i data-lucide="calendar-check" class="w-5 h-5"></i>
                     </div>
                     <div>
                         <h3 class="text-sm font-bold text-white">Free Strategy Session</h3>
-                        <p class="text-xs text-slate-400">1-Hour Technical Deep Dive</p>
+                        <p class="text-xs text-slate-400">1-Hour Technical Discovery Deep Dive</p>
                     </div>
                 </div>
                 <p class="text-xs text-slate-400 leading-relaxed mb-4">
-                    Meet directly with our senior software architects to review your workflow, calculate exact timelines, and map your digital architecture.
+                    Meet directly with our senior software architects in Nairobi to review your workflow, calculate exact timelines, and map your digital revenue architecture.
                 </p>
                 <a href="{% url 'appointments:book' %}" 
-                   class="btn-primary w-full py-2.5 px-4 text-xs rounded-xl flex items-center justify-center gap-2">
+                   class="btn-primary w-full py-2.5 px-4 text-xs rounded-xl flex items-center justify-center gap-2 font-bold shadow-emerald-500/30">
                     <i data-lucide="calendar" class="w-4 h-4"></i>
                     <span>Book Strategy Call</span>
                 </a>
             </div>
 
-            <!-- Engineering Guarantees -->
+            <!-- Engineering Standards & Guarantees -->
             <div class="p-6 rounded-3xl bg-slate-900/90 border border-slate-800 shadow-xl space-y-4">
-                <h3 class="text-xs font-bold uppercase tracking-wider text-slate-400">Our Engineering Standards</h3>
+                <h3 class="text-xs font-bold uppercase tracking-wider text-slate-400 flex items-center gap-2">
+                    <i data-lucide="award" class="w-4 h-4 text-emerald-400"></i>
+                    <span>Our Engineering Standards</span>
+                </h3>
                 
                 <div class="flex items-start gap-3">
                     <div class="w-8 h-8 rounded-xl bg-sky-500/10 text-sky-400 flex items-center justify-center shrink-0 mt-0.5">
@@ -142,7 +168,7 @@
                     </div>
                     <div>
                         <h4 class="text-xs font-bold text-white">Sub-Second Load Speeds</h4>
-                        <p class="text-[11px] text-slate-400 leading-snug">Engineered on Django & modern caching for maximum conversion.</p>
+                        <p class="text-[11px] text-slate-400 leading-snug">Engineered on Django & modern caching for maximum conversion and zero bounce.</p>
                     </div>
                 </div>
 
@@ -152,7 +178,7 @@
                     </div>
                     <div>
                         <h4 class="text-xs font-bold text-white">Complete Source Ownership</h4>
-                        <p class="text-[11px] text-slate-400 leading-snug">Zero vendor lock-in. You own your repository, database, and domains.</p>
+                        <p class="text-[11px] text-slate-400 leading-snug">Zero vendor lock-in. You own your repository, database schema, and custom code.</p>
                     </div>
                 </div>
 
@@ -162,32 +188,37 @@
                     </div>
                     <div>
                         <h4 class="text-xs font-bold text-white">Local & Global Payments</h4>
-                        <p class="text-[11px] text-slate-400 leading-snug">Seamless Safaricom M-Pesa Daraja STK Push & international cards.</p>
+                        <p class="text-[11px] text-slate-400 leading-snug">Seamless Safaricom M-Pesa Daraja STK Push & international card checkouts.</p>
                     </div>
                 </div>
             </div>
 
             <!-- Direct Contact & Headquarters Desk -->
             <div class="p-5 rounded-3xl bg-slate-950 border border-slate-800 text-xs text-slate-400 space-y-2.5">
-                <div class="font-bold text-white text-xs">Direct Engineering Desk:</div>
+                <div class="font-bold text-white text-xs flex items-center gap-2">
+                    <span class="w-2 h-2 rounded-full bg-emerald-400"></span>
+                    <span>Direct Engineering Desk:</span>
+                </div>
                 <div class="flex items-center gap-2">
-                    <i data-lucide="map-pin" class="w-4 h-4 text-emerald-400"></i>
+                    <i data-lucide="map-pin" class="w-4 h-4 text-emerald-400 shrink-0"></i>
                     <span>Nairobi CBD, Nairobi County, Kenya (EAT)</span>
                 </div>
                 <div class="flex items-center gap-2">
-                    <i data-lucide="phone" class="w-4 h-4 text-emerald-400"></i>
-                    <a href="tel:+254715479955" class="text-slate-300 hover:text-emerald-400">+254 715 479 955</a>
+                    <i data-lucide="phone" class="w-4 h-4 text-emerald-400 shrink-0"></i>
+                    <a href="tel:+254715479955" class="text-slate-300 hover:text-emerald-400 transition-colors font-semibold">+254 715 479 955</a>
                 </div>
                 <div class="flex items-center gap-2">
-                    <i data-lucide="mail" class="w-4 h-4 text-emerald-400"></i>
-                    <a href="mailto:info@uniquetechcamp.org" class="text-slate-300 hover:text-emerald-400">info@uniquetechcamp.org</a>
+                    <i data-lucide="mail" class="w-4 h-4 text-emerald-400 shrink-0"></i>
+                    <a href="mailto:info@uniquetechcamp.org" class="text-slate-300 hover:text-emerald-400 transition-colors">info@uniquetechcamp.org</a>
                 </div>
             </div>
 
         </div>
     </div>
 </div>
+{% endblock %}
 
+{% block extra_scripts %}
 <script>
 document.addEventListener('DOMContentLoaded', () => {
     let fullpageSessionId = localStorage.getItem('utc_ai_session_id') || '';
@@ -209,43 +240,148 @@ document.addEventListener('DOMContentLoaded', () => {
         if (messagesBox) messagesBox.scrollTop = messagesBox.scrollHeight;
     }
 
+    // Comprehensive Markdown and Formatting Parser
+    function formatChatMarkdown(raw) {
+        if (!raw) return '';
+        
+        // 1. Escape HTML
+        let text = raw
+            .replace(/&/g, '&amp;')
+            .replace(/</g, '&lt;')
+            .replace(/>/g, '&gt;');
+        
+        // 2. Code blocks ```lang\ncode\n```
+        const codeBlocks = [];
+        text = text.replace(/```(?:[a-zA-Z]*\n)?([\s\S]*?)```/g, (match, code) => {
+            const placeholder = `__CODE_BLOCK_${codeBlocks.length}__`;
+            codeBlocks.push(`<pre class="my-2.5 p-3 rounded-xl bg-slate-950/90 border border-slate-700/80 font-mono text-xs text-emerald-300 overflow-x-auto shadow-inner"><code>${code.trim()}</code></pre>`);
+            return placeholder;
+        });
+
+        // 3. Inline code `code`
+        text = text.replace(/`([^`]+)`/g, '<code class="px-1.5 py-0.5 rounded bg-slate-800 text-emerald-300 font-mono text-xs border border-slate-700/60">$1</code>');
+
+        // 4. Markdown links [text](url)
+        text = text.replace(/\[([^\]]+)\]\((https?:\/\/[^\s\)]+)\)/g, '<a href="$2" target="_blank" rel="noopener noreferrer" class="text-emerald-400 hover:text-emerald-300 font-bold underline decoration-emerald-500/50 hover:decoration-emerald-400 transition-colors inline-flex items-center gap-1">$1 <svg class="w-3 h-3 inline-block" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path></svg></a>');
+
+        // 5. Raw URLs
+        text = text.replace(/(^|[\s(])(https?:\/\/[^\s<)]+)(?=[)\s]|$)/g, '$1<a href="$2" target="_blank" rel="noopener noreferrer" class="text-emerald-400 hover:text-emerald-300 underline font-medium transition-colors break-all">$2</a>');
+
+        // 6. Headers
+        text = text.replace(/^### (.*$)/gim, '<h4 class="text-xs sm:text-sm font-bold text-emerald-400 mt-3 mb-1.5 flex items-center gap-1.5"><span class="w-1.5 h-1.5 rounded-full bg-emerald-400"></span>$1</h4>');
+        text = text.replace(/^## (.*$)/gim, '<h3 class="text-sm sm:text-base font-extrabold text-white mt-3 mb-2 border-b border-slate-800 pb-1">$1</h3>');
+        text = text.replace(/^# (.*$)/gim, '<h2 class="text-base sm:text-lg font-black text-white mt-4 mb-2">$1</h2>');
+
+        // 7. Bold & Italic
+        text = text.replace(/\*\*(.*?)\*\*/g, '<strong class="font-bold text-white">$1</strong>');
+        text = text.replace(/__([^_]+)__/g, '<strong class="font-bold text-white">$1</strong>');
+        text = text.replace(/\*([^*]+)\*/g, '<em class="italic text-slate-200">$1</em>');
+        text = text.replace(/_([^_]+)_/g, '<em class="italic text-slate-200">$1</em>');
+
+        // 8. Blockquotes
+        text = text.replace(/^&gt; (.*$)/gim, '<blockquote class="my-2 pl-3 border-l-2 border-emerald-500 bg-emerald-950/20 py-1 px-2 rounded-r text-emerald-200 text-xs italic">$1</blockquote>');
+
+        // 9. Lists (Unordered & Ordered)
+        const lines = text.split('\n');
+        let inUl = false;
+        let inOl = false;
+        const processedLines = [];
+
+        for (let i = 0; i < lines.length; i++) {
+            let line = lines[i];
+            const ulMatch = line.match(/^(\s*)[*+-]\s+(.*)$/);
+            const olMatch = line.match(/^(\s*)\d+\.\s+(.*)$/);
+
+            if (ulMatch) {
+                if (inOl) { processedLines.push('</ol>'); inOl = false; }
+                if (!inUl) { processedLines.push('<ul class="my-2 space-y-1.5 pl-4 list-disc marker:text-emerald-400 text-slate-100 text-xs sm:text-sm">'); inUl = true; }
+                processedLines.push(`<li>${ulMatch[2]}</li>`);
+            } else if (olMatch) {
+                if (inUl) { processedLines.push('</ul>'); inUl = false; }
+                if (!inOl) { processedLines.push('<ol class="my-2 space-y-1.5 pl-5 list-decimal marker:text-emerald-400 marker:font-bold text-slate-100 text-xs sm:text-sm">'); inOl = true; }
+                processedLines.push(`<li>${olMatch[2]}</li>`);
+            } else {
+                if (inUl) { processedLines.push('</ul>'); inUl = false; }
+                if (inOl) { processedLines.push('</ol>'); inOl = false; }
+                processedLines.push(line);
+            }
+        }
+        if (inUl) processedLines.push('</ul>');
+        if (inOl) processedLines.push('</ol>');
+
+        text = processedLines.join('\n');
+
+        // 10. Paragraphs & Line Breaks
+        text = text.replace(/\n\n+/g, '<div class="my-2"></div>');
+        text = text.replace(/\n/g, '<br>');
+
+        // 11. Restore Code Blocks
+        codeBlocks.forEach((blockHtml, idx) => {
+            text = text.replace(`__CODE_BLOCK_${idx}__`, blockHtml);
+        });
+
+        return text;
+    }
+
     function renderMsg(m) {
         const isUser = m.sender === 'user';
         const item = document.createElement('div');
-        item.className = `flex flex-col ${isUser ? 'items-end' : 'items-start'} animate-fade-in`;
+        item.className = `flex flex-col ${isUser ? 'items-end' : 'items-start'} animate-fade-in w-full`;
 
         const name = isUser ? 'You' : 'UniqueTechCamp AI Solutions Architect';
         const color = isUser ? 'text-slate-400' : 'text-emerald-400';
-        const bg = isUser 
-            ? 'bg-gradient-to-r from-emerald-600 to-green-600 text-white rounded-2xl rounded-tr-none' 
-            : 'bg-slate-900 border border-slate-800 text-slate-100 rounded-2xl rounded-tl-none shadow-lg';
 
-        let html = `
-            <div class="flex items-center gap-2 mb-1 px-1">
-                <span class="text-xs font-bold ${color}">${name}</span>
-                <span class="text-[10px] text-slate-500">${m.created_at || ''}</span>
-            </div>
-            <div class="p-4 ${bg} max-w-[85%] text-xs sm:text-sm leading-relaxed whitespace-pre-wrap">${m.message}</div>
-        `;
+        let contentHtml = '';
+        if (isUser) {
+            contentHtml = `
+                <div class="flex items-center gap-1.5 mb-1 px-1">
+                    <span class="text-[11px] font-semibold ${color}">${name}</span>
+                    <span class="text-[10px] text-slate-500">${m.created_at || ''}</span>
+                </div>
+                <div class="p-3.5 sm:p-4 rounded-2xl rounded-tr-none max-w-[85%] text-xs sm:text-sm leading-relaxed break-words shadow-md"
+                     style="background: linear-gradient(135deg, #059669 0%, #0d9488 100%) !important; color: #FFFFFF !important; border: 1px solid rgba(16, 185, 129, 0.4) !important;">
+                    ${formatChatMarkdown(m.message)}
+                </div>
+            `;
+        } else {
+            contentHtml = `
+                <div class="flex items-center gap-2 mb-1 px-1">
+                    <div class="w-5 h-5 rounded-md bg-emerald-500/20 border border-emerald-500/40 text-emerald-400 flex items-center justify-center text-[10px]">
+                        <i data-lucide="bot" class="w-3 h-3"></i>
+                    </div>
+                    <span class="text-xs font-bold ${color}">${name}</span>
+                    <span class="text-[10px] text-slate-500">${m.created_at || ''}</span>
+                    <span class="px-1.5 py-0.2 rounded-full bg-slate-800 text-[9px] text-emerald-400 font-bold border border-slate-700">Verified</span>
+                </div>
+                <div class="p-4 sm:p-5 rounded-2xl rounded-tl-none max-w-[92%] sm:max-w-[85%] text-xs sm:text-sm leading-relaxed break-words shadow-xl"
+                     style="background-color: #111827 !important; color: #F8FAFC !important; border: 1px solid rgba(71, 85, 105, 0.7) !important;">
+                    ${formatChatMarkdown(m.message)}
+                </div>
+            `;
+        }
 
+        let html = contentHtml;
+
+        // Lead Form Card
         if (m.action_type === 'lead_form' && !hasLead) {
             html += `
-                <div class="mt-3 p-4 rounded-2xl bg-slate-950 border border-emerald-500/40 max-w-[90%] shadow-xl text-left">
+                <div class="mt-3 p-4 sm:p-5 rounded-2xl max-w-[92%] sm:max-w-[85%] shadow-2xl text-left"
+                     style="background-color: #0B0F19; border: 1px solid rgba(16, 185, 129, 0.5);">
                     <div class="flex items-center gap-2 mb-2 text-emerald-400 font-bold text-xs sm:text-sm">
                         <i data-lucide="shield-check" class="w-4 h-4"></i>
                         <span>Client Verification & Project Scoping</span>
                     </div>
-                    <p class="text-xs text-slate-400 mb-3">
-                        Please provide your contact details so our engineering desk can send your project roadmap and full session transcript.
+                    <p class="text-xs text-slate-300 mb-3.5 leading-relaxed">
+                        Please provide your contact details so our engineering desk can dispatch your project architecture roadmap and full session transcript.
                     </p>
-                    <form class="fullpage-lead-form space-y-2.5">
+                    <form class="fullpage-lead-form space-y-3">
                         <input type="text" name="full_name" placeholder="Full Name *" required 
-                               class="w-full px-3 py-2 rounded-xl bg-slate-900 border border-slate-700 text-white text-xs focus:outline-none focus:border-emerald-500">
+                               class="w-full px-3.5 py-2.5 rounded-xl bg-slate-900 border border-slate-700 text-white text-xs placeholder:text-slate-500 focus:outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500">
                         <input type="email" name="email" placeholder="Official Email Address *" required 
-                               class="w-full px-3 py-2 rounded-xl bg-slate-900 border border-slate-700 text-white text-xs focus:outline-none focus:border-emerald-500">
-                        <input type="tel" name="phone" placeholder="WhatsApp / Phone Number (e.g. +254...) *" required 
-                               class="w-full px-3 py-2 rounded-xl bg-slate-900 border border-slate-700 text-white text-xs focus:outline-none focus:border-emerald-500">
-                        <button type="submit" class="w-full py-2.5 px-4 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold text-xs flex items-center justify-center gap-2 transition-all cursor-pointer">
+                               class="w-full px-3.5 py-2.5 rounded-xl bg-slate-900 border border-slate-700 text-white text-xs placeholder:text-slate-500 focus:outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500">
+                        <input type="tel" name="phone" placeholder="WhatsApp / Phone Number (e.g. +254 715...) *" required 
+                               class="w-full px-3.5 py-2.5 rounded-xl bg-slate-900 border border-slate-700 text-white text-xs placeholder:text-slate-500 focus:outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500">
+                        <button type="submit" class="w-full py-3 px-4 rounded-xl bg-gradient-to-r from-emerald-500 to-green-400 hover:from-emerald-400 hover:to-green-300 text-slate-950 font-bold text-xs flex items-center justify-center gap-2 transition-all cursor-pointer shadow-md">
                             <span>Register & Continue Consultation</span>
                             <i data-lucide="arrow-right" class="w-3.5 h-3.5"></i>
                         </button>
@@ -254,21 +390,23 @@ document.addEventListener('DOMContentLoaded', () => {
             `;
         }
 
+        // Slot Picker Card
         if (m.action_type === 'slot_picker' && m.metadata && m.metadata.dates) {
             html += `
-                <div class="mt-3 p-4 rounded-2xl bg-slate-950 border border-sky-500/40 max-w-[90%] shadow-xl text-left">
+                <div class="mt-3 p-4 sm:p-5 rounded-2xl max-w-[92%] sm:max-w-[85%] shadow-2xl text-left"
+                     style="background-color: #0B0F19; border: 1px solid rgba(56, 189, 248, 0.5);">
                     <div class="flex items-center gap-2 mb-2 text-sky-400 font-bold text-xs sm:text-sm">
                         <i data-lucide="calendar" class="w-4 h-4"></i>
-                        <span>Select Upcoming Discovery Consultation Slot (EAT)</span>
+                        <span>Select 1-Hour Discovery Consultation Slot (EAT)</span>
                     </div>
                     <div class="space-y-3 max-h-64 overflow-y-auto pr-1">
             `;
             m.metadata.dates.forEach(d => {
                 html += `
-                    <div class="p-2.5 rounded-xl bg-slate-900 border border-slate-800">
-                        <div class="text-xs font-bold text-slate-300 mb-2 flex items-center justify-between">
+                    <div class="p-3 rounded-xl bg-slate-900 border border-slate-800">
+                        <div class="text-xs font-bold text-slate-200 mb-2 flex items-center justify-between">
                             <span>${d.date_display || d.date_str}</span>
-                            <span class="text-[10px] text-emerald-400 font-semibold">Available</span>
+                            <span class="text-[10px] text-emerald-400 font-semibold px-2 py-0.5 rounded-full bg-emerald-500/10 border border-emerald-500/20">Available</span>
                         </div>
                         <div class="grid grid-cols-2 sm:grid-cols-3 gap-2">
                 `;
@@ -276,7 +414,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     if (s.is_available) {
                         html += `
                             <button type="button" 
-                                    class="fullpage-slot-btn px-2.5 py-2 rounded-lg bg-slate-800 hover:bg-emerald-500 hover:text-slate-950 text-slate-300 text-xs font-semibold border border-slate-700 transition-all text-center"
+                                    class="fullpage-slot-btn px-2.5 py-2 rounded-lg bg-slate-800 hover:bg-emerald-500 hover:text-slate-950 text-slate-200 text-xs font-semibold border border-slate-700 transition-all text-center cursor-pointer shadow-sm"
                                     data-date="${d.date_str}" data-slot="${s.slot_key}">
                                 ${s.label}
                             </button>
@@ -288,11 +426,13 @@ document.addEventListener('DOMContentLoaded', () => {
             html += `</div></div>`;
         }
 
+        // Booking Card
         if (m.action_type === 'booking_card' && m.metadata) {
             html += `
-                <div class="mt-3 p-4 rounded-2xl bg-emerald-950/40 border border-emerald-500/40 max-w-[90%] shadow-xl text-left">
+                <div class="mt-3 p-4 sm:p-5 rounded-2xl max-w-[92%] sm:max-w-[85%] shadow-2xl text-left"
+                     style="background-color: #0B0F19; border: 1px solid rgba(16, 185, 129, 0.6);">
                     <div class="flex items-center justify-between gap-2 mb-2 pb-2 border-b border-emerald-500/30">
-                        <span class="px-2.5 py-0.5 rounded-full bg-emerald-500/20 text-emerald-400 text-xs font-bold">Confirmed</span>
+                        <span class="px-2.5 py-0.5 rounded-full bg-emerald-500/20 text-emerald-400 text-xs font-bold border border-emerald-500/40">Booking Confirmed</span>
                         <span class="text-xs font-mono text-slate-300 font-bold">${m.metadata.reference}</span>
                     </div>
                     <div class="space-y-1.5 text-xs text-slate-300">
@@ -302,8 +442,8 @@ document.addEventListener('DOMContentLoaded', () => {
                     </div>
                     <div class="mt-3">
                         <a href="${m.metadata.whatsapp_url}" target="_blank" 
-                           class="inline-flex items-center gap-1.5 py-2 px-4 rounded-xl bg-emerald-500 text-slate-950 font-bold text-xs">
-                            <i class="fa-brands fa-whatsapp"></i> Chat with Architect on WhatsApp
+                           class="inline-flex items-center gap-2 py-2 px-4 rounded-xl bg-emerald-500 text-slate-950 font-bold text-xs hover:bg-emerald-400 transition-colors">
+                            <i class="fa-brands fa-whatsapp text-sm"></i> Chat with Architect on WhatsApp
                         </a>
                     </div>
                 </div>
@@ -316,7 +456,7 @@ document.addEventListener('DOMContentLoaded', () => {
         scrollBottom();
     }
 
-    // Initialize Full Page Chat
+    // Initialize Full Page Chat Session
     fetch('/ai-assistant/api/init/', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json', 'X-CSRFToken': getCsrf() },
@@ -334,6 +474,16 @@ document.addEventListener('DOMContentLoaded', () => {
                 data.messages.forEach(renderMsg);
             }
         }
+    })
+    .catch(() => {
+        if (messagesBox) {
+            messagesBox.innerHTML = '';
+            renderMsg({
+                sender: 'assistant',
+                message: "Welcome to UniqueTechCamp Solutions Desk! How can our senior software architects help scope your web or AI system today?",
+                created_at: 'Just now'
+            });
+        }
     });
 
     // Form Submit
@@ -346,6 +496,25 @@ document.addEventListener('DOMContentLoaded', () => {
             input.value = '';
             renderMsg({ sender: 'user', message: text, created_at: 'Just now' });
 
+            // Show Typing Indicator
+            const typingEl = document.createElement('div');
+            typingEl.id = 'fullpage-typing';
+            typingEl.className = 'flex items-center gap-2 text-slate-400 text-xs p-2';
+            typingEl.innerHTML = `
+                <div class="w-5 h-5 rounded-md bg-emerald-500/20 border border-emerald-500/40 text-emerald-400 flex items-center justify-center text-[10px]">
+                    <i data-lucide="bot" class="w-3 h-3"></i>
+                </div>
+                <div class="flex items-center gap-1">
+                    <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-bounce"></span>
+                    <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-bounce" style="animation-delay: 0.15s"></span>
+                    <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-bounce" style="animation-delay: 0.3s"></span>
+                </div>
+                <span class="ml-1 text-slate-400">Synthesizing architecture solution...</span>
+            `;
+            messagesBox.appendChild(typingEl);
+            if (window.lucide) lucide.createIcons();
+            scrollBottom();
+
             isBusy = true;
             if (sendBtn) sendBtn.disabled = true;
 
@@ -356,8 +525,11 @@ document.addEventListener('DOMContentLoaded', () => {
             })
             .then(r => r.json())
             .then(data => {
+                const typing = document.getElementById('fullpage-typing');
+                if (typing) typing.remove();
                 isBusy = false;
                 if (sendBtn) sendBtn.disabled = false;
+
                 if (data.success) {
                     renderMsg({
                         sender: 'assistant',
@@ -368,73 +540,88 @@ document.addEventListener('DOMContentLoaded', () => {
                     });
                 }
             })
-            .catch(err => {
+            .catch(() => {
+                const typing = document.getElementById('fullpage-typing');
+                if (typing) typing.remove();
                 isBusy = false;
                 if (sendBtn) sendBtn.disabled = false;
+
+                renderMsg({
+                    sender: 'assistant',
+                    message: "Our engineering desk is temporarily experiencing high inquiry volume. Please reach our senior architects directly on WhatsApp at +254 715 479 955 or email info@uniquetechcamp.org.",
+                    created_at: 'Just now'
+                });
             });
         });
     }
 
-    // Lead Form Delegation
-    document.addEventListener('submit', (e) => {
-        if (e.target && e.target.classList.contains('fullpage-lead-form')) {
-            e.preventDefault();
-            const f = e.target;
-            const name = f.querySelector('[name="full_name"]').value.trim();
-            const email = f.querySelector('[name="email"]').value.trim();
-            const phone = f.querySelector('[name="phone"]').value.trim();
+    // Quick Suggested Chips
+    document.querySelectorAll('.fullpage-quick-chip').forEach(chip => {
+        chip.addEventListener('click', () => {
+            const prompt = chip.getAttribute('data-prompt');
+            if (prompt && input) {
+                input.value = prompt;
+                form.dispatchEvent(new Event('submit'));
+            }
+        });
+    });
 
-            fetch('/ai-assistant/api/capture-lead/', {
+    // Lead Form Delegate
+    document.addEventListener('submit', (e) => {
+        if (e.target.matches('.fullpage-lead-form')) {
+            e.preventDefault();
+            const submitBtn = e.target.querySelector('button[type="submit"]');
+            if (submitBtn) submitBtn.disabled = true;
+
+            const payload = {
+                session_id: fullpageSessionId,
+                full_name: e.target.querySelector('input[name="full_name"]').value.trim(),
+                email: e.target.querySelector('input[name="email"]').value.trim(),
+                phone: e.target.querySelector('input[name="phone"]').value.trim()
+            };
+
+            fetch('/ai-assistant/api/lead/', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json', 'X-CSRFToken': getCsrf() },
-                body: JSON.stringify({
-                    session_id: fullpageSessionId,
-                    full_name: name,
-                    email: email,
-                    phone: phone
-                })
+                body: JSON.stringify(payload)
             })
             .then(r => r.json())
             .then(data => {
                 if (data.success) {
                     hasLead = true;
-                    f.parentElement.remove();
-                    renderMsg({ sender: 'assistant', message: data.reply, created_at: 'Just now' });
+                    e.target.closest('div').innerHTML = `
+                        <div class="p-4 rounded-xl bg-emerald-500/10 border border-emerald-500/40 text-emerald-400 text-xs font-bold flex items-center gap-2">
+                            <i data-lucide="check-circle" class="w-4 h-4"></i>
+                            <span>Details registered! Thank you, ${payload.full_name}. What system can we engineer for you?</span>
+                        </div>
+                    `;
+                    if (window.lucide) lucide.createIcons();
                 } else {
-                    alert(data.error || 'Please review your contact details.');
+                    if (submitBtn) submitBtn.disabled = false;
+                    alert(data.error || 'Could not register details. Please check your inputs.');
                 }
+            })
+            .catch(() => {
+                if (submitBtn) submitBtn.disabled = false;
+                alert('Connection error. Please try again.');
             });
         }
     });
 
-    // Slot button & chip triggers
+    // Slot Selection Delegate
     document.addEventListener('click', (e) => {
-        const chip = e.target.closest('.fullpage-quick-chip');
-        if (chip && input) {
-            input.value = chip.getAttribute('data-prompt');
-            if (form) form.dispatchEvent(new Event('submit'));
-        }
+        const slotBtn = e.target.closest('.fullpage-slot-btn');
+        if (slotBtn) {
+            const date = slotBtn.getAttribute('data-date');
+            const slot = slotBtn.getAttribute('data-slot');
 
-        const slot = e.target.closest('.fullpage-slot-btn');
-        if (slot) {
-            const dateStr = slot.getAttribute('data-date');
-            const slotKey = slot.getAttribute('data-slot');
-
-            if (!confirm(`Confirm 1-hour consultation on ${dateStr} at ${slotKey} (EAT)?`)) return;
-
-            slot.disabled = true;
-            slot.innerText = "Booking...";
+            slotBtn.disabled = true;
+            slotBtn.innerHTML = 'Booking...';
 
             fetch('/ai-assistant/api/book/', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json', 'X-CSRFToken': getCsrf() },
-                body: JSON.stringify({
-                    session_id: fullpageSessionId,
-                    date: dateStr,
-                    slot_key: slotKey,
-                    meeting_type: 'google_meet',
-                    description: 'Scheduled via Full-Page AI Assistant Desk'
-                })
+                body: JSON.stringify({ session_id: fullpageSessionId, date: date, slot: slot })
             })
             .then(r => r.json())
             .then(data => {
@@ -447,10 +634,15 @@ document.addEventListener('DOMContentLoaded', () => {
                         created_at: 'Just now'
                     });
                 } else {
+                    slotBtn.disabled = false;
+                    slotBtn.innerHTML = 'Retry Slot';
                     alert(data.error || 'Could not complete booking.');
-                    slot.disabled = false;
-                    slot.innerText = slotKey;
                 }
+            })
+            .catch(() => {
+                slotBtn.disabled = false;
+                slotBtn.innerHTML = 'Retry Slot';
+                alert('Network error during booking.');
             });
         }
     });
@@ -458,18 +650,28 @@ document.addEventListener('DOMContentLoaded', () => {
     // Email Transcript
     if (transcriptBtn) {
         transcriptBtn.addEventListener('click', () => {
-            if (!hasLead) {
-                alert("Please provide your email address in the chat first so we know where to send your transcript.");
-                return;
-            }
-            fetch('/ai-assistant/api/email-transcript/', {
+            const emailPrompt = prompt('Please enter the email address to receive your consultation transcript:');
+            if (!emailPrompt) return;
+
+            transcriptBtn.disabled = true;
+
+            fetch('/ai-assistant/api/transcript/', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json', 'X-CSRFToken': getCsrf() },
-                body: JSON.stringify({ session_id: fullpageSessionId })
+                body: JSON.stringify({ session_id: fullpageSessionId, email: emailPrompt.trim() })
             })
             .then(r => r.json())
             .then(data => {
-                alert(data.message || (data.success ? 'Transcript sent!' : 'Could not send transcript.'));
+                transcriptBtn.disabled = false;
+                if (data.success) {
+                    alert('Session transcript and architecture summary dispatched successfully!');
+                } else {
+                    alert(data.error || 'Could not send transcript.');
+                }
+            })
+            .catch(() => {
+                transcriptBtn.disabled = false;
+                alert('Connection error.');
             });
         });
     }

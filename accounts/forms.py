@@ -103,6 +103,16 @@ class ClientRegistrationForm(forms.ModelForm):
         }),
         help_text="Human verification: Solve this simple math problem."
     )
+    agree_terms = forms.BooleanField(
+        required=True,
+        error_messages={
+            'required': 'You must accept the Terms of Service and Privacy Policy to create an account.'
+        },
+        widget=forms.CheckboxInput(attrs={
+            'class': 'w-4 h-4 rounded border-slate-700 text-emerald-500 focus:ring-emerald-500 bg-slate-900',
+            'id': 'id_agree_terms'
+        })
+    )
 
     class Meta:
         model = User
@@ -161,7 +171,8 @@ class ClientRegistrationForm(forms.ModelForm):
 
 class ClientLoginForm(forms.Form):
     """
-    Login form allowing clients to log in via Username OR Email Address.
+    Login form allowing clients to log in via Username OR Email Address,
+    with human security math challenge.
     """
     login_identifier = forms.CharField(
         label="Username or Email Address",
@@ -179,6 +190,14 @@ class ClientLoginForm(forms.Form):
             'autocomplete': 'current-password',
         })
     )
+    math_answer = forms.CharField(
+        required=True,
+        widget=forms.TextInput(attrs={
+            'class': 'utc-form-input text-center font-bold tracking-widest',
+            'placeholder': 'Your Answer'
+        }),
+        help_text="Human verification: Solve this simple math problem."
+    )
     remember_me = forms.BooleanField(
         required=False,
         initial=True,
@@ -186,6 +205,48 @@ class ClientLoginForm(forms.Form):
             'class': 'rounded border-slate-700 text-emerald-500 focus:ring-emerald-500'
         })
     )
+
+    def __init__(self, *args, **kwargs):
+        self.request = kwargs.pop('request', None)
+        super().__init__(*args, **kwargs)
+
+    def clean_math_answer(self):
+        user_ans = self.cleaned_data.get('math_answer', '').strip()
+        expected = None
+        if self.request:
+            expected = self.request.session.get('utc_math_answer')
+        if not expected or str(user_ans) != str(expected):
+            raise ValidationError("Incorrect security answer. Please solve the math problem and try again.")
+        return user_ans
+
+
+from django.contrib.auth.forms import PasswordResetForm
+
+class ClientPasswordResetForm(PasswordResetForm):
+    """
+    Password Reset form with human security check (math challenge).
+    """
+    math_answer = forms.CharField(
+        required=True,
+        widget=forms.TextInput(attrs={
+            'class': 'utc-form-input text-center font-bold tracking-widest',
+            'placeholder': 'Your Answer'
+        }),
+        help_text="Human verification: Solve this simple math problem."
+    )
+
+    def __init__(self, *args, **kwargs):
+        self.request = kwargs.pop('request', None)
+        super().__init__(*args, **kwargs)
+
+    def clean_math_answer(self):
+        user_ans = self.cleaned_data.get('math_answer', '').strip()
+        expected = None
+        if self.request:
+            expected = self.request.session.get('utc_math_answer')
+        if not expected or str(user_ans) != str(expected):
+            raise ValidationError("Incorrect security answer. Please solve the math challenge and try again.")
+        return user_ans
 
 
 class ClientProfileUpdateForm(forms.ModelForm):

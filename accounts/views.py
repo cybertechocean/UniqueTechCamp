@@ -186,11 +186,15 @@ class LoginView(View):
     def get(self, request):
         if request.user.is_authenticated:
             return redirect('accounts:dashboard')
-        form = ClientLoginForm()
-        return render(request, self.template_name, {'form': form})
+        question, _ = generate_math_challenge(request)
+        form = ClientLoginForm(request=request)
+        return render(request, self.template_name, {
+            'form': form,
+            'math_question': question,
+        })
 
     def post(self, request):
-        form = ClientLoginForm(request.POST)
+        form = ClientLoginForm(request.POST, request=request)
         if form.is_valid():
             identifier = form.cleaned_data['login_identifier'].strip()
             password = form.cleaned_data['password']
@@ -228,7 +232,12 @@ class LoginView(View):
                     "Invalid username/email or password. Please check your credentials and try again."
                 )
 
-        return render(request, self.template_name, {'form': form})
+        # On error, generate a new math challenge
+        question, _ = generate_math_challenge(request)
+        return render(request, self.template_name, {
+            'form': form,
+            'math_question': question,
+        })
 
 
 class LogoutView(View):
@@ -308,3 +317,34 @@ class RefreshMathChallengeApiView(View):
     def get(self, request):
         question, _ = generate_math_challenge(request)
         return JsonResponse({'question': question})
+
+
+from django.contrib.auth import views as auth_views
+from .forms import ClientPasswordResetForm
+
+class ClientPasswordResetView(auth_views.PasswordResetView):
+    """
+    Password Reset View with server-validated Human Math Security Check.
+    """
+    form_class = ClientPasswordResetForm
+    template_name = 'registration/password_reset_form.html'
+    email_template_name = 'registration/password_reset_email.txt'
+    html_email_template_name = 'registration/password_reset_email.html'
+    subject_template_name = 'registration/password_reset_subject.txt'
+    success_url = '/auth/password_reset/done/'
+
+    def get_form_kwargs(self):
+        kwargs = super().get_form_kwargs()
+        kwargs['request'] = self.request
+        return kwargs
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        question, _ = generate_math_challenge(self.request)
+        context['math_question'] = question
+        return context
+
+    def form_invalid(self, form):
+        question, _ = generate_math_challenge(self.request)
+        return self.render_to_response(self.get_context_data(form=form, math_question=question))
+

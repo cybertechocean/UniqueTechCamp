@@ -144,7 +144,16 @@
                         <label for="{{ form.password.id_for_label }}" class="block text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-1.5">
                             Password <span class="text-emerald-500">*</span>
                         </label>
-                        {{ form.password }}
+                        <div class="relative">
+                            {{ form.password }}
+                            <button type="button" 
+                                    class="password-toggle-btn absolute inset-y-0 right-0 pr-3.5 flex items-center text-slate-400 hover:text-emerald-400 transition-colors cursor-pointer"
+                                    data-target="{{ form.password.id_for_label }}"
+                                    aria-label="Toggle password visibility">
+                                <i data-lucide="eye" class="w-4 h-4 eye-show"></i>
+                                <i data-lucide="eye-off" class="w-4 h-4 eye-hide hidden"></i>
+                            </button>
+                        </div>
                         {% if form.password.errors %}
                             <p class="text-[11px] text-red-500 mt-1">{{ form.password.errors.0 }}</p>
                         {% endif %}
@@ -153,7 +162,16 @@
                         <label for="{{ form.confirm_password.id_for_label }}" class="block text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-1.5">
                             Confirm Password <span class="text-emerald-500">*</span>
                         </label>
-                        {{ form.confirm_password }}
+                        <div class="relative">
+                            {{ form.confirm_password }}
+                            <button type="button" 
+                                    class="password-toggle-btn absolute inset-y-0 right-0 pr-3.5 flex items-center text-slate-400 hover:text-emerald-400 transition-colors cursor-pointer"
+                                    data-target="{{ form.confirm_password.id_for_label }}"
+                                    aria-label="Toggle confirm password visibility">
+                                <i data-lucide="eye" class="w-4 h-4 eye-show"></i>
+                                <i data-lucide="eye-off" class="w-4 h-4 eye-hide hidden"></i>
+                            </button>
+                        </div>
                         {% if form.confirm_password.errors %}
                             <p class="text-[11px] text-red-500 mt-1">{{ form.confirm_password.errors.0 }}</p>
                         {% endif %}
@@ -190,8 +208,27 @@
                     {% endif %}
                 </div>
 
+                <!-- Terms & Conditions Acceptance (Mandatory) -->
+                <div class="pt-2">
+                    <label class="flex items-start gap-3 cursor-pointer group">
+                        <div class="flex items-center h-5 mt-0.5">
+                            {{ form.agree_terms }}
+                        </div>
+                        <div class="text-xs text-slate-400 leading-relaxed select-none">
+                            I have read and agree to the 
+                            <a href="{% url 'core:terms_of_service' %}" target="_blank" class="text-emerald-400 hover:text-emerald-300 font-bold underline">Terms of Service</a> 
+                            and 
+                            <a href="{% url 'core:privacy_policy' %}" target="_blank" class="text-emerald-400 hover:text-emerald-300 font-bold underline">Privacy Policy</a>. 
+                            I understand that UniqueTechCamp respects client intellectual property and data confidentiality. <span class="text-emerald-500 font-bold">*</span>
+                        </div>
+                    </label>
+                    {% if form.agree_terms.errors %}
+                        <p class="text-[11px] text-red-500 mt-1 font-semibold">{{ form.agree_terms.errors.0 }}</p>
+                    {% endif %}
+                </div>
+
                 <!-- Submit Button -->
-                <div class="pt-4">
+                <div class="pt-3">
                     <button type="submit" class="w-full btn-primary py-3.5 px-6 rounded-xl font-bold text-sm tracking-wide shadow-emerald-500/30">
                         <span>Register & Verify Account</span>
                         <i data-lucide="arrow-right" class="w-4 h-4"></i>
@@ -235,5 +272,22 @@
                 });
         });
     }
+
+    // Toggle Show/Hide Password Fields
+    document.querySelectorAll('.password-toggle-btn').forEach(btn => {
+        btn.addEventListener('click', function() {
+            const targetId = btn.getAttribute('data-target');
+            const input = document.getElementById(targetId);
+            if (!input) return;
+            const isPass = input.type === 'password';
+            input.type = isPass ? 'text' : 'password';
+            const eyeShow = btn.querySelector('.eye-show');
+            const eyeHide = btn.querySelector('.eye-hide');
+            if (eyeShow && eyeHide) {
+                eyeShow.classList.toggle('hidden', isPass);
+                eyeHide.classList.toggle('hidden', !isPass);
+            }
+        });
+    });
 </script>
 {% endblock %}

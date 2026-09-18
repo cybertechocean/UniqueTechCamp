@@ -62,6 +62,7 @@ class ClientAccountAndPromptsTestCase(TestCase):
             'password': 'SecurePassword123!',
             'confirm_password': 'SecurePassword123!',
             'math_answer': '15',
+            'agree_terms': True,
         }
         res = self.client.post(reverse('accounts:register'), data)
         self.assertEqual(res.status_code, 302)
@@ -89,13 +90,14 @@ class ClientAccountAndPromptsTestCase(TestCase):
             'password': 'SecurePassword123!',
             'confirm_password': 'SecurePassword123!',
             'math_answer': '10',
+            'agree_terms': True,
         }
         res = self.client.post(reverse('accounts:register'), data)
         self.assertEqual(res.status_code, 200)
         self.assertFalse(User.objects.filter(username='badphoneuser').exists())
 
     def test_dual_login_with_username_and_email(self):
-        """Test that clients can authenticate with either username OR email."""
+        """Test that clients can authenticate with either username OR email with math challenge."""
         user = User.objects.create_user(
             username='johndoe',
             email='john.doe@example.com',
@@ -103,18 +105,28 @@ class ClientAccountAndPromptsTestCase(TestCase):
         )
         UserProfile.objects.create(user=user, phone_number='+254700112233')
 
+        session = self.client.session
+        session['utc_math_answer'] = '20'
+        session.save()
+
         # 1. Login with username
         res_username = self.client.post(reverse('accounts:login'), {
             'login_identifier': 'johndoe',
-            'password': 'MyPassword456!'
+            'password': 'MyPassword456!',
+            'math_answer': '20',
         })
         self.assertEqual(res_username.status_code, 302)
         self.client.logout()
 
+        session = self.client.session
+        session['utc_math_answer'] = '20'
+        session.save()
+
         # 2. Login with email
         res_email = self.client.post(reverse('accounts:login'), {
             'login_identifier': 'john.doe@example.com',
-            'password': 'MyPassword456!'
+            'password': 'MyPassword456!',
+            'math_answer': '20',
         })
         self.assertEqual(res_email.status_code, 302)
 

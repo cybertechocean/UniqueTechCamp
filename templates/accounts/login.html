@@ -82,9 +82,46 @@
                             <i data-lucide="lock" class="w-4 h-4"></i>
                         </span>
                         {{ form.password }}
+                        <button type="button" 
+                                class="password-toggle-btn absolute inset-y-0 right-0 pr-3.5 flex items-center text-slate-400 hover:text-emerald-400 transition-colors cursor-pointer"
+                                data-target="{{ form.password.id_for_label }}"
+                                aria-label="Toggle password visibility">
+                            <i data-lucide="eye" class="w-4 h-4 eye-show"></i>
+                            <i data-lucide="eye-off" class="w-4 h-4 eye-hide hidden"></i>
+                        </button>
                     </div>
                     {% if form.password.errors %}
                         <p class="text-[11px] text-red-500 mt-1">{{ form.password.errors.0 }}</p>
+                    {% endif %}
+                </div>
+
+                <!-- Human Verification (Dynamic Math Challenge) -->
+                <div class="pt-2">
+                    <div class="p-4 rounded-2xl bg-emerald-500/10 dark:bg-emerald-500/10 border border-emerald-500/30 flex flex-col sm:flex-row items-center justify-between gap-3">
+                        <div class="flex items-center gap-3">
+                            <div class="w-10 h-10 rounded-xl bg-emerald-500/20 text-emerald-600 dark:text-emerald-400 flex items-center justify-center shrink-0">
+                                <i data-lucide="shield-check" class="w-5 h-5"></i>
+                            </div>
+                            <div>
+                                <span class="text-xs font-bold uppercase tracking-wider text-slate-900 dark:text-white block">Human Security Check</span>
+                                <span class="text-[11px] text-slate-600 dark:text-slate-400">Solve this simple question to proceed:</span>
+                            </div>
+                        </div>
+
+                        <div class="flex items-center gap-2 w-full sm:w-auto justify-end">
+                            <span id="math-challenge-display" class="px-3.5 py-2 rounded-xl bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-700 text-slate-900 dark:text-white font-mono font-extrabold text-sm shadow-inner">
+                                {{ math_question }} = ?
+                            </span>
+                            <div class="w-24">
+                                {{ form.math_answer }}
+                            </div>
+                            <button type="button" id="refresh-math-btn" class="p-2 rounded-xl bg-white dark:bg-slate-800 hover:bg-slate-100 dark:hover:bg-slate-700 border border-slate-300 dark:border-slate-700 text-slate-600 dark:text-slate-300 transition-colors" title="Get new math question">
+                                <i data-lucide="refresh-cw" class="w-4 h-4"></i>
+                            </button>
+                        </div>
+                    </div>
+                    {% if form.math_answer.errors %}
+                        <p class="text-[11px] text-red-500 mt-1">{{ form.math_answer.errors.0 }}</p>
                     {% endif %}
                 </div>
 
@@ -117,4 +154,46 @@
         </div>
     </div>
 </section>
+{% endblock %}
+
+{% block extra_scripts %}
+<script>
+    // Dynamic Math Question Refresh
+    const refreshBtn = document.getElementById('refresh-math-btn');
+    const mathDisplay = document.getElementById('math-challenge-display');
+
+    if (refreshBtn && mathDisplay) {
+        refreshBtn.addEventListener('click', function() {
+            refreshBtn.classList.add('animate-spin');
+            fetch("{% url 'accounts:refresh_math' %}")
+                .then(res => res.json())
+                .then(data => {
+                    if (data.question) {
+                        mathDisplay.textContent = data.question + ' = ?';
+                    }
+                    setTimeout(() => refreshBtn.classList.remove('animate-spin'), 300);
+                })
+                .catch(() => {
+                    refreshBtn.classList.remove('animate-spin');
+                });
+        });
+    }
+
+    // Toggle Show/Hide Password Fields
+    document.querySelectorAll('.password-toggle-btn').forEach(btn => {
+        btn.addEventListener('click', function() {
+            const targetId = btn.getAttribute('data-target');
+            const input = document.getElementById(targetId);
+            if (!input) return;
+            const isPass = input.type === 'password';
+            input.type = isPass ? 'text' : 'password';
+            const eyeShow = btn.querySelector('.eye-show');
+            const eyeHide = btn.querySelector('.eye-hide');
+            if (eyeShow && eyeHide) {
+                eyeShow.classList.toggle('hidden', isPass);
+                eyeHide.classList.toggle('hidden', !isPass);
+            }
+        });
+    });
+</script>
 {% endblock %}

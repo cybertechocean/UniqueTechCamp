@@ -25,6 +25,7 @@ from core.views import (
     EmailPreviewWelcomeView,
     EmailPreviewPasswordResetView,
 )
+from accounts import views as accounts_views
 
 sitemaps = {
     'static': StaticViewSitemap,
@@ -47,16 +48,10 @@ urlpatterns = [
     path('llms.txt', LLMsTxtView.as_view(), name='llms_txt'),
     path('llms-full.txt', LLMsTxtView.as_view(), name='llms_full_txt'),
 
-    # Authentication & Password Reset (Branded with Top Logo & Bottom Social Icons)
+    # Authentication & Password Reset (Branded with Top Logo & Bottom Social Icons, with Math Captcha)
     path(
         'auth/password_reset/',
-        auth_views.PasswordResetView.as_view(
-            template_name='registration/password_reset_form.html',
-            email_template_name='registration/password_reset_email.txt',
-            html_email_template_name='registration/password_reset_email.html',
-            subject_template_name='registration/password_reset_subject.txt',
-            success_url='/auth/password_reset/done/',
-        ),
+        accounts_views.ClientPasswordResetView.as_view(),
         name='password_reset'
     ),
     path(
