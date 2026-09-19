@@ -107,7 +107,7 @@ class CampaignDashboardView(StaffOnlyMixin, View):
             status='draft'
         )
 
-        # Bulk Create Recipients
+        # Bulk Create Recipients with Pre-Verification Details
         recipient_objs = [
             CampaignRecipient(
                 campaign=campaign,
@@ -115,32 +115,62 @@ class CampaignDashboardView(StaffOnlyMixin, View):
                 email=r['email'],
                 subject=r['subject'] or default_subject or title,
                 personalized_message=r['message'],
-                status='pending'
+                status='pending',
+                verification_status=r.get('verification_status', 'unverified'),
+                verification_reason=r.get('verification_reason', ''),
+                is_deliverable=r.get('is_deliverable', True),
             )
             for r in recipients_data
         ]
         CampaignRecipient.objects.bulk_create(recipient_objs, batch_size=500)
 
-        messages.success(request, f"Campaign '{campaign.title}' created with {len(recipient_objs)} recipients ready!")
+        verified_c = sum(1 for r in recipients_data if r.get('verification_status') == 'verified')
+        invalid_c = sum(1 for r in recipients_data if r.get('verification_status') in ('invalid', 'suppressed'))
+
+        if invalid_c > 0:
+            messages.warning(
+                request,
+                f"Campaign '{campaign.title}' uploaded with {len(recipient_objs)} contacts: "
+                f"{verified_c} clean & verified, {invalid_c} invalid/dead emails detected. "
+                "Review or prune them in the Control Room before firing!"
+            )
+        else:
+            messages.success(request, f"Campaign '{campaign.title}' created with {len(recipient_objs)} clean contacts ready!")
+
         return redirect('marketing:campaign_detail', pk=campaign.id)
 
 
 class CampaignDetailView(StaffOnlyMixin, View):
     """
-    Detailed campaign control room with live delivery status and test dispatch.
+    Detailed campaign control room with live delivery status, test dispatch,
+    and Email Reputation Guardian deliverability shield.
     """
     def get(self, request, pk):
         campaign = get_object_or_404(BulkCampaign, pk=pk)
         filter_status = request.GET.get('status', '').strip()
+        filter_verification = request.GET.get('verification', '').strip()
 
         recipients = campaign.recipients.all()
         if filter_status in ('pending', 'sent', 'failed'):
             recipients = recipients.filter(status=filter_status)
+        if filter_verification in ('verified', 'risky', 'invalid', 'suppressed', 'unverified'):
+            recipients = recipients.filter(verification_status=filter_verification)
+
+        verified_count = campaign.recipients.filter(verification_status='verified').count()
+        risky_count = campaign.recipients.filter(verification_status='risky').count()
+        invalid_count = campaign.recipients.filter(verification_status='invalid').count()
+        suppressed_count = campaign.recipients.filter(verification_status='suppressed').count()
 
         context = {
             'campaign': campaign,
             'recipients': recipients[:200],
             'filter_status': filter_status,
+            'filter_verification': filter_verification,
+            'verified_count': verified_count,
+            'risky_count': risky_count,
+            'invalid_count': invalid_count,
+            'suppressed_count': suppressed_count,
+            'total_invalid_or_suppressed': invalid_count + suppressed_count,
             'default_test_email': request.user.email or 'UniqueTechCamp@gmail.com',
         }
         return render(request, 'marketing/detail.html', context)
@@ -256,6 +286,78 @@ class CampaignStatusApiView(StaffOnlyMixin, View):
             'is_finished': campaign.is_finished,
             'delay_seconds': campaign.delay_seconds,
         })
+
+
+class CampaignValidateContactsView(StaffOnlyMixin, View):
+    """
+    Scans and verifies all pending contacts in a campaign using the Reputation Guardian.
+    Validates DNS MX records, syntax, typos, disposable domains, and suppression list.
+    """
+    def post(self, request, pk):
+        from .validator import verify_email_deliverability
+        campaign = get_object_or_404(BulkCampaign, pk=pk)
+        pending = campaign.recipients.filter(status='pending')
+
+        verified_c = 0
+        risky_c = 0
+        invalid_c = 0
+        suppressed_c = 0
+
+        for r in pending:
+            res = verify_email_deliverability(r.email, check_dns=True, check_suppression=True)
+            r.verification_status = res['status']
+            r.verification_reason = res['reason']
+            r.is_deliverable = res['is_safe']
+            if res.get('was_fixed') and res.get('cleaned_email'):
+                r.email = res['cleaned_email']
+            r.save(update_fields=['verification_status', 'verification_reason', 'is_deliverable', 'email'])
+
+            if res['status'] == 'verified':
+                verified_c += 1
+            elif res['status'] == 'risky':
+                risky_c += 1
+            elif res['status'] == 'suppressed':
+                suppressed_c += 1
+            else:
+                invalid_c += 1
+
+        if request.headers.get('x-requested-with') == 'XMLHttpRequest' or 'json' in request.headers.get('accept', ''):
+            return JsonResponse({
+                'success': True,
+                'verified_count': verified_c,
+                'risky_count': risky_c,
+                'invalid_count': invalid_c,
+                'suppressed_count': suppressed_c,
+                'total_checked': pending.count(),
+            })
+
+        messages.success(
+            request,
+            f"Reputation Shield Scan Complete: {verified_c} verified clean, {risky_c} risky, {invalid_c + suppressed_c} invalid/suppressed flagged."
+        )
+        return redirect('marketing:campaign_detail', pk=campaign.id)
+
+
+class CampaignPruneInvalidView(StaffOnlyMixin, View):
+    """
+    Prunes/removes invalid, dead domain, and suppressed contacts from the campaign queue.
+    Ensures only verified and deliverable emails remain before bulk sending to protect sender score.
+    """
+    def post(self, request, pk):
+        campaign = get_object_or_404(BulkCampaign, pk=pk)
+        invalid_recipients = campaign.recipients.filter(
+            status='pending'
+        ).filter(
+            Q(verification_status__in=['invalid', 'suppressed']) | Q(is_deliverable=False)
+        )
+        count = invalid_recipients.count()
+        invalid_recipients.delete()
+
+        campaign.total_recipients = campaign.recipients.count()
+        campaign.save(update_fields=['total_recipients'])
+
+        messages.success(request, f"Cleaned campaign queue! Pruned {count} invalid/dead contacts. Sender reputation protected.")
+        return redirect('marketing:campaign_detail', pk=campaign.id)
 
 
 # ==============================================================================

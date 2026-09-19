@@ -127,6 +127,29 @@ class CampaignRecipient(models.Model):
         default='pending'
     )
     error_message = models.TextField(blank=True, help_text="Error trace if delivery failed")
+    VERIFICATION_CHOICES = [
+        ('unverified', 'Unverified'),
+        ('verified', 'Verified Clean'),
+        ('risky', 'Risky / Role-Based'),
+        ('invalid', 'Invalid / Dead Domain'),
+        ('suppressed', 'Suppressed / Bounced'),
+    ]
+    verification_status = models.CharField(
+        max_length=20,
+        choices=VERIFICATION_CHOICES,
+        default='unverified',
+        db_index=True,
+        help_text="Deliverability score from pre-send verification shield"
+    )
+    verification_reason = models.CharField(
+        max_length=255,
+        blank=True,
+        help_text="Verification check result or reason"
+    )
+    is_deliverable = models.BooleanField(
+        default=True,
+        help_text="Whether this contact is safe to send to without risking reputation"
+    )
     sent_at = models.DateTimeField(null=True, blank=True)
 
     class Meta:
@@ -136,6 +159,40 @@ class CampaignRecipient(models.Model):
 
     def __str__(self):
         return f"{self.name or self.email} - {self.status}"
+
+
+class EmailSuppressionList(models.Model):
+    """
+    Global suppression list preventing dispatches to emails that hard-bounced (550),
+    unsubscribed, or were flagged as spam traps / dead domains.
+    Protects sender domain and SMTP account reputation from blacklisting.
+    """
+    REASON_CHOICES = [
+        ('hard_bounce', 'Hard Bounce (550 Mailbox Does Not Exist)'),
+        ('invalid_domain', 'Invalid / Dead Domain (No MX Records)'),
+        ('spam_trap', 'Spam Trap / Blacklist Hazard'),
+        ('disposable', 'Disposable / Temporary Email'),
+        ('unsubscribed', 'Recipient Unsubscribed'),
+        ('manual_block', 'Manually Blocked by Admin'),
+    ]
+
+    email = models.EmailField(unique=True, db_index=True, help_text="Suppressed email address")
+    reason = models.CharField(
+        max_length=30,
+        choices=REASON_CHOICES,
+        default='hard_bounce',
+        help_text="Reason for suppression"
+    )
+    detail = models.TextField(blank=True, help_text="Error message or source of suppression")
+    created_at = models.DateTimeField(auto_now_add=True, db_index=True)
+
+    class Meta:
+        ordering = ['-created_at']
+        verbose_name = 'Suppressed Email'
+        verbose_name_plural = 'Suppression List'
+
+    def __str__(self):
+        return f"[{self.get_reason_display()}] {self.email}"
 
 
 class EmailLog(models.Model):

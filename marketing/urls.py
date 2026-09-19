@@ -8,6 +8,8 @@ from .views import (
     CampaignResetStatusView,
     CampaignStatusApiView,
     CampaignDispatchStepApiView,
+    CampaignValidateContactsView,
+    CampaignPruneInvalidView,
     SendSingleEmailView,
     EmailLogListView,
     EmailLogResendView,
@@ -26,6 +28,8 @@ urlpatterns = [
     path('campaign/<int:pk>/test/', CampaignSendTestView.as_view(), name='send_test'),
     path('campaign/<int:pk>/start/', CampaignStartSendingView.as_view(), name='start_sending'),
     path('campaign/<int:pk>/reset-status/', CampaignResetStatusView.as_view(), name='reset_status'),
+    path('campaign/<int:pk>/validate-contacts/', CampaignValidateContactsView.as_view(), name='validate_contacts'),
+    path('campaign/<int:pk>/prune-invalid/', CampaignPruneInvalidView.as_view(), name='prune_invalid'),
     path('api/campaign/<int:pk>/status/', CampaignStatusApiView.as_view(), name='campaign_status_api'),
     path('api/campaign/<int:pk>/dispatch-step/', CampaignDispatchStepApiView.as_view(), name='campaign_dispatch_step_api'),
     

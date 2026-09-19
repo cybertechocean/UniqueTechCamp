@@ -1,5 +1,6 @@
 import io
 import csv
+from .validator import clean_and_normalize_email, verify_email_deliverability
 
 def generate_excel_template():
     """
@@ -142,9 +143,13 @@ def parse_spreadsheet(file_obj, default_subject=""):
         for row in rows[1:]:
             if not row or not any(row):
                 continue
-            email = row[email_idx].strip() if email_idx < len(row) else ''
-            if not email or '@' not in email:
+            raw_email = row[email_idx] if email_idx < len(row) else ''
+            cleaned_email, was_fixed = clean_and_normalize_email(raw_email)
+            if not cleaned_email or '@' not in cleaned_email:
                 continue
+
+            # Run deliverability shield
+            verify_res = verify_email_deliverability(cleaned_email, check_dns=True, check_suppression=True)
 
             name = row[name_idx].strip() if name_idx is not None and name_idx < len(row) else ''
             subject = row[subject_idx].strip() if subject_idx is not None and subject_idx < len(row) else default_subject
@@ -154,9 +159,12 @@ def parse_spreadsheet(file_obj, default_subject=""):
 
             recipients_data.append({
                 'name': name,
-                'email': email,
+                'email': cleaned_email,
                 'subject': subject,
                 'message': message,
+                'verification_status': verify_res['status'],
+                'verification_reason': verify_res['reason'],
+                'is_deliverable': verify_res['is_safe'],
             })
 
     else:
@@ -184,9 +192,13 @@ def parse_spreadsheet(file_obj, default_subject=""):
         for row in rows[1:]:
             if not row or not any(row):
                 continue
-            email = str(row[email_idx] or '').strip() if email_idx < len(row) else ''
-            if not email or '@' not in email:
+            raw_email = row[email_idx] if email_idx < len(row) else ''
+            cleaned_email, was_fixed = clean_and_normalize_email(raw_email)
+            if not cleaned_email or '@' not in cleaned_email:
                 continue
+
+            # Run deliverability shield
+            verify_res = verify_email_deliverability(cleaned_email, check_dns=True, check_suppression=True)
 
             name = str(row[name_idx] or '').strip() if name_idx is not None and name_idx < len(row) else ''
             subject = str(row[subject_idx] or '').strip() if subject_idx is not None and subject_idx < len(row) else default_subject
@@ -196,9 +208,12 @@ def parse_spreadsheet(file_obj, default_subject=""):
 
             recipients_data.append({
                 'name': name,
-                'email': email,
+                'email': cleaned_email,
                 'subject': subject,
                 'message': message,
+                'verification_status': verify_res['status'],
+                'verification_reason': verify_res['reason'],
+                'is_deliverable': verify_res['is_safe'],
             })
 
     return recipients_data

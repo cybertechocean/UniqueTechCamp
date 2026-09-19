@@ -1,7 +1,7 @@
 from django.contrib import admin
 from django.utils.html import format_html
 from unfold.admin import ModelAdmin, TabularInline
-from .models import BulkCampaign, CampaignRecipient, EmailLog
+from .models import BulkCampaign, CampaignRecipient, EmailLog, EmailSuppressionList
 
 class CampaignRecipientInline(TabularInline):
     model = CampaignRecipient
@@ -174,4 +174,33 @@ class EmailLogAdmin(ModelAdmin):
             return format_html('<span style="color: #f59e0b; font-weight: 700;">📎 Yes</span>')
         return format_html('<span style="color: #64748b;">No</span>')
     has_attachment_display.short_description = "Attachment"
+
+
+@admin.register(EmailSuppressionList)
+class EmailSuppressionListAdmin(ModelAdmin):
+    list_display = ('email', 'reason_badge', 'detail_snippet', 'created_at')
+    list_filter = ('reason', 'created_at')
+    search_fields = ('email', 'detail')
+    ordering = ('-created_at',)
+
+    def reason_badge(self, obj):
+        colors = {
+            'hard_bounce': '#ef4444',
+            'invalid_domain': '#f97316',
+            'spam_trap': '#dc2626',
+            'disposable': '#a855f7',
+            'unsubscribed': '#64748b',
+            'manual_block': '#3b82f6',
+        }
+        color = colors.get(obj.reason, '#94a3b8')
+        return format_html(
+            '<span style="display: inline-block; padding: 2px 8px; border-radius: 9999px; background-color: {}20; color: {}; font-size: 11px; font-weight: 700; border: 1px solid {}40;">{}</span>',
+            color, color, color, obj.get_reason_display()
+        )
+    reason_badge.short_description = "Reason"
+
+    def detail_snippet(self, obj):
+        return obj.detail[:80] if obj.detail else "--"
+    detail_snippet.short_description = "Details"
+
 

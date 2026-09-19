@@ -1,8 +1,16 @@
 from django.test import TestCase, Client, override_settings
 from django.contrib.auth import get_user_model
 from django.urls import reverse
-from marketing.models import BulkCampaign, CampaignRecipient, EmailLog
-from marketing.dispatcher import dispatch_next_campaign_recipient
+from marketing.models import BulkCampaign, CampaignRecipient, EmailLog, EmailSuppressionList
+from marketing.dispatcher import dispatch_next_campaign_recipient, send_single_campaign_email
+from marketing.validator import (
+    clean_and_normalize_email,
+    is_valid_syntax,
+    is_disposable,
+    is_dangerous_spam_trap,
+    is_hard_bounce_error,
+    verify_email_deliverability
+)
 
 User = get_user_model()
 
@@ -91,3 +99,82 @@ class BulkMarketingEngineTests(TestCase):
         self.assertEqual(data['recipient_email'], 'alice@example.com')
         self.assertEqual(data['sent_count'], 1)
         self.assertEqual(data['remaining_count'], 1)
+
+    def test_validator_typo_correction(self):
+        """Verify automatic domain typo correction for scraped emails."""
+        cleaned, fixed = clean_and_normalize_email("  <narokcounty@gamil.com>  ")
+        self.assertEqual(cleaned, "narokcounty@gmail.com")
+        self.assertTrue(fixed)
+
+        cleaned2, fixed2 = clean_and_normalize_email("test@yaho.com,")
+        self.assertEqual(cleaned2, "test@yahoo.com")
+        self.assertTrue(fixed2)
+
+    def test_validator_disposable_and_spam_trap(self):
+        """Verify disposable emails and spam trap addresses are detected."""
+        self.assertTrue(is_disposable("user@mailinator.com"))
+        self.assertTrue(is_disposable("fake@tempmail.com"))
+        self.assertFalse(is_disposable("contact@uniquetechcamp.org"))
+
+        self.assertTrue(is_dangerous_spam_trap("abuse@example.com"))
+        self.assertTrue(is_dangerous_spam_trap("postmaster@domain.com"))
+        self.assertTrue(is_dangerous_spam_trap("spam@domain.com"))
+        self.assertFalse(is_dangerous_spam_trap("sales@domain.com"))
+
+    def test_hard_bounce_detection(self):
+        """Verify hard bounce 550 strings are accurately detected."""
+        err1 = "550-5.1.1 The email account that you tried to reach does not exist. https://support.google.com/mail/?p=NoSuchUser"
+        self.assertTrue(is_hard_bounce_error(err1))
+
+        err2 = "550 User unknown"
+        self.assertTrue(is_hard_bounce_error(err2))
+
+        err3 = "Connection refused (port 465)"
+        self.assertFalse(is_hard_bounce_error(err3))
+
+    def test_suppression_list_blocks_send(self):
+        """Verify that an email in EmailSuppressionList is blocked from sending."""
+        EmailSuppressionList.objects.create(
+            email='bounced_user@example.com',
+            reason='hard_bounce',
+            detail='550 NoSuchUser'
+        )
+
+        bad_recipient = CampaignRecipient.objects.create(
+            campaign=self.campaign,
+            name='Bounced Guy',
+            email='bounced_user@example.com',
+            subject='Hello',
+            personalized_message='Test message'
+        )
+
+        success, err = send_single_campaign_email(bad_recipient)
+        self.assertFalse(success)
+        bad_recipient.refresh_from_db()
+        self.assertEqual(bad_recipient.status, 'failed')
+        self.assertIn('Reputation Shield', bad_recipient.error_message)
+
+    def test_prune_invalid_view(self):
+        """Verify pruning removes invalid/suppressed contacts from campaign queue."""
+        CampaignRecipient.objects.create(
+            campaign=self.campaign,
+            name='Dead Guy',
+            email='dead@fake_domain_xyz_12345.com',
+            subject='Hello',
+            personalized_message='Test message',
+            verification_status='invalid',
+            is_deliverable=False,
+            status='pending'
+        )
+        self.campaign.total_recipients = self.campaign.recipients.count()
+        self.campaign.save()
+
+        initial_count = self.campaign.recipients.count()
+
+        url = reverse('marketing:prune_invalid', kwargs={'pk': self.campaign.id})
+        res = self.client.post(url)
+        self.assertEqual(res.status_code, 302)
+
+        self.campaign.refresh_from_db()
+        self.assertLess(self.campaign.recipients.count(), initial_count)
+        self.assertFalse(self.campaign.recipients.filter(email='dead@fake_domain_xyz_12345.com').exists())

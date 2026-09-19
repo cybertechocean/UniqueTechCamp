@@ -166,6 +166,80 @@
       </div>
     </div>
 
+    <!-- Email Reputation Guardian & Deliverability Shield Card -->
+    <div class="bg-slate-900/90 border border-slate-800 rounded-3xl p-6 sm:p-8 shadow-2xl mb-10 relative overflow-hidden backdrop-blur-sm">
+      <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-6 pb-6 border-b border-slate-800">
+        <div>
+          <div class="flex items-center gap-2 text-xs font-bold text-emerald-400 uppercase tracking-wider mb-1">
+            <i data-lucide="shield-check" class="w-4 h-4 text-emerald-400"></i>
+            <span>Email Reputation Guardian • DNS MX & Bounce Shield</span>
+          </div>
+          <h3 class="text-xl font-heading font-extrabold text-white">Contact Quality & Deliverability Pre-Check</h3>
+          <p class="text-xs text-slate-400 mt-1">
+            Protects your SMTP accounts and domain reputation from 550 hard bounces, dead domains, disposable addresses, and spam traps.
+          </p>
+        </div>
+
+        <!-- Guardian Action Buttons -->
+        <div class="flex flex-wrap items-center gap-3">
+          <!-- Verify List Button -->
+          <form method="POST" action="{% url 'marketing:validate_contacts' campaign.id %}">
+            {% csrf_token %}
+            <button type="submit" class="py-3 px-4.5 rounded-2xl bg-slate-800 hover:bg-slate-700 text-slate-200 hover:text-white border border-slate-700 text-xs font-bold transition-all flex items-center gap-2 cursor-pointer shadow-lg">
+              <i data-lucide="search-check" class="w-4 h-4 text-emerald-400"></i>
+              <span>Scan & Verify Contacts (DNS MX)</span>
+            </button>
+          </form>
+
+          <!-- Prune Invalid Contacts Button -->
+          {% if total_invalid_or_suppressed > 0 %}
+          <form method="POST" action="{% url 'marketing:prune_invalid' campaign.id %}" onsubmit="return confirm('Prune {{ total_invalid_or_suppressed }} invalid/dead/suppressed contacts from this campaign? This guarantees zero 550 bounces and protects your reputation.');">
+            {% csrf_token %}
+            <button type="submit" class="py-3 px-4.5 rounded-2xl bg-rose-500/20 hover:bg-rose-500/30 text-rose-300 border border-rose-500/40 text-xs font-bold transition-all flex items-center gap-2 cursor-pointer shadow-lg shadow-rose-500/10">
+              <i data-lucide="user-x" class="w-4 h-4"></i>
+              <span>Prune {{ total_invalid_or_suppressed }} Dead Contacts</span>
+            </button>
+          </form>
+          {% endif %}
+        </div>
+      </div>
+
+      <!-- Deliverability Breakdown Grid -->
+      <div class="grid grid-cols-2 sm:grid-cols-4 gap-4 mt-6">
+        <div class="bg-slate-950/70 border border-emerald-500/20 rounded-2xl p-4 text-center">
+          <div class="text-[11px] font-bold text-emerald-400 uppercase tracking-wider mb-1 flex items-center justify-center gap-1">
+            <span class="w-2 h-2 rounded-full bg-emerald-400"></span> Verified Clean
+          </div>
+          <div class="text-2xl font-mono font-extrabold text-white" id="stat-verified">{{ verified_count }}</div>
+          <div class="text-[10px] text-slate-500 mt-0.5">Active MX • Safe to Send</div>
+        </div>
+
+        <div class="bg-slate-950/70 border border-amber-500/20 rounded-2xl p-4 text-center">
+          <div class="text-[11px] font-bold text-amber-400 uppercase tracking-wider mb-1 flex items-center justify-center gap-1">
+            <span class="w-2 h-2 rounded-full bg-amber-400"></span> Risky / Role-Based
+          </div>
+          <div class="text-2xl font-mono font-extrabold text-amber-300" id="stat-risky">{{ risky_count }}</div>
+          <div class="text-[10px] text-slate-500 mt-0.5">General Inboxes (info@, etc.)</div>
+        </div>
+
+        <div class="bg-slate-950/70 border border-rose-500/20 rounded-2xl p-4 text-center">
+          <div class="text-[11px] font-bold text-rose-400 uppercase tracking-wider mb-1 flex items-center justify-center gap-1">
+            <span class="w-2 h-2 rounded-full bg-rose-400"></span> Invalid / Dead
+          </div>
+          <div class="text-2xl font-mono font-extrabold text-rose-400" id="stat-invalid">{{ invalid_count }}</div>
+          <div class="text-[10px] text-slate-500 mt-0.5">No MX Records • 100% Bounce</div>
+        </div>
+
+        <div class="bg-slate-950/70 border border-purple-500/20 rounded-2xl p-4 text-center">
+          <div class="text-[11px] font-bold text-purple-400 uppercase tracking-wider mb-1 flex items-center justify-center gap-1">
+            <span class="w-2 h-2 rounded-full bg-purple-400"></span> Suppressed (550)
+          </div>
+          <div class="text-2xl font-mono font-extrabold text-purple-300" id="stat-suppressed">{{ suppressed_count }}</div>
+          <div class="text-[10px] text-slate-500 mt-0.5">Known 550 Failure / Blocked</div>
+        </div>
+      </div>
+    </div>
+
     <!-- Metrics Grid -->
     <div class="grid grid-cols-2 sm:grid-cols-4 gap-4 sm:gap-6 mb-10">
       <div class="bg-slate-900/80 border border-slate-800 rounded-2xl p-5 text-center">
@@ -216,18 +290,31 @@
     <div class="bg-slate-900/90 border border-slate-800 rounded-3xl p-6 sm:p-8 shadow-2xl overflow-hidden">
       <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-6 border-b border-slate-800 mb-6">
         <div>
-          <h3 class="text-lg font-bold text-white">Recipient Queue & Delivery Logs</h3>
-          <p class="text-xs text-slate-400">Individual status, timestamps, and error traces for each contact</p>
+          <h3 class="text-lg font-bold text-white">Recipient Queue & Deliverability Logs</h3>
+          <p class="text-xs text-slate-400">Individual deliverability status, timestamps, and bounce protection traces</p>
         </div>
 
         <!-- Filter Pill Tabs -->
         <div class="flex flex-wrap items-center gap-2">
-          <a href="{% url 'marketing:campaign_detail' campaign.id %}" class="px-3 py-1.5 rounded-xl text-xs font-bold transition-all {% if not filter_status %}bg-emerald-500 text-slate-950{% else %}bg-slate-800 text-slate-300 hover:text-white{% endif %}">
+          <a href="{% url 'marketing:campaign_detail' campaign.id %}" class="px-3 py-1.5 rounded-xl text-xs font-bold transition-all {% if not filter_status and not filter_verification %}bg-emerald-500 text-slate-950{% else %}bg-slate-800 text-slate-300 hover:text-white{% endif %}">
             All ({{ campaign.total_recipients }})
           </a>
           <a href="{% url 'marketing:campaign_detail' campaign.id %}?status=pending" class="px-3 py-1.5 rounded-xl text-xs font-bold transition-all {% if filter_status == 'pending' %}bg-amber-500 text-slate-950{% else %}bg-slate-800 text-slate-300 hover:text-white{% endif %}">
             Pending
           </a>
+          <a href="{% url 'marketing:campaign_detail' campaign.id %}?verification=verified" class="px-3 py-1.5 rounded-xl text-xs font-bold transition-all {% if filter_verification == 'verified' %}bg-emerald-500 text-slate-950{% else %}bg-slate-800 text-emerald-400 hover:text-white border border-emerald-500/30{% endif %}">
+            Clean ({{ verified_count }})
+          </a>
+          {% if invalid_count > 0 %}
+          <a href="{% url 'marketing:campaign_detail' campaign.id %}?verification=invalid" class="px-3 py-1.5 rounded-xl text-xs font-bold transition-all {% if filter_verification == 'invalid' %}bg-rose-500 text-white{% else %}bg-slate-800 text-rose-400 hover:text-white border border-rose-500/30{% endif %}">
+            Dead / Invalid ({{ invalid_count }})
+          </a>
+          {% endif %}
+          {% if suppressed_count > 0 %}
+          <a href="{% url 'marketing:campaign_detail' campaign.id %}?verification=suppressed" class="px-3 py-1.5 rounded-xl text-xs font-bold transition-all {% if filter_verification == 'suppressed' %}bg-purple-500 text-white{% else %}bg-slate-800 text-purple-400 hover:text-white border border-purple-500/30{% endif %}">
+            Suppressed ({{ suppressed_count }})
+          </a>
+          {% endif %}
           <a href="{% url 'marketing:campaign_detail' campaign.id %}?status=sent" class="px-3 py-1.5 rounded-xl text-xs font-bold transition-all {% if filter_status == 'sent' %}bg-emerald-500 text-slate-950{% else %}bg-slate-800 text-slate-300 hover:text-white{% endif %}">
             Sent
           </a>
@@ -244,8 +331,8 @@
               <th class="pb-3 px-3">#</th>
               <th class="pb-3 px-3">Name</th>
               <th class="pb-3 px-3">Email Address</th>
+              <th class="pb-3 px-3">Deliverability</th>
               <th class="pb-3 px-3">Subject</th>
-              <th class="pb-3 px-3">Message Snippet</th>
               <th class="pb-3 px-3">Status</th>
               <th class="pb-3 px-3">Dispatched</th>
             </tr>
@@ -255,9 +342,25 @@
             <tr class="hover:bg-slate-800/40 transition-colors" id="recipient-row-{{ r.id }}" data-recipient-id="{{ r.id }}" data-status="{{ r.status }}">
               <td class="py-3.5 px-3 text-slate-500 font-mono">{{ forloop.counter }}</td>
               <td class="py-3.5 px-3 font-bold text-white">{{ r.name|default:"--" }}</td>
-              <td class="py-3.5 px-3 font-mono text-emerald-400">{{ r.email }}</td>
+              <td class="py-3.5 px-3 font-mono text-emerald-400">
+                <span>{{ r.email }}</span>
+              </td>
+              <td class="py-3.5 px-3" id="recipient-deliverability-{{ r.id }}">
+                <span class="px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase
+                  {% if r.verification_status == 'verified' %}bg-emerald-500/20 text-emerald-400 border border-emerald-500/30
+                  {% elif r.verification_status == 'risky' %}bg-amber-500/20 text-amber-400 border border-amber-500/30
+                  {% elif r.verification_status == 'invalid' %}bg-rose-500/20 text-rose-400 border border-rose-500/30
+                  {% elif r.verification_status == 'suppressed' %}bg-purple-500/20 text-purple-400 border border-purple-500/30
+                  {% else %}bg-slate-800 text-slate-400 border border-slate-700{% endif %}" id="recipient-verify-badge-{{ r.id }}" title="{{ r.verification_reason }}">
+                  {{ r.get_verification_status_display }}
+                </span>
+                {% if r.verification_reason %}
+                <div class="text-[10px] text-slate-400 mt-0.5 max-w-[170px] truncate" id="recipient-verify-reason-{{ r.id }}" title="{{ r.verification_reason }}">
+                  {{ r.verification_reason }}
+                </div>
+                {% endif %}
+              </td>
               <td class="py-3.5 px-3 font-semibold text-slate-200 max-w-[200px] truncate" title="{{ r.subject }}">{{ r.subject }}</td>
-              <td class="py-3.5 px-3 text-slate-400 max-w-[260px] truncate" title="{{ r.personalized_message }}">{{ r.personalized_message|truncatechars:60 }}</td>
               <td class="py-3.5 px-3" id="recipient-cell-status-{{ r.id }}">
                 <span class="px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase transition-all
                   {% if r.status == 'sent' %}bg-emerald-500/20 text-emerald-400 border border-emerald-500/30
@@ -265,7 +368,7 @@
                   {% else %}bg-amber-500/20 text-amber-400 border border-amber-500/30{% endif %}" id="recipient-badge-{{ r.id }}">
                   {{ r.get_status_display }}
                 </span>
-                <div class="text-[10px] text-rose-400 mt-1 max-w-[150px] truncate {% if not r.error_message %}hidden{% endif %}" id="recipient-error-{{ r.id }}" title="{{ r.error_message }}">
+                <div class="text-[10px] text-rose-400 mt-1 max-w-[170px] truncate {% if not r.error_message %}hidden{% endif %}" id="recipient-error-{{ r.id }}" title="{{ r.error_message }}">
                   {{ r.error_message }}
                 </div>
               </td>
@@ -400,6 +503,8 @@
           const timeCell = document.getElementById(`recipient-time-${data.recipient_id}`);
           const errDiv = document.getElementById(`recipient-error-${data.recipient_id}`);
           const row = document.getElementById(`recipient-row-${data.recipient_id}`);
+          const verifyBadge = document.getElementById(`recipient-verify-badge-${data.recipient_id}`);
+          const verifyReason = document.getElementById(`recipient-verify-reason-${data.recipient_id}`);
 
           if (badge) {
             if (data.recipient_status === 'sent') {
@@ -411,19 +516,48 @@
             }
           }
 
+          if (verifyBadge && data.verification_status) {
+            const vColors = {
+              'verified': 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/30',
+              'risky': 'bg-amber-500/20 text-amber-400 border border-amber-500/30',
+              'invalid': 'bg-rose-500/20 text-rose-400 border border-rose-500/30',
+              'suppressed': 'bg-purple-500/20 text-purple-400 border border-purple-500/30',
+            };
+            const vLabels = {
+              'verified': 'Verified Clean',
+              'risky': 'Risky / Role-Based',
+              'invalid': 'Dead Domain',
+              'suppressed': 'Suppressed (550)',
+            };
+            verifyBadge.textContent = vLabels[data.verification_status] || data.verification_status;
+            verifyBadge.className = `px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase ${vColors[data.verification_status] || 'bg-slate-800 text-slate-400 border border-slate-700'}`;
+          }
+          if (verifyReason && data.verification_reason) {
+            verifyReason.textContent = data.verification_reason;
+          }
+
           if (timeCell && data.sent_at) timeCell.textContent = data.sent_at;
           if (errDiv && data.error_message) {
             errDiv.textContent = data.error_message;
             errDiv.classList.remove('hidden');
           }
           if (row) {
-            row.classList.add('bg-emerald-500/10');
-            setTimeout(() => row.classList.remove('bg-emerald-500/10'), 1500);
+            if (data.recipient_status === 'sent') {
+              row.classList.add('bg-emerald-500/10');
+              setTimeout(() => row.classList.remove('bg-emerald-500/10'), 1500);
+            } else {
+              row.classList.add('bg-rose-500/10');
+              setTimeout(() => row.classList.remove('bg-rose-500/10'), 1500);
+            }
           }
 
           if (lastResultLabel) {
-            const statusIcon = data.recipient_status === 'sent' ? '✓' : '✗';
-            lastResultLabel.textContent = `${statusIcon} ${data.recipient_email} (${data.recipient_status.toUpperCase()})`;
+            if (data.error_message && data.error_message.includes('Reputation Shield')) {
+              lastResultLabel.textContent = `🛡️ ${data.recipient_email} (BLOCKED: ${data.verification_reason || 'Dead Mailbox'})`;
+            } else {
+              const statusIcon = data.recipient_status === 'sent' ? '✓' : '✗';
+              lastResultLabel.textContent = `${statusIcon} ${data.recipient_email} (${data.recipient_status.toUpperCase()})`;
+            }
           }
         }
 

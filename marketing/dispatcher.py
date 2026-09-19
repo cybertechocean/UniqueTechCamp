@@ -54,8 +54,31 @@ def send_single_campaign_email(recipient, from_email=None):
     Returns (True, None) on success, or (False, error_str) on failure.
     """
     from .email_service import send_robust_email
+    from .validator import verify_email_deliverability
 
     try:
+        # Pre-send Deliverability & Reputation Check
+        verify_res = verify_email_deliverability(recipient.email, check_dns=True, check_suppression=True)
+        if not verify_res['is_safe']:
+            # Block sending to protect sender domain score and prevent SMTP 550 strikes
+            recipient.status = 'failed'
+            recipient.verification_status = verify_res['status']
+            recipient.verification_reason = verify_res['reason']
+            recipient.is_deliverable = False
+            recipient.error_message = f"Reputation Shield Blocked: {verify_res['reason']}"
+            recipient.save(update_fields=['status', 'verification_status', 'verification_reason', 'is_deliverable', 'error_message'])
+            logger.warning(f"Reputation Shield prevented dispatch to {recipient.email}: {verify_res['reason']}")
+            return False, recipient.error_message
+
+        # If typo was auto-fixed, update recipient email
+        if verify_res.get('was_fixed') and verify_res.get('cleaned_email'):
+            recipient.email = verify_res['cleaned_email']
+            recipient.save(update_fields=['email'])
+
+        recipient.verification_status = verify_res['status']
+        recipient.verification_reason = verify_res['reason']
+        recipient.is_deliverable = True
+
         text_content, html_content = render_campaign_email_content(
             getattr(recipient.campaign, 'email_format', 'branded'),
             recipient_name=recipient.name,
@@ -162,6 +185,8 @@ def dispatch_next_campaign_recipient(campaign):
         'recipient_name': recipient.name,
         'recipient_email': recipient.email,
         'recipient_status': recipient.status,
+        'verification_status': recipient.verification_status,
+        'verification_reason': recipient.verification_reason,
         'error_message': recipient.error_message,
         'sent_at': recipient.sent_at.strftime('%b %d, %H:%M:%S') if recipient.sent_at else '',
         'sent_count': campaign.sent_count,

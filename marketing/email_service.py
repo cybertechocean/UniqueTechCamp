@@ -5,7 +5,8 @@ from django.conf import settings
 from django.core.mail import EmailMultiAlternatives
 from django.core.mail.backends.smtp import EmailBackend
 from django.utils import timezone
-from .models import EmailLog
+from .models import EmailLog, EmailSuppressionList
+from .validator import clean_and_normalize_email, is_hard_bounce_error
 
 logger = logging.getLogger(__name__)
 
@@ -101,13 +102,13 @@ def send_robust_email(
     if not from_email:
         from_email = get_sender_from_email(sender_choice)
 
-    # Normalize recipient list
+    # Normalize recipient list and clean email
     if isinstance(to_email, (list, tuple)):
-        recipient_list = list(to_email)
+        recipient_list = [clean_and_normalize_email(e)[0] for e in to_email if e]
         primary_recipient = recipient_list[0] if recipient_list else ''
     else:
-        primary_recipient = str(to_email).strip()
-        recipient_list = [primary_recipient]
+        primary_recipient = clean_and_normalize_email(to_email)[0]
+        recipient_list = [primary_recipient] if primary_recipient else []
 
     # Create or update EmailLog
     if existing_log:
@@ -134,6 +135,19 @@ def send_robust_email(
             email_type=email_type,
             status='pending',
         )
+
+    # Pre-send Suppression Check: Protect sender reputation from known bad/bounced emails
+    try:
+        suppressed_entry = EmailSuppressionList.objects.filter(email=primary_recipient).first()
+        if suppressed_entry:
+            err = f"Blocked by Reputation Shield: {suppressed_entry.get_reason_display()} ({suppressed_entry.detail[:100]})"
+            logger.warning(f"Prevented dispatch to suppressed email {primary_recipient}: {err}")
+            email_log.status = 'failed'
+            email_log.error_message = err
+            email_log.save(update_fields=['status', 'error_message'])
+            return False, email_log
+    except Exception as se:
+        logger.warning(f"Could not check suppression list: {se}")
 
     # Handle attached file upload persistence
     if attachment_file and hasattr(attachment_file, 'name'):
@@ -260,6 +274,22 @@ def send_robust_email(
     except Exception as e:
         err_msg = str(e)
         logger.error(f"Failed to send email to {primary_recipient} via [{sender_choice}]: {err_msg}")
+
+        # Automatically capture permanent hard bounces (e.g. 550 NoSuchUser / Mailbox does not exist)
+        # into EmailSuppressionList to prevent repeated damage to domain reputation
+        if is_hard_bounce_error(err_msg):
+            try:
+                EmailSuppressionList.objects.get_or_create(
+                    email=primary_recipient,
+                    defaults={
+                        'reason': 'hard_bounce',
+                        'detail': f"SMTP Bounce: {err_msg[:400]}"
+                    }
+                )
+                err_msg = f"Hard Bounce (550 Mailbox does not exist): {err_msg[:300]}. Added to suppression list to protect sender reputation."
+            except Exception as ex:
+                logger.warning(f"Could not auto-record hard bounce suppression: {ex}")
+
         email_log.status = 'failed'
         email_log.error_message = err_msg
         email_log.save(update_fields=['status', 'error_message'])
