@@ -9,10 +9,12 @@ from django.core.paginator import Paginator
 from django.db.models import Q
 from django.template.loader import render_to_string
 from django.utils.html import strip_tags
-from .models import BulkCampaign, CampaignRecipient, EmailLog
+from django.utils import timezone
+from .models import BulkCampaign, CampaignRecipient, EmailLog, EmailSuppressionList
 from .utils import generate_excel_template, parse_spreadsheet
 from .dispatcher import execute_campaign, send_test_email, dispatch_next_campaign_recipient
 from .email_service import send_robust_email, get_sender_from_email
+from .validator import verify_email_deliverability
 
 class StaffOnlyMixin(UserPassesTestMixin):
     """Ensure only staff / administrators can access marketing & bulk emailing tools."""
@@ -358,6 +360,141 @@ class CampaignPruneInvalidView(StaffOnlyMixin, View):
 
         messages.success(request, f"Cleaned campaign queue! Pruned {count} invalid/dead contacts. Sender reputation protected.")
         return redirect('marketing:campaign_detail', pk=campaign.id)
+
+
+class CampaignBulkRecipientActionView(StaffOnlyMixin, View):
+    """
+    Handles bulk recipient operations from the interactive Recipient Queue & Deliverability Logs table:
+    - 'mark_bounced': Marks selected recipients as failed, assigns 550 bounce error, and automatically
+      adds their email addresses to the global EmailSuppressionList (hard_bounce) to permanently protect
+      all future campaigns.
+    - 'suppress': Adds selected emails to EmailSuppressionList (manual_block) and marks verification_status='suppressed'.
+    - 'delete': Prunes and deletes selected recipients from the campaign queue.
+    - 'reverify': Re-runs multi-tier deliverability verification on selected contacts.
+    """
+    def post(self, request, pk):
+        import json
+        campaign = get_object_or_404(BulkCampaign, pk=pk)
+
+        action = request.POST.get('action', '').strip()
+        raw_ids = request.POST.getlist('recipient_ids') or request.POST.getlist('recipient_ids[]')
+
+        if not raw_ids and request.body:
+            try:
+                body_data = json.loads(request.body)
+                action = action or body_data.get('action', '')
+                raw_ids = body_data.get('recipient_ids', [])
+            except Exception:
+                pass
+
+        try:
+            recipient_ids = [int(i) for i in raw_ids if str(i).isdigit()]
+        except Exception:
+            recipient_ids = []
+
+        if not recipient_ids:
+            msg = "No recipients were selected for this bulk action."
+            if request.headers.get('x-requested-with') == 'XMLHttpRequest' or 'json' in request.headers.get('accept', ''):
+                return JsonResponse({'success': False, 'message': msg}, status=400)
+            messages.warning(request, msg)
+            return redirect('marketing:campaign_detail', pk=campaign.id)
+
+        target_recipients = campaign.recipients.filter(id__in=recipient_ids)
+        total_selected = target_recipients.count()
+
+        if action == 'mark_bounced':
+            suppressed_count = 0
+            for r in target_recipients:
+                r.status = 'failed'
+                r.error_message = 'Marked as Bounced by Admin (Permanent 550 Mailbox Not Found)'
+                r.verification_status = 'suppressed'
+                r.verification_reason = 'Hard Bounce: 550 Mailbox does not exist'
+                r.is_deliverable = False
+                r.save(update_fields=['status', 'error_message', 'verification_status', 'verification_reason', 'is_deliverable'])
+
+                EmailSuppressionList.objects.update_or_create(
+                    email=r.email.lower().strip(),
+                    defaults={
+                        'reason': 'hard_bounce',
+                        'detail': f"Marked as bounced in Campaign #{campaign.id} ({campaign.title}) by {request.user.username or 'admin'}"
+                    }
+                )
+                suppressed_count += 1
+
+            campaign.sent_count = campaign.recipients.filter(status='sent').count()
+            campaign.failed_count = campaign.recipients.filter(status='failed').count()
+            campaign.save(update_fields=['sent_count', 'failed_count'])
+
+            msg = f"Successfully marked {suppressed_count} contact(s) as Bounced & added to permanent Suppression Shield."
+
+        elif action == 'suppress':
+            count = 0
+            for r in target_recipients:
+                r.verification_status = 'suppressed'
+                r.verification_reason = 'Manually suppressed by admin'
+                r.is_deliverable = False
+                r.save(update_fields=['verification_status', 'verification_reason', 'is_deliverable'])
+
+                EmailSuppressionList.objects.update_or_create(
+                    email=r.email.lower().strip(),
+                    defaults={
+                        'reason': 'manual_block',
+                        'detail': f"Manually blocked in Campaign #{campaign.id} by {request.user.username or 'admin'}"
+                    }
+                )
+                count += 1
+
+            msg = f"Permanently suppressed {count} contact(s) across all campaigns."
+
+        elif action == 'delete':
+            deleted_count = target_recipients.count()
+            target_recipients.delete()
+
+            campaign.total_recipients = campaign.recipients.count()
+            campaign.sent_count = campaign.recipients.filter(status='sent').count()
+            campaign.failed_count = campaign.recipients.filter(status='failed').count()
+            campaign.save(update_fields=['total_recipients', 'sent_count', 'failed_count'])
+
+            msg = f"Deleted {deleted_count} selected contact(s) from campaign queue."
+
+        elif action == 'reverify':
+            reverified_count = 0
+            for r in target_recipients:
+                res = verify_email_deliverability(r.email, check_dns=True, check_suppression=True)
+                r.verification_status = res['status']
+                r.verification_reason = res['reason']
+                r.is_deliverable = res['is_safe']
+                if res.get('was_fixed') and res.get('cleaned_email'):
+                    r.email = res['cleaned_email']
+                r.save(update_fields=['verification_status', 'verification_reason', 'is_deliverable', 'email'])
+                reverified_count += 1
+
+            msg = f"Re-verified deliverability for {reverified_count} selected contact(s)."
+
+        else:
+            msg = f"Unknown bulk action: {action}"
+            if request.headers.get('x-requested-with') == 'XMLHttpRequest' or 'json' in request.headers.get('accept', ''):
+                return JsonResponse({'success': False, 'message': msg}, status=400)
+            messages.error(request, msg)
+            return redirect('marketing:campaign_detail', pk=campaign.id)
+
+        if request.headers.get('x-requested-with') == 'XMLHttpRequest' or 'json' in request.headers.get('accept', ''):
+            return JsonResponse({
+                'success': True,
+                'action': action,
+                'count': total_selected,
+                'message': msg,
+                'campaign': {
+                    'total_recipients': campaign.total_recipients,
+                    'sent_count': campaign.sent_count,
+                    'failed_count': campaign.failed_count,
+                    'pending_count': campaign.recipients.filter(status='pending').count(),
+                }
+            })
+
+        messages.success(request, msg)
+        return redirect('marketing:campaign_detail', pk=campaign.id)
+
 
 
 # ==============================================================================

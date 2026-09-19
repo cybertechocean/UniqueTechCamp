@@ -324,10 +324,54 @@
         </div>
       </div>
 
+      <!-- Interactive Bulk Action Toolbar -->
+      <div id="bulk-actions-bar" class="mb-4 p-3 rounded-2xl bg-slate-950/80 border border-slate-800 flex flex-wrap items-center justify-between gap-3 transition-all">
+        <div class="flex items-center gap-3">
+          <span class="text-xs font-bold text-slate-400">
+            Selected: <span id="selected-count-badge" class="font-mono text-white bg-slate-800 px-2 py-0.5 rounded-lg border border-slate-700">0</span>
+          </span>
+          <button type="button" id="btn-select-all-toggle" class="text-[11px] font-semibold text-sky-400 hover:text-sky-300 underline cursor-pointer">
+            Select All
+          </button>
+          <button type="button" id="btn-deselect-all" class="text-[11px] font-semibold text-slate-500 hover:text-slate-300 cursor-pointer hidden">
+            Deselect
+          </button>
+        </div>
+
+        <div class="flex flex-wrap items-center gap-2">
+          <!-- Mark as Bounced Button -->
+          <button type="button" onclick="executeBulkAction('mark_bounced')" class="bulk-action-btn opacity-50 pointer-events-none px-3 py-1.5 rounded-xl text-xs font-bold bg-rose-500/20 text-rose-300 hover:bg-rose-500 hover:text-white border border-rose-500/30 flex items-center gap-1.5 transition-all cursor-pointer" title="Flag selected emails as 550 Hard Bounces and permanently suppress them from all future campaigns">
+            <i data-lucide="mail-x" class="w-3.5 h-3.5"></i>
+            <span>Mark as Bounced (550)</span>
+          </button>
+
+          <!-- Suppress Button -->
+          <button type="button" onclick="executeBulkAction('suppress')" class="bulk-action-btn opacity-50 pointer-events-none px-3 py-1.5 rounded-xl text-xs font-bold bg-purple-500/20 text-purple-300 hover:bg-purple-500 hover:text-white border border-purple-500/30 flex items-center gap-1.5 transition-all cursor-pointer" title="Permanently suppress selected emails from sending">
+            <i data-lucide="shield-ban" class="w-3.5 h-3.5"></i>
+            <span>Suppress</span>
+          </button>
+
+          <!-- Re-Verify Button -->
+          <button type="button" onclick="executeBulkAction('reverify')" class="bulk-action-btn opacity-50 pointer-events-none px-3 py-1.5 rounded-xl text-xs font-bold bg-sky-500/20 text-sky-300 hover:bg-sky-500 hover:text-white border border-sky-500/30 flex items-center gap-1.5 transition-all cursor-pointer" title="Re-scan and test deliverability on selected emails">
+            <i data-lucide="refresh-cw" class="w-3.5 h-3.5"></i>
+            <span>Re-Verify</span>
+          </button>
+
+          <!-- Delete Button -->
+          <button type="button" onclick="executeBulkAction('delete')" class="bulk-action-btn opacity-50 pointer-events-none px-3 py-1.5 rounded-xl text-xs font-bold bg-slate-800 text-rose-400 hover:bg-rose-900/60 hover:text-rose-200 border border-slate-700 flex items-center gap-1.5 transition-all cursor-pointer" title="Remove selected contacts from this campaign queue">
+            <i data-lucide="trash-2" class="w-3.5 h-3.5"></i>
+            <span>Delete</span>
+          </button>
+        </div>
+      </div>
+
       <div class="overflow-x-auto">
         <table class="w-full text-left text-xs text-slate-300">
           <thead>
             <tr class="border-b border-slate-800 text-[11px] uppercase tracking-wider text-slate-400 font-bold">
+              <th class="pb-3 px-3 w-10 text-center">
+                <input type="checkbox" id="master-select-checkbox" title="Select / Deselect All" class="w-4 h-4 rounded border-slate-700 bg-slate-950 text-sky-500 focus:ring-sky-400 cursor-pointer">
+              </th>
               <th class="pb-3 px-3">#</th>
               <th class="pb-3 px-3">Name</th>
               <th class="pb-3 px-3">Email Address</th>
@@ -335,11 +379,15 @@
               <th class="pb-3 px-3">Subject</th>
               <th class="pb-3 px-3">Status</th>
               <th class="pb-3 px-3">Dispatched</th>
+              <th class="pb-3 px-3 text-center">Actions</th>
             </tr>
           </thead>
           <tbody class="divide-y divide-slate-800/60 font-medium" id="recipients-table-body">
             {% for r in recipients %}
             <tr class="hover:bg-slate-800/40 transition-colors" id="recipient-row-{{ r.id }}" data-recipient-id="{{ r.id }}" data-status="{{ r.status }}">
+              <td class="py-3.5 px-3 text-center">
+                <input type="checkbox" class="recipient-checkbox w-4 h-4 rounded border-slate-700 bg-slate-950 text-sky-500 focus:ring-sky-400 cursor-pointer" value="{{ r.id }}" data-email="{{ r.email }}">
+              </td>
               <td class="py-3.5 px-3 text-slate-500 font-mono">{{ forloop.counter }}</td>
               <td class="py-3.5 px-3 font-bold text-white">{{ r.name|default:"--" }}</td>
               <td class="py-3.5 px-3 font-mono text-emerald-400">
@@ -375,10 +423,20 @@
               <td class="py-3.5 px-3 text-slate-500 font-mono text-[11px]" id="recipient-time-{{ r.id }}">
                 {{ r.sent_at|date:"M d, H:i:s"|default:"--" }}
               </td>
+              <td class="py-3.5 px-3 text-center">
+                <div class="flex items-center justify-center gap-1">
+                  <button type="button" onclick="markSingleBounced({{ r.id }}, '{{ r.email }}')" title="Mark as Bounced (550) & Suppress" class="p-1.5 rounded-lg text-slate-400 hover:text-rose-300 hover:bg-rose-500/20 transition-all cursor-pointer">
+                    <i data-lucide="mail-x" class="w-3.5 h-3.5"></i>
+                  </button>
+                  <button type="button" onclick="deleteSingleRecipient({{ r.id }}, '{{ r.email }}')" title="Delete from Queue" class="p-1.5 rounded-lg text-slate-400 hover:text-rose-400 hover:bg-slate-800 transition-all cursor-pointer">
+                    <i data-lucide="trash-2" class="w-3.5 h-3.5"></i>
+                  </button>
+                </div>
+              </td>
             </tr>
             {% empty %}
             <tr>
-              <td colspan="7" class="py-10 text-center text-slate-500 text-xs">
+              <td colspan="9" class="py-10 text-center text-slate-500 text-xs">
                 No recipients match the selected filter.
               </td>
             </tr>
@@ -609,6 +667,143 @@
           })
           .catch(err => console.error('Status poll error:', err));
       }, 3000);
+    }
+
+    // ----------------------------------------------------
+    // BULK RECIPIENT SELECTION & ACTIONS
+    // ----------------------------------------------------
+    const masterCheckbox = document.getElementById('master-select-checkbox');
+    const recipientCheckboxes = document.querySelectorAll('.recipient-checkbox');
+    const selectedCountBadge = document.getElementById('selected-count-badge');
+    const bulkActionBtns = document.querySelectorAll('.bulk-action-btn');
+    const btnSelectAllToggle = document.getElementById('btn-select-all-toggle');
+    const btnDeselectAll = document.getElementById('btn-deselect-all');
+
+    function getSelectedRecipientIds() {
+      const selected = [];
+      document.querySelectorAll('.recipient-checkbox:checked').forEach(cb => {
+        selected.push(parseInt(cb.value));
+      });
+      return selected;
+    }
+
+    function updateSelectionState() {
+      const selected = getSelectedRecipientIds();
+      const count = selected.length;
+      if (selectedCountBadge) selectedCountBadge.textContent = count;
+
+      if (count > 0) {
+        bulkActionBtns.forEach(btn => {
+          btn.classList.remove('opacity-50', 'pointer-events-none');
+        });
+        if (btnDeselectAll) btnDeselectAll.classList.remove('hidden');
+      } else {
+        bulkActionBtns.forEach(btn => {
+          btn.classList.add('opacity-50', 'pointer-events-none');
+        });
+        if (btnDeselectAll) btnDeselectAll.classList.add('hidden');
+      }
+
+      if (masterCheckbox && recipientCheckboxes.length > 0) {
+        masterCheckbox.checked = (count === recipientCheckboxes.length);
+        masterCheckbox.indeterminate = (count > 0 && count < recipientCheckboxes.length);
+      }
+    }
+
+    if (masterCheckbox) {
+      masterCheckbox.addEventListener('change', function () {
+        const isChecked = this.checked;
+        document.querySelectorAll('.recipient-checkbox').forEach(cb => {
+          cb.checked = isChecked;
+        });
+        updateSelectionState();
+      });
+    }
+
+    if (btnSelectAllToggle) {
+      btnSelectAllToggle.addEventListener('click', function () {
+        document.querySelectorAll('.recipient-checkbox').forEach(cb => {
+          cb.checked = true;
+        });
+        updateSelectionState();
+      });
+    }
+
+    if (btnDeselectAll) {
+      btnDeselectAll.addEventListener('click', function () {
+        document.querySelectorAll('.recipient-checkbox').forEach(cb => {
+          cb.checked = false;
+        });
+        if (masterCheckbox) {
+          masterCheckbox.checked = false;
+          masterCheckbox.indeterminate = false;
+        }
+        updateSelectionState();
+      });
+    }
+
+    document.querySelectorAll('.recipient-checkbox').forEach(cb => {
+      cb.addEventListener('change', updateSelectionState);
+    });
+
+    window.executeBulkAction = async function (action, specificIds = null) {
+      const ids = specificIds || getSelectedRecipientIds();
+      if (!ids || ids.length === 0) {
+        alert('Please select at least one contact.');
+        return;
+      }
+
+      const actionDescriptions = {
+        'mark_bounced': `Mark ${ids.length} selected contact(s) as permanent 550 Bounces and add to Suppression Shield?`,
+        'suppress': `Permanently suppress ${ids.length} contact(s) from future campaigns?`,
+        'delete': `Delete ${ids.length} contact(s) from this campaign queue?`,
+        'reverify': `Re-verify deliverability for ${ids.length} contact(s)?`,
+      };
+
+      if (!confirm(actionDescriptions[action] || `Execute action on ${ids.length} contact(s)?`)) {
+        return;
+      }
+
+      try {
+        const response = await fetch(`/marketing/campaign/${campaignId}/bulk-recipients/`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'X-CSRFToken': csrfToken,
+            'X-Requested-With': 'XMLHttpRequest',
+          },
+          body: JSON.stringify({
+            action: action,
+            recipient_ids: ids,
+          })
+        });
+
+        const data = await response.json();
+        if (data.success) {
+          window.location.reload();
+        } else {
+          alert(data.message || 'Error executing action');
+        }
+      } catch (err) {
+        console.error('Bulk action error:', err);
+        alert('Failed to execute bulk action: ' + err.message);
+      }
+    };
+
+    window.markSingleBounced = function (recipientId, email) {
+      if (confirm(`Mark '${email}' as permanent 550 Bounce and add to global Suppression Shield?`)) {
+        window.executeBulkAction('mark_bounced', [recipientId]);
+      }
+    };
+
+    window.deleteSingleRecipient = function (recipientId, email) {
+      if (confirm(`Remove '${email}' from this campaign queue?`)) {
+        window.executeBulkAction('delete', [recipientId]);
+      }
+    };
+
+    if (window.lucide) {
+      lucide.createIcons();
     }
 
   })();

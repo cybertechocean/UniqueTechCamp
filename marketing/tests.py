@@ -178,3 +178,61 @@ class BulkMarketingEngineTests(TestCase):
         self.campaign.refresh_from_db()
         self.assertLess(self.campaign.recipients.count(), initial_count)
         self.assertFalse(self.campaign.recipients.filter(email='dead@fake_domain_xyz_12345.com').exists())
+
+    def test_bulk_recipient_mark_bounced_and_suppression(self):
+        """Verify that checking and marking contacts as bounced updates status and permanently suppresses them."""
+        url = reverse('marketing:bulk_recipients', kwargs={'pk': self.campaign.id})
+        response = self.client.post(
+            url,
+            data={'action': 'mark_bounced', 'recipient_ids': [self.r1.id]},
+            HTTP_X_REQUESTED_WITH='XMLHttpRequest'
+        )
+        self.assertEqual(response.status_code, 200)
+        data = response.json()
+        self.assertTrue(data['success'])
+
+        self.r1.refresh_from_db()
+        self.assertEqual(self.r1.status, 'failed')
+        self.assertEqual(self.r1.verification_status, 'suppressed')
+        self.assertFalse(self.r1.is_deliverable)
+        self.assertIn('550', self.r1.error_message)
+
+        # Confirm global suppression list entry was created
+        suppressed_entry = EmailSuppressionList.objects.filter(email='alice@example.com').first()
+        self.assertIsNotNone(suppressed_entry)
+        self.assertEqual(suppressed_entry.reason, 'hard_bounce')
+
+    def test_bulk_recipient_delete(self):
+        """Verify that bulk delete removes selected recipients from queue and recalculates counts."""
+        url = reverse('marketing:bulk_recipients', kwargs={'pk': self.campaign.id})
+        response = self.client.post(
+            url,
+            data={'action': 'delete', 'recipient_ids': [self.r2.id]},
+            HTTP_X_REQUESTED_WITH='XMLHttpRequest'
+        )
+        self.assertEqual(response.status_code, 200)
+        data = response.json()
+        self.assertTrue(data['success'])
+
+        self.assertFalse(CampaignRecipient.objects.filter(id=self.r2.id).exists())
+        self.campaign.refresh_from_db()
+        self.assertEqual(self.campaign.total_recipients, 1)
+
+    def test_scrape_anomaly_detection(self):
+        """Verify that corrupted emails scraped from web/PDFs are detected and blocked."""
+        from marketing.validator import detect_scrape_anomaly
+
+        corrupt1, r1 = detect_scrape_anomaly("contact@domain.con")
+        self.assertTrue(corrupt1)
+        self.assertIn(".con", r1)
+
+        corrupt2, r2 = detect_scrape_anomaly("info@gmail.comphone")
+        self.assertTrue(corrupt2)
+        self.assertIn("Scraped text glued", r2)
+
+        corrupt3, r3 = detect_scrape_anomaly("a@gmail.com")
+        self.assertTrue(corrupt3)
+        self.assertIn("truncated username", r3)
+
+        ok, _ = detect_scrape_anomaly("valid.user@gmail.com")
+        self.assertFalse(ok)
