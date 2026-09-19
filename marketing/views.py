@@ -11,7 +11,7 @@ from django.template.loader import render_to_string
 from django.utils.html import strip_tags
 from .models import BulkCampaign, CampaignRecipient, EmailLog
 from .utils import generate_excel_template, parse_spreadsheet
-from .dispatcher import execute_campaign, send_test_email
+from .dispatcher import execute_campaign, send_test_email, dispatch_next_campaign_recipient
 from .email_service import send_robust_email, get_sender_from_email
 
 class StaffOnlyMixin(UserPassesTestMixin):
@@ -169,15 +169,22 @@ class CampaignSendTestView(StaffOnlyMixin, View):
 
 class CampaignStartSendingView(StaffOnlyMixin, View):
     """
-    Triggers execution of the bulk sending campaign in a background worker thread.
+    Triggers execution of the bulk sending campaign.
+    Supports both background thread dispatch and initiating the interactive browser runner.
     """
     def post(self, request, pk):
         campaign = get_object_or_404(BulkCampaign, pk=pk)
 
-        if campaign.status == 'sending':
-            messages.warning(request, "Campaign is already actively in progress.")
+        # Allow initiating interactive or background execution
+        if campaign.status == 'sending' and not request.POST.get('force'):
+            messages.warning(request, "Campaign is currently in progress. You can monitor live progress or click 'Reset to Draft' if stalled.")
             return redirect('marketing:campaign_detail', pk=campaign.id)
 
+        # Mark campaign as sending
+        campaign.status = 'sending'
+        campaign.save(update_fields=['status'])
+
+        # Start thread execution (for users who navigate away or use non-interactive mode)
         dispatch_thread = threading.Thread(
             target=execute_campaign,
             args=(campaign.id,),
@@ -185,7 +192,49 @@ class CampaignStartSendingView(StaffOnlyMixin, View):
         )
         dispatch_thread.start()
 
-        messages.success(request, f"Campaign dispatch initiated via [{campaign.get_sender_choice_display()}]! Emails will send with a {campaign.delay_seconds}s delay.")
+        messages.success(request, f"Campaign dispatch initiated via [{campaign.get_sender_choice_display()}]! Emails are sending with a {campaign.delay_seconds}s delay.")
+        return redirect('marketing:campaign_detail', pk=campaign.id)
+
+
+class CampaignDispatchStepApiView(StaffOnlyMixin, View):
+    """
+    Step-by-step interactive dispatch API endpoint.
+    Called by the front-end browser runner to dispatch 1 recipient at a time.
+    100% resilient to Phusion Passenger / WSGI request timeouts and thread terminations!
+    """
+    def post(self, request, pk):
+        campaign = get_object_or_404(BulkCampaign, pk=pk)
+        result = dispatch_next_campaign_recipient(campaign)
+        return JsonResponse(result)
+
+
+class CampaignResetStatusView(StaffOnlyMixin, View):
+    """
+    Force-unlocks and resets a stalled or stuck campaign back to 'draft'
+    (or 'completed' if all recipients have already been sent/failed).
+    Accurately recalculates sent_count, failed_count, and remaining recipients.
+    """
+    def post(self, request, pk):
+        campaign = get_object_or_404(BulkCampaign, pk=pk)
+        
+        sent_c = campaign.recipients.filter(status='sent').count()
+        failed_c = campaign.recipients.filter(status='failed').count()
+        pending_c = campaign.recipients.filter(status='pending').count()
+
+        campaign.sent_count = sent_c
+        campaign.failed_count = failed_c
+        
+        if pending_c == 0 and (sent_c + failed_c) > 0:
+            campaign.status = 'completed'
+            if not campaign.completed_at:
+                campaign.completed_at = timezone.now()
+            status_msg = "All contacts already sent/failed. Campaign marked as Completed."
+        else:
+            campaign.status = 'draft'
+            status_msg = f"Campaign unlocked and reset to Draft ({sent_c} sent, {failed_c} failed, {pending_c} pending remaining). You can now safely dispatch."
+
+        campaign.save()
+        messages.success(request, f"Campaign {campaign.campaign_id}: {status_msg}")
         return redirect('marketing:campaign_detail', pk=campaign.id)
 
 
@@ -195,14 +244,17 @@ class CampaignStatusApiView(StaffOnlyMixin, View):
     """
     def get(self, request, pk):
         campaign = get_object_or_404(BulkCampaign, pk=pk)
+        pending_count = campaign.recipients.filter(status='pending').count()
         return JsonResponse({
             'campaign_id': campaign.campaign_id,
             'status': campaign.status,
             'total_recipients': campaign.total_recipients,
             'sent_count': campaign.sent_count,
             'failed_count': campaign.failed_count,
+            'pending_count': pending_count,
             'progress_percentage': campaign.progress_percentage,
             'is_finished': campaign.is_finished,
+            'delay_seconds': campaign.delay_seconds,
         })
 
 

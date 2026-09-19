@@ -5,7 +5,9 @@ from .views import (
     CampaignDetailView,
     CampaignSendTestView,
     CampaignStartSendingView,
+    CampaignResetStatusView,
     CampaignStatusApiView,
+    CampaignDispatchStepApiView,
     SendSingleEmailView,
     EmailLogListView,
     EmailLogResendView,
@@ -23,7 +25,9 @@ urlpatterns = [
     path('campaign/<int:pk>/', CampaignDetailView.as_view(), name='campaign_detail'),
     path('campaign/<int:pk>/test/', CampaignSendTestView.as_view(), name='send_test'),
     path('campaign/<int:pk>/start/', CampaignStartSendingView.as_view(), name='start_sending'),
+    path('campaign/<int:pk>/reset-status/', CampaignResetStatusView.as_view(), name='reset_status'),
     path('api/campaign/<int:pk>/status/', CampaignStatusApiView.as_view(), name='campaign_status_api'),
+    path('api/campaign/<int:pk>/dispatch-step/', CampaignDispatchStepApiView.as_view(), name='campaign_dispatch_step_api'),
     
     # Single / Custom Email Composer
     path('send-single/', SendSingleEmailView.as_view(), name='send_single'),

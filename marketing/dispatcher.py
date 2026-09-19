@@ -5,6 +5,7 @@ from django.core.mail import EmailMultiAlternatives
 from django.template.loader import render_to_string
 from django.utils.html import strip_tags
 from django.utils import timezone
+from django.db import close_old_connections
 from .models import BulkCampaign, CampaignRecipient
 
 logger = logging.getLogger(__name__)
@@ -101,51 +102,138 @@ def send_single_campaign_email(recipient, from_email=None):
 
 
 
+def dispatch_next_campaign_recipient(campaign):
+    """
+    Dispatches the next single pending recipient for a campaign.
+    Updates campaign counts immediately.
+    Returns a dict with execution results for API response or worker consumption.
+    """
+    close_old_connections()
+    recipient = campaign.recipients.filter(status='pending').first()
+
+    if not recipient:
+        # All recipients processed
+        sent_c = campaign.recipients.filter(status='sent').count()
+        failed_c = campaign.recipients.filter(status='failed').count()
+        campaign.sent_count = sent_c
+        campaign.failed_count = failed_c
+        campaign.status = 'completed'
+        if not campaign.completed_at:
+            campaign.completed_at = timezone.now()
+        campaign.save(update_fields=['sent_count', 'failed_count', 'status', 'completed_at'])
+        close_old_connections()
+        return {
+            'completed': True,
+            'recipient': None,
+            'sent_count': campaign.sent_count,
+            'failed_count': campaign.failed_count,
+            'total_recipients': campaign.total_recipients,
+            'progress_percentage': campaign.progress_percentage,
+            'remaining_count': 0,
+        }
+
+    # Ensure campaign status reflects sending
+    if campaign.status != 'sending':
+        campaign.status = 'sending'
+        campaign.save(update_fields=['status'])
+
+    from_email = f"{campaign.sender_name} <{campaign.sender_email}>"
+    success, err_msg = send_single_campaign_email(recipient, from_email=from_email)
+
+    # Recalculate and persist counts immediately
+    sent_c = campaign.recipients.filter(status='sent').count()
+    failed_c = campaign.recipients.filter(status='failed').count()
+    remaining_c = campaign.recipients.filter(status='pending').count()
+
+    campaign.sent_count = sent_c
+    campaign.failed_count = failed_c
+    if remaining_c == 0:
+        campaign.status = 'completed'
+        campaign.completed_at = timezone.now()
+        campaign.save(update_fields=['sent_count', 'failed_count', 'status', 'completed_at'])
+    else:
+        campaign.save(update_fields=['sent_count', 'failed_count'])
+
+    close_old_connections()
+
+    return {
+        'completed': remaining_c == 0,
+        'recipient_id': recipient.id,
+        'recipient_name': recipient.name,
+        'recipient_email': recipient.email,
+        'recipient_status': recipient.status,
+        'error_message': recipient.error_message,
+        'sent_at': recipient.sent_at.strftime('%b %d, %H:%M:%S') if recipient.sent_at else '',
+        'sent_count': campaign.sent_count,
+        'failed_count': campaign.failed_count,
+        'total_recipients': campaign.total_recipients,
+        'progress_percentage': campaign.progress_percentage,
+        'remaining_count': remaining_c,
+        'delay_seconds': campaign.delay_seconds,
+    }
+
+
 def execute_campaign(campaign_id):
     """
     Runs the bulk sending loop with configurable delay between each email.
-    Can be invoked synchronously or via background thread/task.
+    Can be invoked synchronously or via background thread/task/CLI.
     """
+    close_old_connections()
     try:
         campaign = BulkCampaign.objects.get(id=campaign_id)
     except BulkCampaign.DoesNotExist:
         logger.error(f"Campaign with ID {campaign_id} not found.")
-        return
+        return 0, 0
 
     campaign.status = 'sending'
     campaign.save(update_fields=['status'])
 
-    pending_recipients = campaign.recipients.filter(status='pending')
     from_email = f"{campaign.sender_name} <{campaign.sender_email}>"
 
-    sent_count = campaign.sent_count
-    failed_count = campaign.failed_count
+    try:
+        while True:
+            close_old_connections()
+            # Check if campaign was paused or reset by user
+            campaign.refresh_from_db()
+            if campaign.status != 'sending':
+                logger.info(f"Campaign {campaign.campaign_id} dispatch stopped: status changed to {campaign.status}")
+                break
 
-    for idx, recipient in enumerate(pending_recipients):
-        success, _ = send_single_campaign_email(recipient, from_email=from_email)
-        if success:
-            sent_count += 1
-        else:
-            failed_count += 1
+            recipient = campaign.recipients.filter(status='pending').first()
+            if not recipient:
+                break
 
-        # Update campaign counts incrementally every 5 sends or on completion
-        if (idx + 1) % 5 == 0 or (idx + 1) == len(pending_recipients):
-            campaign.sent_count = sent_count
-            campaign.failed_count = failed_count
+            success, _ = send_single_campaign_email(recipient, from_email=from_email)
+
+            # Persist counts immediately after every single send
+            campaign.sent_count = campaign.recipients.filter(status='sent').count()
+            campaign.failed_count = campaign.recipients.filter(status='failed').count()
             campaign.save(update_fields=['sent_count', 'failed_count'])
 
-        # Apply configurable delay time
-        if campaign.delay_seconds > 0 and (idx + 1) < len(pending_recipients):
-            time.sleep(campaign.delay_seconds)
+            remaining = campaign.recipients.filter(status='pending').count()
+            if remaining == 0:
+                break
 
-    campaign.sent_count = sent_count
-    campaign.failed_count = failed_count
-    campaign.status = 'completed' if failed_count == 0 else 'completed'
-    campaign.completed_at = timezone.now()
-    campaign.save(update_fields=['sent_count', 'failed_count', 'status', 'completed_at'])
+            # Apply configurable delay time
+            if campaign.delay_seconds > 0:
+                time.sleep(campaign.delay_seconds)
 
-    logger.info(f"Campaign {campaign.campaign_id} finished. Sent: {sent_count}, Failed: {failed_count}")
-    return sent_count, failed_count
+    except Exception as e:
+        logger.error(f"Unexpected error executing campaign {campaign_id}: {e}", exc_info=True)
+    finally:
+        close_old_connections()
+        campaign.refresh_from_db()
+        pending_left = campaign.recipients.filter(status='pending').count()
+        if pending_left == 0:
+            campaign.status = 'completed'
+            campaign.completed_at = timezone.now()
+        campaign.sent_count = campaign.recipients.filter(status='sent').count()
+        campaign.failed_count = campaign.recipients.filter(status='failed').count()
+        campaign.save(update_fields=['sent_count', 'failed_count', 'status', 'completed_at'])
+        close_old_connections()
+
+    logger.info(f"Campaign {campaign.campaign_id} dispatch ended. Sent: {campaign.sent_count}, Failed: {campaign.failed_count}")
+    return campaign.sent_count, campaign.failed_count
 
 
 def send_test_email(campaign, target_email):

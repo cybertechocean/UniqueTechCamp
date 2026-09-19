@@ -10,24 +10,27 @@
 
     <!-- Top Navigation Breadcrumb -->
     <div class="flex items-center gap-2 text-xs text-slate-400 mb-6">
-      <a href="{% url 'marketing:dashboard' %}" class="hover:text-emerald-400 flex items-center gap-1">
+      <a href="{% url 'marketing:dashboard' %}" class="hover:text-emerald-400 flex items-center gap-1 transition-colors">
         <i data-lucide="arrow-left" class="w-3.5 h-3.5"></i> All Campaigns
       </a>
       <span>/</span>
-      <span class="text-slate-200 font-bold">{{ campaign.campaign_id }}</span>
+      <span class="text-slate-200 font-bold font-mono">{{ campaign.campaign_id }}</span>
     </div>
 
-    <!-- Campaign Header -->
-    <div class="bg-slate-900/90 border border-slate-800 rounded-3xl p-6 sm:p-8 shadow-2xl mb-10">
-      <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-6 pb-6 border-b border-slate-800">
+    <!-- Campaign Header & Control Dashboard -->
+    <div class="bg-slate-900/90 border border-slate-800 rounded-3xl p-6 sm:p-8 shadow-2xl mb-10 relative overflow-hidden backdrop-blur-sm">
+      <!-- Glow ambient accent -->
+      <div class="absolute -top-24 -right-24 w-72 h-72 bg-emerald-500/10 rounded-full blur-3xl pointer-events-none"></div>
+
+      <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-6 pb-6 border-b border-slate-800 relative z-10">
         <div>
-          <div class="flex items-center gap-3 mb-2">
+          <div class="flex flex-wrap items-center gap-2 sm:gap-3 mb-2.5">
             <span class="px-3 py-1 rounded-full text-xs font-mono font-bold bg-emerald-500/20 text-emerald-400 border border-emerald-500/30">
               {{ campaign.campaign_id }}
             </span>
-            <span class="px-3 py-1 rounded-full text-xs font-bold uppercase
+            <span class="px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wide
               {% if campaign.status == 'completed' %}bg-emerald-500/20 text-emerald-400 border border-emerald-500/30
-              {% elif campaign.status == 'sending' %}bg-sky-500/20 text-sky-400 border border-sky-500/30 animate-pulse
+              {% elif campaign.status == 'sending' %}bg-sky-500/20 text-sky-300 border border-sky-500/30 animate-pulse
               {% elif campaign.status == 'failed' %}bg-rose-500/20 text-rose-400 border border-rose-500/30
               {% else %}bg-slate-800 text-slate-300 border border-slate-700{% endif %}" id="campaign-status-badge">
               {{ campaign.get_status_display }}
@@ -35,33 +38,66 @@
             <span class="px-3 py-1 rounded-full text-xs font-bold bg-purple-500/20 text-purple-300 border border-purple-500/30">
               Layout: {{ campaign.get_email_format_display|truncatechars:25 }}
             </span>
+            <span class="px-3 py-1 rounded-full text-xs font-bold bg-cyan-500/20 text-cyan-300 border border-cyan-500/30">
+              {{ campaign.get_sender_choice_display|truncatechars:32 }}
+            </span>
           </div>
-          <h1 class="text-2xl sm:text-3xl font-heading font-extrabold text-white">{{ campaign.title }}</h1>
-          <p class="text-xs text-slate-400 mt-1">
-            Sender: <strong class="text-slate-200">{{ campaign.sender_name }}</strong> &lt;{{ campaign.sender_email }}&gt; • Delay: <strong class="text-emerald-400">{{ campaign.delay_seconds }}s</strong> per contact
+          <h1 class="text-2xl sm:text-3xl font-heading font-extrabold text-white tracking-tight">{{ campaign.title }}</h1>
+          <p class="text-xs text-slate-400 mt-1.5 flex flex-wrap items-center gap-2">
+            <span>Sender: <strong class="text-slate-200">{{ campaign.sender_name }}</strong> &lt;{{ campaign.sender_email }}&gt;</span>
+            <span>•</span>
+            <span>Interval Delay: <strong class="text-emerald-400 font-mono" id="campaign-delay-val">{{ campaign.delay_seconds }}s</strong> per contact</span>
           </p>
         </div>
 
         <!-- Priority Dispatch Action Buttons -->
         <div class="flex flex-wrap items-center gap-3">
-          {% if campaign.status != 'completed' and campaign.status != 'sending' %}
-          <form method="POST" action="{% url 'marketing:start_sending' campaign.id %}" onsubmit="return confirm('Ready to start sending? Emails will be dispatched with a {{ campaign.delay_seconds }}s delay between each contact.');">
-            {% csrf_token %}
-            <button type="submit" class="py-3.5 px-6 rounded-2xl bg-gradient-to-r from-emerald-500 to-green-600 hover:from-emerald-600 hover:to-green-700 text-white font-heading font-extrabold text-xs sm:text-sm shadow-xl shadow-emerald-500/25 transition-all flex items-center gap-2 cursor-pointer">
+          {% if campaign.status == 'sending' %}
+            <!-- Interactive Resume Button -->
+            <button type="button" id="btn-resume-dispatch" onclick="startLiveInteractiveDispatch()" class="py-3 px-5 rounded-2xl bg-gradient-to-r from-emerald-500 to-green-600 hover:from-emerald-600 hover:to-green-700 text-white font-heading font-bold text-xs sm:text-sm shadow-xl shadow-emerald-500/25 transition-all flex items-center gap-2 cursor-pointer">
+              <i data-lucide="play" class="w-4 h-4 fill-white"></i>
+              <span>Resume Live Dispatch in Browser</span>
+            </button>
+
+            <!-- Force Unlock / Reset Status Form -->
+            <form method="POST" action="{% url 'marketing:reset_status' campaign.id %}" onsubmit="return confirm('Unlock and reset campaign status to Draft? This will synchronize actual sent/failed counts and allow you to restart or resume sending.');">
+              {% csrf_token %}
+              <button type="submit" class="py-3 px-4 rounded-2xl bg-amber-500/15 hover:bg-amber-500/25 border border-amber-500/40 text-amber-300 font-bold text-xs sm:text-sm transition-all flex items-center gap-1.5 cursor-pointer" title="Unlock stalled campaign and reset status to Draft">
+                <i data-lucide="unlock" class="w-4 h-4"></i>
+                <span>Reset / Unlock Campaign</span>
+              </button>
+            </form>
+
+          {% elif campaign.status != 'completed' %}
+            <!-- Primary Start Sending Button (Interactive Browser Engine) -->
+            <button type="button" id="btn-start-interactive" onclick="startLiveInteractiveDispatch()" class="py-3.5 px-6 rounded-2xl bg-gradient-to-r from-emerald-500 to-green-600 hover:from-emerald-600 hover:to-green-700 text-white font-heading font-extrabold text-xs sm:text-sm shadow-xl shadow-emerald-500/25 transition-all flex items-center gap-2 cursor-pointer">
               <i data-lucide="send" class="w-4 h-4"></i>
               <span>Start Bulk Sending Campaign</span>
             </button>
-          </form>
-          {% elif campaign.status == 'sending' %}
-          <div class="py-3.5 px-6 rounded-2xl bg-sky-500/20 border border-sky-500/40 text-sky-300 font-bold text-xs sm:text-sm flex items-center gap-2 animate-pulse">
-            <span class="material-symbols-outlined text-base animate-spin">progress_activity</span>
-            <span>Dispatching in Progress…</span>
-          </div>
+
+            <!-- Background Thread Fallback -->
+            <form method="POST" action="{% url 'marketing:start_sending' campaign.id %}" onsubmit="return confirm('Start background sending?');">
+              {% csrf_token %}
+              <button type="submit" class="py-3 px-3.5 rounded-2xl bg-slate-800 hover:bg-slate-700 border border-slate-700 text-slate-300 hover:text-white text-xs font-semibold transition-all flex items-center gap-1.5 cursor-pointer" title="Run in background server thread">
+                <i data-lucide="cpu" class="w-3.5 h-3.5"></i>
+                <span class="hidden sm:inline">Background Thread</span>
+              </button>
+            </form>
+
           {% else %}
-          <div class="py-3 px-5 rounded-2xl bg-emerald-500/15 border border-emerald-500/30 text-emerald-400 font-bold text-xs flex items-center gap-2">
-            <i data-lucide="check-circle" class="w-4 h-4"></i>
-            <span>Campaign Completed</span>
-          </div>
+            <!-- Completed Actions -->
+            <div class="py-3 px-5 rounded-2xl bg-emerald-500/15 border border-emerald-500/30 text-emerald-400 font-bold text-xs flex items-center gap-2">
+              <i data-lucide="check-circle" class="w-4 h-4"></i>
+              <span>Campaign Completed</span>
+            </div>
+
+            <form method="POST" action="{% url 'marketing:reset_status' campaign.id %}" onsubmit="return confirm('Reset campaign to Draft to allow re-sending?');">
+              {% csrf_token %}
+              <button type="submit" class="py-3 px-4 rounded-2xl bg-slate-800 hover:bg-slate-700 border border-slate-700 text-slate-300 hover:text-white text-xs font-bold transition-all flex items-center gap-1.5 cursor-pointer">
+                <i data-lucide="rotate-ccw" class="w-3.5 h-3.5"></i>
+                <span>Reset to Draft</span>
+              </button>
+            </form>
           {% endif %}
         </div>
       </div>
@@ -69,11 +105,63 @@
       <!-- Live Delivery Progress Bar -->
       <div class="pt-6">
         <div class="flex items-center justify-between text-xs font-bold mb-2">
-          <span class="text-slate-400 uppercase tracking-wider">Overall Delivery Progress</span>
-          <span class="text-emerald-400" id="progress-label">{{ campaign.sent_count }}/{{ campaign.total_recipients }} Sent ({{ campaign.progress_percentage }}%)</span>
+          <span class="text-slate-400 uppercase tracking-wider flex items-center gap-1.5">
+            <span class="w-2 h-2 rounded-full {% if campaign.status == 'sending' %}bg-sky-400 animate-ping{% elif campaign.status == 'completed' %}bg-emerald-400{% else %}bg-slate-500{% endif %}"></span>
+            Overall Delivery Progress
+          </span>
+          <span class="text-emerald-400 font-mono font-bold" id="progress-label">{{ campaign.sent_count }}/{{ campaign.total_recipients }} Sent ({{ campaign.progress_percentage }}%)</span>
         </div>
-        <div class="w-full bg-slate-950 rounded-full h-3.5 overflow-hidden p-0.5 border border-slate-800">
-          <div id="progress-bar-fill" class="bg-gradient-to-r from-emerald-500 to-green-400 h-full rounded-full transition-all duration-500" style="width: {{ campaign.progress_percentage }}%;"></div>
+        <div class="w-full bg-slate-950 rounded-full h-3.5 overflow-hidden p-0.5 border border-slate-800 shadow-inner">
+          <div id="progress-bar-fill" class="bg-gradient-to-r from-emerald-500 to-green-400 h-full rounded-full transition-all duration-300" style="width: {{ campaign.progress_percentage }}%;"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Live Real-Time Interactive Dispatch Console (Visible during dispatch) -->
+    <div id="live-dispatch-console" class="hidden mb-10 bg-slate-900/95 border-2 border-emerald-500/50 rounded-3xl p-6 sm:p-8 shadow-2xl shadow-emerald-500/10 backdrop-blur-md relative overflow-hidden transition-all">
+      <div class="flex flex-col md:flex-row md:items-center justify-between gap-6 pb-5 border-b border-slate-800">
+        <div>
+          <div class="flex items-center gap-2 text-xs font-bold text-emerald-400 uppercase tracking-wider mb-1">
+            <span class="relative flex h-3 w-3">
+              <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+              <span class="relative inline-flex rounded-full h-3 w-3 bg-emerald-500"></span>
+            </span>
+            <span>Live Interactive Dispatch Engine Active</span>
+          </div>
+          <h2 class="text-xl font-heading font-extrabold text-white" id="console-current-action">Preparing recipient queue…</h2>
+          <p class="text-xs text-slate-400 mt-1" id="console-subtext">Executing synchronized single-recipient dispatches with automatic port failover.</p>
+        </div>
+
+        <!-- Dispatch Controls (Pause / Resume / Cancel) -->
+        <div class="flex items-center gap-3">
+          <button type="button" id="btn-pause-dispatch" onclick="togglePauseDispatch()" class="py-2.5 px-4 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 hover:text-white border border-slate-700 text-xs font-bold transition-all flex items-center gap-1.5 cursor-pointer">
+            <i data-lucide="pause" class="w-3.5 h-3.5" id="btn-pause-icon"></i>
+            <span id="btn-pause-text">Pause Dispatch</span>
+          </button>
+
+          <form method="POST" action="{% url 'marketing:reset_status' campaign.id %}" onsubmit="return confirm('Stop active dispatch and return campaign to Draft?');" class="inline">
+            {% csrf_token %}
+            <button type="submit" class="py-2.5 px-4 rounded-xl bg-rose-500/20 hover:bg-rose-500/30 text-rose-300 border border-rose-500/30 text-xs font-bold transition-all flex items-center gap-1.5 cursor-pointer">
+              <i data-lucide="square" class="w-3.5 h-3.5"></i>
+              <span>Stop & Reset</span>
+            </button>
+          </form>
+        </div>
+      </div>
+
+      <!-- Live Countdown & Status Ribbon -->
+      <div class="mt-5 grid grid-cols-1 sm:grid-cols-3 gap-4 text-center">
+        <div class="bg-slate-950/80 rounded-2xl p-4 border border-slate-800">
+          <div class="text-[11px] text-slate-400 uppercase font-bold tracking-wider mb-1">Queue Remaining</div>
+          <div class="text-2xl font-mono font-bold text-white" id="console-remaining-count">--</div>
+        </div>
+        <div class="bg-slate-950/80 rounded-2xl p-4 border border-slate-800">
+          <div class="text-[11px] text-slate-400 uppercase font-bold tracking-wider mb-1">Next Dispatch In</div>
+          <div class="text-2xl font-mono font-bold text-emerald-400" id="console-countdown">Ready</div>
+        </div>
+        <div class="bg-slate-950/80 rounded-2xl p-4 border border-slate-800">
+          <div class="text-[11px] text-slate-400 uppercase font-bold tracking-wider mb-1">Last Delivery Result</div>
+          <div class="text-sm font-semibold text-slate-300 truncate" id="console-last-result">Ready to begin</div>
         </div>
       </div>
     </div>
@@ -109,13 +197,13 @@
             <i data-lucide="mail-check" class="w-5 h-5 text-emerald-400"></i> Send Test Preview to Your Inbox
           </h3>
           <p class="text-xs text-slate-400 mt-1">
-            Test the email layout, buttons, and personalized message formatting on your own inbox first.
+            Test the email layout, sender display name, and personalized message formatting on your own inbox first.
           </p>
         </div>
 
         <form method="POST" action="{% url 'marketing:send_test' campaign.id %}" class="flex flex-col sm:flex-row items-center gap-3 w-full md:w-auto">
           {% csrf_token %}
-          <input type="email" name="test_email" value="{{ default_test_email }}" required placeholder="your.email@example.com" class="px-4 py-2.5 rounded-xl border border-slate-700 bg-slate-950 text-xs font-medium text-white focus:border-emerald-500 focus:outline-none w-full sm:w-64">
+          <input type="email" name="test_email" value="{{ default_test_email }}" required placeholder="your.email@example.com" class="px-4 py-2.5 rounded-xl border border-slate-700 bg-slate-950 text-xs font-medium text-white focus:border-emerald-500 focus:outline-none w-full sm:w-64 transition-all">
           <button type="submit" class="w-full sm:w-auto py-2.5 px-5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 hover:text-white text-xs font-bold border border-slate-700 transition-all flex items-center justify-center gap-1.5 shrink-0 cursor-pointer">
             <i data-lucide="send" class="w-3.5 h-3.5"></i>
             <span>Send Test Email</span>
@@ -128,8 +216,8 @@
     <div class="bg-slate-900/90 border border-slate-800 rounded-3xl p-6 sm:p-8 shadow-2xl overflow-hidden">
       <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-6 border-b border-slate-800 mb-6">
         <div>
-          <h3 class="text-lg font-bold text-white">Recipient Queue & Logs</h3>
-          <p class="text-xs text-slate-400">Personalized messages parsed from your spreadsheet</p>
+          <h3 class="text-lg font-bold text-white">Recipient Queue & Delivery Logs</h3>
+          <p class="text-xs text-slate-400">Individual status, timestamps, and error traces for each contact</p>
         </div>
 
         <!-- Filter Pill Tabs -->
@@ -162,26 +250,26 @@
               <th class="pb-3 px-3">Dispatched</th>
             </tr>
           </thead>
-          <tbody class="divide-y divide-slate-800/60 font-medium">
+          <tbody class="divide-y divide-slate-800/60 font-medium" id="recipients-table-body">
             {% for r in recipients %}
-            <tr class="hover:bg-slate-800/40 transition-colors">
+            <tr class="hover:bg-slate-800/40 transition-colors" id="recipient-row-{{ r.id }}" data-recipient-id="{{ r.id }}" data-status="{{ r.status }}">
               <td class="py-3.5 px-3 text-slate-500 font-mono">{{ forloop.counter }}</td>
               <td class="py-3.5 px-3 font-bold text-white">{{ r.name|default:"--" }}</td>
               <td class="py-3.5 px-3 font-mono text-emerald-400">{{ r.email }}</td>
               <td class="py-3.5 px-3 font-semibold text-slate-200 max-w-[200px] truncate" title="{{ r.subject }}">{{ r.subject }}</td>
               <td class="py-3.5 px-3 text-slate-400 max-w-[260px] truncate" title="{{ r.personalized_message }}">{{ r.personalized_message|truncatechars:60 }}</td>
-              <td class="py-3.5 px-3">
-                <span class="px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase
+              <td class="py-3.5 px-3" id="recipient-cell-status-{{ r.id }}">
+                <span class="px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase transition-all
                   {% if r.status == 'sent' %}bg-emerald-500/20 text-emerald-400 border border-emerald-500/30
                   {% elif r.status == 'failed' %}bg-rose-500/20 text-rose-400 border border-rose-500/30
-                  {% else %}bg-amber-500/20 text-amber-400 border border-amber-500/30{% endif %}">
+                  {% else %}bg-amber-500/20 text-amber-400 border border-amber-500/30{% endif %}" id="recipient-badge-{{ r.id }}">
                   {{ r.get_status_display }}
                 </span>
-                {% if r.error_message %}
-                <div class="text-[10px] text-rose-400 mt-1 max-w-[150px] truncate" title="{{ r.error_message }}">{{ r.error_message }}</div>
-                {% endif %}
+                <div class="text-[10px] text-rose-400 mt-1 max-w-[150px] truncate {% if not r.error_message %}hidden{% endif %}" id="recipient-error-{{ r.id }}" title="{{ r.error_message }}">
+                  {{ r.error_message }}
+                </div>
               </td>
-              <td class="py-3.5 px-3 text-slate-500">
+              <td class="py-3.5 px-3 text-slate-500 font-mono text-[11px]" id="recipient-time-{{ r.id }}">
                 {{ r.sent_at|date:"M d, H:i:s"|default:"--" }}
               </td>
             </tr>
@@ -205,26 +293,180 @@
 
 {% block extra_scripts %}
 <script>
-  // Live polling of status if sending is in progress
   (function () {
     'use strict';
-    const campaignId = {{ campaign.id }};
-    const isSending = "{{ campaign.status }}" === "sending";
 
-    if (isSending) {
-      const pollInterval = setInterval(() => {
+    const campaignId = {{ campaign.id }};
+    const csrfToken = "{{ csrf_token }}";
+    const initialDelay = parseFloat("{{ campaign.delay_seconds|default:'2.0' }}");
+
+    let isDispatching = false;
+    let isPaused = false;
+    let countdownTimer = null;
+    let pollInterval = null;
+
+    // Elements
+    const liveConsole = document.getElementById('live-dispatch-console');
+    const actionLabel = document.getElementById('console-current-action');
+    const countdownLabel = document.getElementById('console-countdown');
+    const remainingLabel = document.getElementById('console-remaining-count');
+    const lastResultLabel = document.getElementById('console-last-result');
+    const pauseBtn = document.getElementById('btn-pause-dispatch');
+    const pauseText = document.getElementById('btn-pause-text');
+
+    const progressLabel = document.getElementById('progress-label');
+    const progressBar = document.getElementById('progress-bar-fill');
+    const statSent = document.getElementById('stat-sent');
+    const statFailed = document.getElementById('stat-failed');
+    const statusBadge = document.getElementById('campaign-status-badge');
+
+    // Make live interactive dispatch globally callable
+    window.startLiveInteractiveDispatch = async function () {
+      if (isDispatching) return;
+      isDispatching = true;
+      isPaused = false;
+
+      if (liveConsole) liveConsole.classList.remove('hidden');
+      if (statusBadge) {
+        statusBadge.textContent = 'In Progress / Sending';
+        statusBadge.className = 'px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wide bg-sky-500/20 text-sky-300 border border-sky-500/30 animate-pulse';
+      }
+
+      runNextStep();
+    };
+
+    window.togglePauseDispatch = function () {
+      if (!isDispatching) return;
+      isPaused = !isPaused;
+      if (isPaused) {
+        if (countdownTimer) clearInterval(countdownTimer);
+        if (actionLabel) actionLabel.textContent = 'Dispatch Paused by User';
+        if (countdownLabel) countdownLabel.textContent = 'Paused';
+        if (pauseText) pauseText.textContent = 'Resume Dispatch';
+      } else {
+        if (actionLabel) actionLabel.textContent = 'Resuming queue…';
+        if (pauseText) pauseText.textContent = 'Pause Dispatch';
+        runNextStep();
+      }
+    };
+
+    async function runNextStep() {
+      if (!isDispatching || isPaused) return;
+
+      if (actionLabel) actionLabel.textContent = 'Dispatching next contact in queue…';
+      if (countdownLabel) countdownLabel.textContent = 'Sending…';
+
+      try {
+        const response = await fetch(`/marketing/api/campaign/${campaignId}/dispatch-step/`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'X-CSRFToken': csrfToken,
+          }
+        });
+
+        if (!response.ok) {
+          throw new Error(`Server returned HTTP ${response.status}`);
+        }
+
+        const data = await response.json();
+
+        // Update overall counters
+        if (statSent) statSent.textContent = data.sent_count;
+        if (statFailed) statFailed.textContent = data.failed_count;
+        if (progressLabel) progressLabel.textContent = `${data.sent_count}/${data.total_recipients} Sent (${data.progress_percentage}%)`;
+        if (progressBar) progressBar.style.width = `${data.progress_percentage}%`;
+        if (remainingLabel) remainingLabel.textContent = data.remaining_count;
+
+        // If completed
+        if (data.completed || data.remaining_count === 0) {
+          isDispatching = false;
+          if (actionLabel) actionLabel.textContent = 'All Campaign Emails Dispatched Successfully!';
+          if (countdownLabel) countdownLabel.textContent = 'Completed (100%)';
+          if (lastResultLabel) lastResultLabel.textContent = `Finished: ${data.sent_count} sent, ${data.failed_count} failed`;
+          if (statusBadge) {
+            statusBadge.textContent = 'Completed Successfully';
+            statusBadge.className = 'px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wide bg-emerald-500/20 text-emerald-400 border border-emerald-500/30';
+          }
+          setTimeout(() => {
+            window.location.reload();
+          }, 2500);
+          return;
+        }
+
+        // Update recipient row in table dynamically
+        if (data.recipient_id) {
+          const badge = document.getElementById(`recipient-badge-${data.recipient_id}`);
+          const timeCell = document.getElementById(`recipient-time-${data.recipient_id}`);
+          const errDiv = document.getElementById(`recipient-error-${data.recipient_id}`);
+          const row = document.getElementById(`recipient-row-${data.recipient_id}`);
+
+          if (badge) {
+            if (data.recipient_status === 'sent') {
+              badge.textContent = 'Sent Successfully';
+              badge.className = 'px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase transition-all bg-emerald-500/20 text-emerald-400 border border-emerald-500/30';
+            } else {
+              badge.textContent = 'Delivery Failed';
+              badge.className = 'px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase transition-all bg-rose-500/20 text-rose-400 border border-rose-500/30';
+            }
+          }
+
+          if (timeCell && data.sent_at) timeCell.textContent = data.sent_at;
+          if (errDiv && data.error_message) {
+            errDiv.textContent = data.error_message;
+            errDiv.classList.remove('hidden');
+          }
+          if (row) {
+            row.classList.add('bg-emerald-500/10');
+            setTimeout(() => row.classList.remove('bg-emerald-500/10'), 1500);
+          }
+
+          if (lastResultLabel) {
+            const statusIcon = data.recipient_status === 'sent' ? '✓' : '✗';
+            lastResultLabel.textContent = `${statusIcon} ${data.recipient_email} (${data.recipient_status.toUpperCase()})`;
+          }
+        }
+
+        // Apply delay with live countdown
+        const delaySeconds = data.delay_seconds || initialDelay || 2.0;
+        let countdownLeft = Math.ceil(delaySeconds);
+
+        if (actionLabel) actionLabel.textContent = `Dispatched to ${data.recipient_email || 'contact'}. Waiting interval delay…`;
+        if (countdownLabel) countdownLabel.textContent = `${countdownLeft}s…`;
+
+        if (countdownTimer) clearInterval(countdownTimer);
+        countdownTimer = setInterval(() => {
+          if (isPaused) return;
+          countdownLeft -= 1;
+          if (countdownLabel) countdownLabel.textContent = `${countdownLeft}s…`;
+          if (countdownLeft <= 0) {
+            clearInterval(countdownTimer);
+            runNextStep();
+          }
+        }, 1000);
+
+      } catch (err) {
+        console.error('Interactive dispatch step error:', err);
+        if (actionLabel) actionLabel.textContent = `Network glitch: ${err.message}. Retrying in 4s…`;
+        if (countdownLabel) countdownLabel.textContent = 'Retrying…';
+        setTimeout(() => {
+          if (isDispatching && !isPaused) runNextStep();
+        }, 4000);
+      }
+    }
+
+    // Auto-poll status in the background if campaign is marked as sending
+    const serverStatus = "{{ campaign.status }}";
+    if (serverStatus === "sending") {
+      pollInterval = setInterval(() => {
+        if (isDispatching) return; // interactive mode is handling it
         fetch(`/marketing/api/campaign/${campaignId}/status/`)
           .then(res => res.json())
           .then(data => {
-            const label = document.getElementById('progress-label');
-            const bar = document.getElementById('progress-bar-fill');
-            const sent = document.getElementById('stat-sent');
-            const failed = document.getElementById('stat-failed');
-
-            if (label) label.textContent = `${data.sent_count}/${data.total_recipients} Sent (${data.progress_percentage}%)`;
-            if (bar) bar.style.width = `${data.progress_percentage}%`;
-            if (sent) sent.textContent = data.sent_count;
-            if (failed) failed.textContent = data.failed_count;
+            if (progressLabel) progressLabel.textContent = `${data.sent_count}/${data.total_recipients} Sent (${data.progress_percentage}%)`;
+            if (progressBar) progressBar.style.width = `${data.progress_percentage}%`;
+            if (statSent) statSent.textContent = data.sent_count;
+            if (statFailed) statFailed.textContent = data.failed_count;
 
             if (data.is_finished) {
               clearInterval(pollInterval);
@@ -234,6 +476,7 @@
           .catch(err => console.error('Status poll error:', err));
       }, 3000);
     }
+
   })();
 </script>
 {% endblock %}

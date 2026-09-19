@@ -217,11 +217,10 @@ def send_robust_email(
                     msg.connection = fallback_backend
                     msg.send(fail_silently=False)
                 except Exception as retry_err:
-                    # If Email 2 is blocked by server firewall (e.g. [Errno 111] Connection refused),
-                    # automatically fail over to Email 1 (cPanel) which is whitelisted on this host!
+                    # Bidirectional Automatic Failover between Email 1 and Email 2
                     if sender_choice == 'email2':
                         logger.warning(
-                            f"Email 2 (Google SMTP) blocked by server firewall ({retry_err}). "
+                            f"Email 2 (Google SMTP) failed ({retry_err}). "
                             "Failing over to Email 1 (mail.uniquetechcamp.org) with Reply-To set to UniqueTechCamp@gmail.com..."
                         )
                         email1_backend = get_email_connection('email1')
@@ -230,11 +229,23 @@ def send_robust_email(
                         msg.reply_to = [getattr(settings, 'EMAIL2_HOST_USER', 'UniqueTechCamp@gmail.com')]
                         msg.send(fail_silently=False)
                         email_log.error_message = (
-                            f"Dispatched via Email 1 failover (Server firewall blocked outbound Google SMTP: {retry_err}). "
+                            f"Dispatched via Email 1 failover (Email 2 failed: {retry_err}). "
                             "Reply-To set to UniqueTechCamp@gmail.com."
                         )
                     else:
-                        raise retry_err
+                        logger.warning(
+                            f"Email 1 (cPanel SMTP) failed ({retry_err}). "
+                            "Failing over to Email 2 (smtp.gmail.com) with Reply-To set to info@uniquetechcamp.org..."
+                        )
+                        email2_backend = get_email_connection('email2')
+                        msg.connection = email2_backend
+                        msg.from_email = get_sender_from_email('email2')
+                        msg.reply_to = [getattr(settings, 'EMAIL1_HOST_USER', 'info@uniquetechcamp.org')]
+                        msg.send(fail_silently=False)
+                        email_log.error_message = (
+                            f"Dispatched via Email 2 failover (Email 1 failed: {retry_err}). "
+                            "Reply-To set to info@uniquetechcamp.org."
+                        )
             else:
                 raise first_err
 
