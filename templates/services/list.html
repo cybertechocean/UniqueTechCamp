@@ -528,7 +528,7 @@
         <p class="service-desc flex-grow text-sm leading-relaxed mb-6" style="color:{% if service.is_featured %}#94a3b8{% else %}#6b7280{% endif %};">{{ service.short_description }}</p>
 
         <!-- Action Buttons -->
-        <div class="pt-5 mt-auto border-t bg-emerald-600{% if service.is_featured %}border-slate-700{% else %}border-slate-100{% endif %} flex flex-wrap items-center justify-between gap-2">
+        <div class="pt-5 mt-auto border-t {% if service.is_featured %}border-slate-700{% else %}border-slate-100{% endif %} flex flex-wrap items-center justify-between gap-2">
           <a href="{% url 'services:detail' service.slug %}" class="explore-link">
             Explore Service
             <span class="material-symbols-outlined" style="font-size:1rem;">arrow_forward</span>
